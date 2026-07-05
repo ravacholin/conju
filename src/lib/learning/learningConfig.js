@@ -119,9 +119,7 @@ export const ADAPTIVE_LEVELS = {
       introduction: 1.2,         // Longer introduction
       guided_drills: 1.3,        // More guided practice
       recap: 1.2,               // Longer recap
-      practice: 0.8,            // Less free practice
-      meaningful_practice: 0.9,
-      communicative_practice: 0.9
+      practice: 0.8            // Less free practice
     }
   },
   INTERMEDIATE: {
@@ -135,9 +133,7 @@ export const ADAPTIVE_LEVELS = {
       introduction: 0.8,
       guided_drills: 1.0,
       recap: 1.0,
-      practice: 1.1,
-      meaningful_practice: 1.0,
-      communicative_practice: 1.0
+      practice: 1.1
     }
   },
   ADVANCED: {
@@ -151,9 +147,7 @@ export const ADAPTIVE_LEVELS = {
       introduction: 0.5,         // Much shorter intro
       guided_drills: 0.7,        // Shorter guided practice
       recap: 0.8,
-      practice: 1.2,            // More free practice
-      meaningful_practice: 1.2,
-      communicative_practice: 1.2
+      practice: 1.2            // More free practice
     }
   }
 };
@@ -181,12 +175,10 @@ export const MASTERY_THRESHOLDS = {
  * Session phase distribution (as percentage of total duration)
  */
 export const PHASE_DISTRIBUTION = {
-  introduction: 0.15,           // 15%
-  guided_drills: 0.35,         // 35%
-  recap: 0.10,                 // 10%
-  practice: 0.20,              // 20%
-  meaningful_practice: 0.10,    // 10%
-  communicative_practice: 0.10  // 10%
+  introduction: 0.1875,         // 18.75%
+  guided_drills: 0.4375,       // 43.75%
+  recap: 0.125,                // 12.5%
+  practice: 0.25               // 25%
 };
 
 /**

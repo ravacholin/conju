@@ -252,14 +252,12 @@ describe('Learning Configuration Module', () => {
           introduction: 2.0, // Double weight
           guided_drills: 0.5, // Half weight
           recap: 1.0,
-          practice: 1.0,
-          meaningful_practice: 1.0,
-          communicative_practice: 1.0
+          practice: 1.0
         }
       }
       
       const result = calculatePhaseDurations(10, customConfig)
-      const standardIntro = 600000 * 0.15 // 15% of 10 minutes
+      const standardIntro = 600000 * 0.1875 // 18.75% of 10 minutes
       const weightedIntro = standardIntro * 2.0
       
       expect(result.phases.introduction).toBe(Math.round(weightedIntro))
