@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import legacy from '@vitejs/plugin-legacy'
 import { VitePWA } from 'vite-plugin-pwa'
 // import { spawn, spawnSync } from 'node:child_process'
 // import { existsSync } from 'node:fs'
@@ -96,6 +97,17 @@ export default defineConfig(({ mode }) => ({
           { src: 'favicon.png', sizes: '512x512', type: 'image/png' }
         ]
       }
+    }),
+    // Emits a separate "legacy" bundle (transpiled + core-js polyfills) loaded via
+    // nomodule on older browsers, so machines with an outdated Chrome/Edge/Firefox
+    // still run the app. Modern browsers keep using the untouched module bundle.
+    // Must come after VitePWA so the generated legacy assets are picked up correctly.
+    // modernPolyfills also patches the modern bundle for browsers that support ES
+    // modules but lack newer runtime APIs (e.g. structuredClone, Array.prototype.at).
+    legacy({
+      targets: ['>0.3%', 'last 4 years', 'Firefox ESR', 'not dead'],
+      modernPolyfills: true,
+      renderLegacyChunks: true
     })
   ],
   build: {
@@ -139,7 +151,11 @@ export default defineConfig(({ mode }) => ({
         }
       }
     },
-    target: 'esnext',
+    // Baseline modern-browser syntax target. Kept broadly compatible (not 'esnext')
+    // so browsers a bit behind the latest release can still parse the module bundle;
+    // @vitejs/plugin-legacy handles anything older via the nomodule fallback.
+    // es2020 (not lower) keeps optional chaining / nullish coalescing native.
+    target: 'es2020',
     // Verb datasets are intentionally split but some single modules (legacy fallbacks)
     // remain heavy; raise limit to avoid noisy warnings while keeping code-splitting.
     chunkSizeWarningLimit: 3000,

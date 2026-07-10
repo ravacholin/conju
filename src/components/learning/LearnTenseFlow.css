@@ -270,13 +270,18 @@
   accent-color: #000000;
 }
 
-.learn-flow .radio-group label:has(input[type="radio"]:checked) {
-  background: var(--panel);
-  border-color: var(--border-active);
-  color: var(--text);
-  font-weight: 700;
-  box-shadow: var(--shadow-hard-sm);
-  transform: translate(-2px, -2px);
+/* Cosmetic highlight for the selected radio. Guarded with @supports because :has()
+   is unsupported on older browsers; there the radio is still usable (accent-color
+   marks the selection), it just doesn't get the extra emphasis. */
+@supports selector(:has(*)) {
+  .learn-flow .radio-group label:has(input[type="radio"]:checked) {
+    background: var(--panel);
+    border-color: var(--border-active);
+    color: var(--text);
+    font-weight: 700;
+    box-shadow: var(--shadow-hard-sm);
+    transform: translate(-2px, -2px);
+  }
 }
 
 /* Start learning button */
