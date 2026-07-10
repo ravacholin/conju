@@ -5,6 +5,7 @@
  * que notifica cuando el sistema de progreso está listo para su uso.
  */
 
+import { useState, useEffect } from 'react'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('ProgressSystemEvents')
@@ -168,17 +169,10 @@ export function resetProgressSystemState() {
   logger.debug('Estado del sistema de progreso reseteado')
 }
 
-// Import React hooks for the React hook
-let useState, useEffect
-try {
-  const react = await import('react')
-  useState = react.useState
-  useEffect = react.useEffect
-} catch {
-  // En entornos no-React, proveer stubs
-  useState = () => [false, () => {}]
-  useEffect = () => {}
-}
+// React hooks are imported statically at the top of this module. The previous
+// top-level `await import('react')` was removed so the bundle can target older
+// browsers (top-level await requires a very recent engine); React is a hard
+// dependency of the app and always resolvable in app and test environments.
 
 // ===== EVENTOS DE PROGRESO PARA INICIALIZACIÓN POR LOTES =====
 

@@ -17,42 +17,16 @@ import { getCurrentUserId } from '../../lib/progress/userManager/index.js'
 import { validateDrillItemStructure } from './DrillItemGenerator.js'
 import { createLogger } from '../../lib/utils/logger.js'
 import { onProgressSystemReady, isProgressSystemReady } from '../../lib/progress/index.js'
-
-// Import progress system modules with error handling
-let processUserResponse = null
-let flowDetector = null
-let momentumTracker = null
-let confidenceEngine = null
-let dynamicGoalsSystem = null
-
-try {
-  const flowModule = await import('../../lib/progress/flowStateDetection.js')
-  processUserResponse = flowModule.processUserResponse
-  flowDetector = flowModule.flowDetector
-} catch (error) {
-  logger.warn('Flow detection module not available', error)
-}
-
-try {
-  const momentumModule = await import('../../lib/progress/momentumTracker.js')
-  momentumTracker = momentumModule.momentumTracker
-} catch (error) {
-  logger.warn('Momentum tracking module not available', error)
-}
-
-try {
-  const confidenceModule = await import('../../lib/progress/confidenceEngine.js')
-  confidenceEngine = confidenceModule.confidenceEngine
-} catch (error) {
-  logger.warn('Confidence engine module not available', error)
-}
-
-try {
-  const goalsModule = await import('../../lib/progress/dynamicGoals.js')
-  dynamicGoalsSystem = goalsModule.dynamicGoalsSystem
-} catch (error) {
-  logger.warn('Dynamic goals module not available', error)
-}
+// Emotional-intelligence progress modules. Imported statically (previously loaded via
+// top-level await) so these bindings are available synchronously when the hook runs —
+// exactly like before — while dropping the top-level await that forced an 'esnext'
+// build target. Removing it lets the bundle target older browsers; @vitejs/plugin-legacy
+// still covers pre-ESM ones. These are hard dependencies of the progress system, and
+// none import back into this hook, so a static import introduces no dependency cycle.
+import { processUserResponse, flowDetector } from '../../lib/progress/flowStateDetection.js'
+import { momentumTracker } from '../../lib/progress/momentumTracker.js'
+import { confidenceEngine } from '../../lib/progress/confidenceEngine.js'
+import { dynamicGoalsSystem } from '../../lib/progress/dynamicGoals.js'
 
 // NOTE: attempt persistence, mastery calculation and SRS scheduling are NOT done here.
 // They run once, in full, inside trackAttemptSubmitted (src/lib/progress/tracking.js),

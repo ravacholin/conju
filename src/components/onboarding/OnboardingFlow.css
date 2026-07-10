@@ -1,6 +1,13 @@
 
 .verbos-onboarding {
   position: fixed;
+  /* Longhand precedes the `inset` shorthand so browsers without `inset` support
+     (pre Chrome/Edge 87) still pin this fixed container to the viewport instead of
+     collapsing to zero size (which left only the near-black background visible). */
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   inset: 0;
   background: var(--bg);
   color: var(--text);
@@ -375,6 +382,10 @@
 /* ── Placement report modal ── */
 .placement-report-overlay {
   position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   inset: 0;
   background: rgba(0, 0, 0, 0.85);
   display: flex;
