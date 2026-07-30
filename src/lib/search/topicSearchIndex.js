@@ -1,0 +1,321 @@
+import { MOOD_TENSES, getMoodLabel, getTenseLabel } from '../utils/verbLabels.js'
+import { getFirstLevelForCombo } from '../core/curriculumGate.js'
+import { getFamiliesForTense } from '../data/irregularFamilies.js'
+import { getSimplifiedGroupsForTense } from '../data/simplifiedFamilyGroups.js'
+import { foldForSearch } from './searchText.js'
+import {
+  MOOD_ALIASES,
+  TENSE_ALIASES,
+  VERB_TYPE_ALIASES,
+  LEVEL_ALIASES,
+  SECTION_ENTRIES
+} from './searchAliases.js'
+import { buildTopicPayload, buildLevelPayload } from './searchPayloads.js'
+
+/**
+ * Flat, searchable index of everything the main menu can take you to.
+ *
+ * Built lazily and memoised at module scope: the menu asks for it inside a
+ * useMemo, so it costs nothing until someone opens the menu and nothing again
+ * after that.
+ */
+
+export const TOPIC_KINDS = Object.freeze({
+  TENSE: 'tense',
+  VERB_TYPE: 'verbType',
+  FAMILY: 'family',
+  LEVEL: 'level',
+  SECTION: 'section'
+})
+
+// Menu-style labels. formatMoodTense() produces awkward duplicates for
+// conditional and nonfinite ("Condicional (Condicional)"), so the display
+// strings are spelled out here.
+const TENSE_LABEL = {
+  pres: 'presente',
+  pretPerf: 'pretérito perfecto',
+  pretIndef: 'pretérito indefinido',
+  impf: 'pretérito imperfecto',
+  plusc: 'pluscuamperfecto',
+  fut: 'futuro simple',
+  futPerf: 'futuro compuesto',
+  subjPres: 'presente de subjuntivo',
+  subjImpf: 'imperfecto de subjuntivo',
+  subjPerf: 'perfecto de subjuntivo',
+  subjPlusc: 'pluscuamperfecto de subjuntivo',
+  impAff: 'imperativo afirmativo',
+  impNeg: 'imperativo negativo',
+  impMixed: 'imperativo mixto',
+  cond: 'condicional simple',
+  condPerf: 'condicional compuesto',
+  ger: 'gerundio',
+  part: 'participio',
+  nonfiniteMixed: 'formas no finitas mixtas'
+}
+
+// Short word for the giant focal panel — the mood already shows in the tag.
+const TENSE_FOCAL = {
+  pres: 'presente',
+  pretPerf: 'pretérito perfecto',
+  pretIndef: 'indefinido',
+  impf: 'imperfecto',
+  plusc: 'pluscuamperfecto',
+  fut: 'futuro',
+  futPerf: 'futuro compuesto',
+  subjPres: 'presente',
+  subjImpf: 'imperfecto',
+  subjPerf: 'perfecto',
+  subjPlusc: 'pluscuamperfecto',
+  impAff: 'afirmativo',
+  impNeg: 'negativo',
+  impMixed: 'mixto',
+  cond: 'condicional',
+  condPerf: 'condicional compuesto',
+  ger: 'gerundio',
+  part: 'participio',
+  nonfiniteMixed: 'no finitas'
+}
+
+// Dialect-neutral sample forms of *hablar*.
+const TENSE_EXAMPLE = {
+  pres: 'yo hablo',
+  pretPerf: 'he hablado',
+  pretIndef: 'yo hablé',
+  impf: 'yo hablaba',
+  plusc: 'había hablado',
+  fut: 'yo hablaré',
+  futPerf: 'habré hablado',
+  subjPres: 'que yo hable',
+  subjImpf: 'si yo hablara',
+  subjPerf: 'haya hablado',
+  subjPlusc: 'hubiera hablado',
+  impAff: 'hablá · habla',
+  impNeg: 'no hables',
+  impMixed: 'hablá · no hables',
+  cond: 'yo hablaría',
+  condPerf: 'habría hablado',
+  ger: 'hablando',
+  part: 'hablado',
+  nonfiniteMixed: 'hablando · hablado'
+}
+
+const MOOD_TAG = {
+  indicative: 'IND',
+  subjunctive: 'SUBJ',
+  imperative: 'IMP',
+  conditional: 'COND',
+  nonfinite: 'NF'
+}
+
+const LEVEL_GLOSS = {
+  A1: 'presente y poco más',
+  A2: 'pasados y futuro',
+  B1: 'perfectos y subjuntivo',
+  B2: 'subjuntivo imperfecto',
+  C1: 'más exigencia, no más tiempos',
+  C2: 'máxima exigencia, no más tiempos'
+}
+
+const uniq = (values) => Array.from(new Set(values.filter(Boolean)))
+
+const MAX_FOCAL_LENGTH = 28
+
+/**
+ * The focal panel renders its word at up to 180px, so long family names blow
+ * up the layout. Drop the trailing parenthetical qualifier first (it is always
+ * a technical aside), then clip on a word boundary.
+ */
+function shortenFocal(name) {
+  const withoutQualifier = name.replace(/\s*\([^)]*\)\s*$/, '').trim() || name.trim()
+  if (withoutQualifier.length <= MAX_FOCAL_LENGTH) return withoutQualifier
+  const clipped = withoutQualifier.slice(0, MAX_FOCAL_LENGTH)
+  const lastSpace = clipped.lastIndexOf(' ')
+  return (lastSpace > 8 ? clipped.slice(0, lastSpace) : clipped).trim()
+}
+
+// Fold once at build time so matching never re-normalises the index.
+function finalize(entry) {
+  const keywords = uniq(entry.keywords.map(foldForSearch))
+  return {
+    ...entry,
+    focal: entry.focal || entry.label,
+    keywords,
+    foldedLabel: foldForSearch(entry.label),
+    haystack: `${foldForSearch(entry.label)} ${keywords.join(' ')}`
+  }
+}
+
+function tenseKeywords(mood, tense) {
+  return [
+    TENSE_LABEL[tense],
+    getTenseLabel(tense),
+    getMoodLabel(mood),
+    ...(TENSE_ALIASES[tense] || []),
+    ...(MOOD_ALIASES[mood] || [])
+  ]
+}
+
+function buildTenseEntries() {
+  const entries = []
+  Object.entries(MOOD_TENSES).forEach(([mood, tenses]) => {
+    tenses.forEach(tense => {
+      const level = getFirstLevelForCombo(mood, tense)
+      entries.push(finalize({
+        id: `tense:${mood}:${tense}`,
+        kind: TOPIC_KINDS.TENSE,
+        label: TENSE_LABEL[tense],
+        focal: TENSE_FOCAL[tense],
+        tag: level || MOOD_TAG[mood],
+        gloss: getMoodLabel(mood).toLowerCase(),
+        ex: TENSE_EXAMPLE[tense],
+        level,
+        keywords: [...tenseKeywords(mood, tense), ...(level ? LEVEL_ALIASES[level] : [])],
+        payload: buildTopicPayload({ mood, tense })
+      }))
+    })
+  })
+  return entries
+}
+
+/**
+ * Compound tenses conjugate only *haber*, so their "irregulares" variant is
+ * whatever haber does in that tense. `he/has/ha` and `haya` are irregular, but
+ * `había`, `habré`, `hubiera` and `habría` are regular for their tense — those
+ * four variants have an empty form pool and must not be offered.
+ * topicSearchIndex.integrity.test.js asserts this list is exactly right, in
+ * both directions.
+ */
+export const TENSES_WITHOUT_IRREGULARS = Object.freeze(['plusc', 'futPerf', 'subjPlusc', 'condPerf'])
+
+function buildVerbTypeEntries() {
+  const entries = []
+  Object.entries(MOOD_TENSES).forEach(([mood, tenses]) => {
+    tenses.forEach(tense => {
+      const level = getFirstLevelForCombo(mood, tense)
+      const verbTypes = TENSES_WITHOUT_IRREGULARS.includes(tense)
+        ? ['regular']
+        : ['regular', 'irregular']
+      ;verbTypes.forEach(verbType => {
+        const suffix = verbType === 'regular' ? 'regulares' : 'irregulares'
+        entries.push(finalize({
+          id: `verbType:${mood}:${tense}:${verbType}`,
+          kind: TOPIC_KINDS.VERB_TYPE,
+          label: `${TENSE_LABEL[tense]} · ${suffix}`,
+          focal: TENSE_FOCAL[tense],
+          tag: suffix.toUpperCase(),
+          gloss: `${getMoodLabel(mood).toLowerCase()} · ${suffix}`,
+          ex: TENSE_EXAMPLE[tense],
+          level,
+          keywords: [...tenseKeywords(mood, tense), ...VERB_TYPE_ALIASES[verbType]],
+          payload: buildTopicPayload({ mood, tense, verbType })
+        }))
+      })
+    })
+  })
+  return entries
+}
+
+function buildFamilyEntries() {
+  const entries = []
+  Object.entries(MOOD_TENSES).forEach(([mood, tenses]) => {
+    tenses.forEach(tense => {
+      const level = getFirstLevelForCombo(mood, tense)
+      // Simplified groups are the learner-facing grouping and are ranked above
+      // the technical families; getFamiliesForTense() is used rather than
+      // IRREGULAR_FAMILIES because it hides families meant to stay out of menus.
+      const groups = (getSimplifiedGroupsForTense(tense) || []).map(g => ({
+        id: g.id,
+        name: g.name,
+        blurb: g.explanation || g.description || '',
+        ex: g.description || (g.exampleVerbs || []).join(' · '),
+        simplified: true
+      }))
+      const families = (getFamiliesForTense(tense) || []).map(f => ({
+        id: f.id,
+        name: f.name,
+        blurb: f.description || '',
+        ex: (f.examples || []).slice(0, 4).join(' · ') || f.description || '',
+        simplified: false
+      }))
+
+      ;[...groups, ...families].forEach(family => {
+        entries.push(finalize({
+          id: `family:${mood}:${tense}:${family.id}`,
+          kind: TOPIC_KINDS.FAMILY,
+          label: `${family.name.toLowerCase()} · ${TENSE_LABEL[tense]}`,
+          focal: shortenFocal(family.name.toLowerCase()),
+          tag: family.simplified ? 'GRUPO' : 'FAMILIA',
+          gloss: `${TENSE_LABEL[tense]} · irregulares`,
+          ex: family.ex,
+          level,
+          simplified: family.simplified,
+          keywords: [
+            family.name,
+            family.blurb,
+            family.ex,
+            ...tenseKeywords(mood, tense),
+            ...VERB_TYPE_ALIASES.irregular
+          ],
+          payload: buildTopicPayload({
+            mood,
+            tense,
+            verbType: 'irregular',
+            selectedFamily: family.id
+          })
+        }))
+      })
+    })
+  })
+  return entries
+}
+
+function buildLevelEntries() {
+  return Object.keys(LEVEL_ALIASES).map(level => finalize({
+    id: `level:${level}`,
+    kind: TOPIC_KINDS.LEVEL,
+    label: `nivel ${level.toLowerCase()} · todo mezclado`,
+    focal: level.toLowerCase(),
+    tag: 'NIVEL',
+    gloss: LEVEL_GLOSS[level],
+    ex: 'práctica mixta del nivel',
+    level,
+    keywords: [`nivel ${level}`, 'nivel', 'mezclado', 'mixto', ...LEVEL_ALIASES[level]],
+    payload: buildLevelPayload(level)
+  }))
+}
+
+function buildSectionEntries() {
+  return SECTION_ENTRIES.map(section => finalize({
+    id: `section:${section.id}`,
+    kind: TOPIC_KINDS.SECTION,
+    label: section.label,
+    focal: section.focal,
+    tag: section.tag,
+    gloss: section.gloss,
+    ex: section.ex,
+    level: null,
+    sectionId: section.id,
+    keywords: [section.label, ...section.keywords],
+    payload: null
+  }))
+}
+
+let cachedIndex = null
+
+export function getTopicSearchIndex() {
+  if (!cachedIndex) {
+    cachedIndex = [
+      ...buildTenseEntries(),
+      ...buildVerbTypeEntries(),
+      ...buildFamilyEntries(),
+      ...buildLevelEntries(),
+      ...buildSectionEntries()
+    ]
+  }
+  return cachedIndex
+}
+
+// Test-only escape hatch; production never needs to rebuild.
+export function resetTopicSearchIndex() {
+  cachedIndex = null
+}

@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import './OnboardingFlow.css'
 import PlacementTest from '../levels/PlacementTest.jsx'
+import StepView from './StepView.jsx'
+import { isTextEntryTarget } from './textEntry.js'
+import { getTopicSearchIndex } from '../../lib/search/topicSearchIndex.js'
+import { searchTopics } from '../../lib/search/searchTopics.js'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
 import { getFamiliesForMood, getFamiliesForTense } from '../../lib/data/irregularFamilies.js'
 import {
@@ -33,6 +37,9 @@ const VERB_TYPE_OPTS = [
 ]
 
 const THEME_ROOT_MOOD_OPTS = new Set(['subjunctive', 'imperative'])
+
+// The main menu — where the topic search lives.
+const SEARCH_STEP = 2
 
 function buildThemeTopicOptions({ selectMood, selectTense, themeSubMenu, setThemeSubMenu }) {
   if (themeSubMenu === 'condicional') {
@@ -561,172 +568,6 @@ function buildBreadcrumb(settings) {
   return items.slice(-3)
 }
 
-/* ──────────────────────────────
-   StepView — two-panel layout
-────────────────────────────── */
-function StepView({ stepConfig, animKey, onSelect }) {
-  const [focusIdx, setFocusIdx] = useState(0)
-  const { n, kicker, prompt, aux, options } = stepConfig
-
-  useEffect(() => { setFocusIdx(0) }, [animKey])
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handle = (e) => {
-      if (e.key === 'ArrowDown') {
-        e.preventDefault()
-        setFocusIdx(i => Math.min(options.length - 1, i + 1))
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault()
-        setFocusIdx(i => Math.max(0, i - 1))
-      } else if (e.key === 'Enter' || e.key === 'ArrowRight') {
-        e.preventDefault()
-        onSelect(options[focusIdx])
-      } else if (/^[1-9]$/.test(e.key)) {
-        const idx = parseInt(e.key, 10) - 1
-        if (idx < options.length) { setFocusIdx(idx); onSelect(options[idx]) }
-      }
-    }
-    window.addEventListener('keydown', handle)
-    return () => window.removeEventListener('keydown', handle)
-  }, [focusIdx, options, onSelect])
-
-  const focused = options[focusIdx] || options[0]
-
-  // Dynamic font size for focal word
-  const len = (focused?.label || '').length
-  const lenFactor = len <= 6 ? 1 : len <= 10 ? 0.78 : len <= 16 ? 0.58 : len <= 22 ? 0.44 : 0.34
-  const focalSize = `clamp(44px, ${Math.max(5, 12 * lenFactor)}vw, ${Math.round(180 * lenFactor)}px)`
-  const optionFontSize = '26px'
-
-  return (
-    <div key={animKey} className="vo-step vo-lift-in">
-      {/* LEFT: focal word display */}
-      <div className="vo-left">
-        <div className="vo-step-tag">──── {kicker}</div>
-
-        {/* Ghost step number watermark */}
-        <div className="vo-watermark" aria-hidden="true">{n}</div>
-
-        <div className="vo-left-bottom">
-          <div className="vo-aux">▸ {aux}</div>
-          <div className="vo-prompt">{prompt}</div>
-
-          {/* Focal option — huge italic */}
-          <div
-            key={focused?.id ?? 'x'}
-            className="vo-focal-word vo-scan-in"
-            style={{ fontSize: focalSize, color: ACCENT }}
-          >
-            {focused?.label}
-            <span
-              className="vo-cursor"
-              style={{
-                display: 'inline-block',
-                width: '0.07em',
-                height: '0.68em',
-                background: ACCENT,
-                marginLeft: '0.05em',
-                verticalAlign: 'baseline',
-                transform: 'translateY(-0.05em)',
-              }}
-            />
-          </div>
-
-          {/* Metadata strip */}
-          {focused && (
-            <div className="vo-meta">
-              <div className="vo-meta-item">
-                <span className="vo-meta-key">TAG</span>
-                <span className="vo-meta-val">{focused.tag}</span>
-              </div>
-              <div className="vo-meta-item">
-                <span className="vo-meta-key">TIPO</span>
-                <span className="vo-meta-val">{focused.gloss}</span>
-              </div>
-              {focused.ex && (
-                <div className="vo-meta-item vo-meta-right">
-                  <span className="vo-meta-key">EJEMPLO</span>
-                  <span className="vo-meta-val vo-meta-ex" style={{ color: ACCENT }}>{focused.ex}</span>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* RIGHT: option list */}
-      <div className="vo-right vo-noscroll">
-        <div className="vo-options-label">
-          OPCIONES · {String(options.length).padStart(2, '0')} ────
-        </div>
-
-        <div className="vo-options-list">
-          {options.map((opt, i) => {
-            const active = i === focusIdx
-            return (
-              <div
-                key={opt.id ?? i}
-                className="vo-option"
-                role="button"
-                tabIndex={0}
-                aria-label={opt.ariaLabel || opt.label}
-                style={{ paddingLeft: active ? 76 : 52, paddingTop: 14, paddingBottom: 14 }}
-                onMouseEnter={() => setFocusIdx(i)}
-                onClick={() => onSelect(opt)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    onSelect(opt)
-                  }
-                }}
-              >
-                {/* Number box */}
-                <div className="vo-option-num" style={{ color: active ? ACCENT : INK3 }}>
-                  <span className="vo-option-num-box" style={{ borderColor: active ? ACCENT : LINE }}>
-                    {i + 1}
-                  </span>
-                  {active && <span className="vo-option-tick" style={{ background: ACCENT }} />}
-                </div>
-
-                {/* Label */}
-                <div
-                  className="vo-option-label"
-                  style={{
-                    fontSize: optionFontSize,
-                    fontWeight: active ? 700 : 400,
-                    fontStyle: active ? 'italic' : 'normal',
-                    color: active ? INK : INK2,
-                  }}
-                >
-                  {opt.label}
-                </div>
-
-                {/* Tag */}
-                <div className="vo-option-tag" style={{ color: active ? ACCENT : INK3 }}>
-                  {opt.tag}
-                </div>
-
-                {/* Arrow */}
-                <div
-                  className="vo-option-arrow"
-                  style={{
-                    color: ACCENT,
-                    opacity: active ? 1 : 0,
-                    transform: active ? 'translateX(0)' : 'translateX(-6px)',
-                  }}
-                >
-                  →
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-    </div>
-  )
-}
-
 /* ────────────────────────────────────────────
    Corner crosshairs — purely decorative
 ──────────────────────────────────────────── */
@@ -846,6 +687,8 @@ function OnboardingFlow({
   getAvailableMoodsForLevel,
   getAvailableTensesForLevelAndMood,
   onGoToProgress,
+  setOnboardingStep,
+  startFromSearch,
 }) {
   const [showLevelTest, setShowLevelTest]             = useState(false)
   const [showPlacementSummary, setShowPlacementSummary] = useState(false)
@@ -853,6 +696,8 @@ function OnboardingFlow({
   const [reportSaved, setReportSaved]                   = useState(false)
   const [animKey, setAnimKey]                           = useState(0)
   const [themeSubMenu, setThemeSubMenu]                 = useState(null)
+  const [searchQuery, setSearchQuery]                   = useState('')
+  const searchInputRef                                  = useRef(null)
 
   // Bump animKey on step change to trigger animations
   const prevStep = useRef(onboardingStep)
@@ -861,6 +706,7 @@ function OnboardingFlow({
       prevStep.current = onboardingStep
       setAnimKey(k => k + 1)
       setThemeSubMenu(null)
+      setSearchQuery('')
     }
   }, [onboardingStep])
 
@@ -901,19 +747,39 @@ function OnboardingFlow({
     handleHome(setCurrentMode)
   }, [handleHome, setCurrentMode])
 
-  // Global back keyboard shortcut
+  // Global back keyboard shortcut.
+  // All three keys stand down while the user is typing: ArrowLeft moves the
+  // caret, Escape clears the search (handled by the field), and Backspace
+  // deletes a character.
   useEffect(() => {
     const fn = (e) => {
       if (showLevelTest) return
-      if (e.key === 'Escape' || e.key === 'ArrowLeft') {
-        e.preventDefault(); handleBack()
-      } else if (e.key === 'Backspace' && document.activeElement.tagName !== 'INPUT') {
+      if (isTextEntryTarget(document.activeElement)) return
+      if (e.key === 'Escape' || e.key === 'ArrowLeft' || e.key === 'Backspace') {
         e.preventDefault(); handleBack()
       }
     }
     window.addEventListener('keydown', fn)
     return () => window.removeEventListener('keydown', fn)
   }, [handleBack, showLevelTest])
+
+  // "/" from any step jumps to the main menu with the search focused.
+  useEffect(() => {
+    const fn = (e) => {
+      if (showLevelTest || e.key !== '/') return
+      if (isTextEntryTarget(e.target)) return
+      e.preventDefault()
+      if (onboardingStep === SEARCH_STEP) {
+        searchInputRef.current?.focus()
+      } else {
+        setOnboardingStep(SEARCH_STEP)
+        // The field mounts with the step, so focus after the commit.
+        setTimeout(() => searchInputRef.current?.focus(), 0)
+      }
+    }
+    window.addEventListener('keydown', fn)
+    return () => window.removeEventListener('keydown', fn)
+  }, [onboardingStep, setOnboardingStep, showLevelTest])
 
   const handlers = useMemo(() => ({
     selectDialect,
@@ -945,6 +811,48 @@ function OnboardingFlow({
   )
 
   const breadcrumb = useMemo(() => buildBreadcrumb(settings), [settings])
+
+  /* ── Topic search (main menu only) ── */
+  // Search entries that navigate somewhere instead of starting a drill.
+  const SECTION_ACTIONS = useMemo(() => ({
+    progress: onGoToProgress,
+    learning: onStartLearningNewTense,
+    placement: handleStartLevelTest
+  }), [onGoToProgress, onStartLearningNewTense, handleStartLevelTest])
+
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return []
+    return searchTopics(searchQuery, getTopicSearchIndex())
+  }, [searchQuery])
+
+  // Search results are rendered by the same row component as the menu
+  // options, so each one is given the option shape the list expects.
+  const searchOptions = useMemo(() => searchResults.map(result => ({
+    ...result.entry,
+    ariaLabel: `${result.entry.label} — ${result.entry.gloss}`,
+    onSelect: () => {
+      if (result.entry.kind === 'section') {
+        SECTION_ACTIONS[result.entry.sectionId]?.()
+        return
+      }
+      startFromSearch?.(result.entry.payload, onStartPractice)
+    }
+  })), [searchResults, startFromSearch, onStartPractice, SECTION_ACTIONS])
+
+  const search = useMemo(() => ({
+    query: searchQuery,
+    onQueryChange: setSearchQuery,
+    results: searchResults.map((result, i) => ({ ...result, entry: searchOptions[i] })),
+    inputRef: searchInputRef,
+    onEscape: () => {
+      if (searchQuery) {
+        setSearchQuery('')
+      } else {
+        searchInputRef.current?.blur()
+        handleBack()
+      }
+    }
+  }), [searchQuery, searchResults, searchOptions, handleBack])
 
   const handleOptionSelect = useCallback((opt) => {
     opt.onSelect()
@@ -1009,6 +917,7 @@ function OnboardingFlow({
           stepConfig={stepConfig}
           animKey={animKey}
           onSelect={handleOptionSelect}
+          search={onboardingStep === SEARCH_STEP ? search : undefined}
         />
       ) : null}
 
@@ -1029,6 +938,7 @@ function OnboardingFlow({
           <span><em>↑↓</em> navegá</span>
           <span><em>↵ / →</em> seleccioná</span>
           <span><em>← / esc</em> volver</span>
+          <span className="vo-hint-search"><em>/</em> buscar</span>
         </div>
         <div style={{ color: INK2 }}>{stepConfig?.kicker}</div>
         <div>SISTEMA · OK</div>

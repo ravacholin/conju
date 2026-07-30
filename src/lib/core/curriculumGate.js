@@ -52,6 +52,30 @@ function canonicalizeTense(tense) {
   return map[tense] || tense;
 }
 
+const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+let firstLevelByCombo = null;
+
+/**
+ * The earliest CEFR level at which a mood/tense combo is introduced.
+ * Accepts canonical or Spanish/long keys, same as the rest of this module.
+ *
+ * @returns {string|null} e.g. 'A2', or null when the combo is not in the curriculum
+ */
+export function getFirstLevelForCombo(mood, tense) {
+  if (!firstLevelByCombo) {
+    firstLevelByCombo = new Map();
+    gates.forEach(g => {
+      const key = `${canonicalizeMood(g.mood)}|${canonicalizeTense(g.tense)}`;
+      const known = firstLevelByCombo.get(key);
+      if (!known || LEVEL_ORDER.indexOf(g.level) < LEVEL_ORDER.indexOf(known)) {
+        firstLevelByCombo.set(key, g.level);
+      }
+    });
+  }
+  return firstLevelByCombo.get(`${canonicalizeMood(mood)}|${canonicalizeTense(tense)}`) || null;
+}
+
 export function getAllowedCombosForLevel(level) {
   if (!level) return new Set();
   // Build list with canonicalized mood/tense to match forms dataset

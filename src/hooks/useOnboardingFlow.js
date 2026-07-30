@@ -3,28 +3,13 @@ import { useSettings } from '../state/settings.js'
 import { getTensesForMood /* getTenseLabel, getMoodLabel */ } from '../lib/utils/verbLabels.js'
 import { getAllowedMoods as gateAllowedMoods, getAllowedTensesForMood as gateAllowedTensesForMood } from '../lib/core/eligibility.js'
 import { getFamiliesForTense } from '../lib/data/irregularFamilies.js'
-import { LEVELS } from '../lib/data/levels.js'
+import { buildLevelSettingsUpdate } from '../lib/core/levelSettingsPresets.js'
 import router from '../lib/routing/Router.js'
 import { ROUTES } from '../lib/routing/routeContract.js'
 import { createLogger } from '../lib/utils/logger.js'
 // import gates from '../data/curriculum.json'
 
 const logger = createLogger('useOnboardingFlow')
-
-// Helper function to get allowed lemmas from level configuration
-function getAllowedLemmasForLevel(level) {
-  const levelConfig = LEVELS[level]
-  if (!levelConfig || !levelConfig.verbPacks) {
-    return null // No restriction
-  }
-  
-  const allowedLemmas = new Set()
-  levelConfig.verbPacks.forEach(pack => {
-    pack.lemmas.forEach(lemma => allowedLemmas.add(lemma))
-  })
-  
-  return allowedLemmas
-}
 
 const ONBOARDING_ACTIONS = {
   SET_STEP: 'SET_STEP',
@@ -385,115 +370,9 @@ export function useOnboardingFlow() {
       logger.debug('ACTION: selectLevel', level);
     }
     closeTopPanelsAndFeatures()
-    // Apply level-specific policies
-    // DON'T set practiceMode here - let user choose in next step
-    const updates = {
-      level,
-      cameFromTema: false,
-      specificMood: null,
-      specificTense: null
-    }
-    if (level === 'A1') {
-      updates.strict = false
-      updates.accentTolerance = 'accept'
-      updates.requireDieresis = false
-      updates.blockNonNormativeSpelling = false
-      updates.cliticStrictness = 'off'
-      updates.impSubjVariantMode = 'accept_both'
-      updates.cliticsPercent = 0
-      updates.neutralizePronoun = false
-      updates.rotateSecondPerson = false
-      updates.timeMode = 'none'
-      updates.perItemMs = null
-      updates.medianTargetMs = null
-      updates.showPronouns = true
-      updates.practicePronoun = 'both'
-      updates.allowedLemmas = getAllowedLemmasForLevel('A1')
-    } else if (level === 'A2') {
-      updates.strict = false
-      updates.accentTolerance = 'warn'
-      updates.requireDieresis = false
-      updates.blockNonNormativeSpelling = false
-      updates.cliticStrictness = 'off'
-      updates.impSubjVariantMode = 'accept_both'
-      updates.cliticsPercent = 0
-      updates.neutralizePronoun = false
-      updates.rotateSecondPerson = false
-      updates.timeMode = 'soft'
-      updates.perItemMs = 8000
-      updates.medianTargetMs = null
-      updates.showPronouns = true
-      updates.allowedLemmas = getAllowedLemmasForLevel('A2')
-    } else if (level === 'B1') {
-      updates.strict = true
-      updates.accentTolerance = 'warn'
-      updates.requireDieresis = false
-      updates.blockNonNormativeSpelling = false
-      updates.cliticStrictness = 'low'
-      updates.impSubjVariantMode = 'accept_both'
-      updates.cliticsPercent = 0
-      updates.neutralizePronoun = false
-      updates.rotateSecondPerson = false
-      updates.timeMode = 'soft'
-      updates.perItemMs = 6000
-      updates.medianTargetMs = 3000
-      updates.allowedLemmas = getAllowedLemmasForLevel('B1')
-    } else if (level === 'B2') {
-      updates.strict = true
-      updates.accentTolerance = 'strict'
-      updates.requireDieresis = true
-      updates.blockNonNormativeSpelling = false
-      updates.cliticStrictness = 'low'
-      updates.impSubjVariantMode = 'accept_both'
-      updates.cliticsPercent = 10
-      updates.neutralizePronoun = false
-      updates.rotateSecondPerson = true
-      updates.timeMode = 'strict'
-      updates.perItemMs = 5000
-      updates.medianTargetMs = 2500
-      updates.allowedLemmas = getAllowedLemmasForLevel('B2')
-    } else if (level === 'C1') {
-      updates.strict = true
-      updates.accentTolerance = 'warn'
-      updates.requireDieresis = true
-      updates.blockNonNormativeSpelling = true
-      updates.cliticStrictness = 'high'
-      updates.cliticsPercent = 30
-      updates.neutralizePronoun = true
-      updates.rotateSecondPerson = false
-      updates.timeMode = 'strict'
-      updates.perItemMs = 3500
-      updates.medianTargetMs = 1800
-      updates.enableFuturoSubjRead = true
-      updates.enableFuturoSubjProd = false
-      updates.enableC2Conmutacion = false
-      updates.allowedLemmas = getAllowedLemmasForLevel('C1')
-    } else if (level === 'C2') {
-      updates.strict = true
-      updates.accentTolerance = 'strict'
-      updates.requireDieresis = true
-      updates.blockNonNormativeSpelling = true
-      updates.cliticStrictness = 'high'
-      updates.cliticsPercent = 60
-      updates.neutralizePronoun = true
-      updates.rotateSecondPerson = true
-      updates.timeMode = 'strict'
-      updates.perItemMs = 2500
-      updates.medianTargetMs = 1200
-      updates.enableFuturoSubjRead = true
-      updates.enableFuturoSubjProd = true
-      updates.enableC2Conmutacion = true
-      updates.burstSize = 16
-      updates.c2RareBoostLemmas = ['argüir','delinquir','henchir','agorar','cocer','esparcir','distinguir','tañer']
-      updates.allowedLemmas = getAllowedLemmasForLevel('C2')
-      // C2: Override region to 'global' to practice ALL dialect forms (tú, vos, vosotros)
-      updates.region = 'global'
-      updates.useTuteo = true
-      updates.useVoseo = true
-      updates.useVosotros = true
-      updates.practicePronoun = 'all'
-    }
-    settings.set(updates)
+    // Apply level-specific policies.
+    // DON'T set practiceMode here - let user choose in next step.
+    settings.set(buildLevelSettingsUpdate(level))
     setOnboardingStep(4) // Go to practice mode selection (mixed vs specific)
   }, [setOnboardingStep, settings])
 
@@ -680,6 +559,23 @@ export function useOnboardingFlow() {
     onStartPractice && onStartPractice()
   }, [settings])
 
+  /**
+   * Apply a settings payload produced by the menu topic search and jump
+   * straight into the drill, skipping the remaining onboarding steps.
+   *
+   * The payload is built by src/lib/search/searchPayloads.js and is already a
+   * complete, self-consistent settings patch — this only applies it.
+   */
+  const startFromSearch = useCallback((payload, onStartPractice) => {
+    if (import.meta.env.DEV) {
+      logger.debug('ACTION: startFromSearch', payload);
+    }
+    closeTopPanelsAndFeatures()
+    if (!payload) return
+    settings.set(payload)
+    onStartPractice && onStartPractice()
+  }, [settings])
+
   const goBack = useCallback(() => {
     if (import.meta.env.DEV) {
       logger.debug('ACTION: goBack');
@@ -735,6 +631,7 @@ export function useOnboardingFlow() {
     selectTense,
     selectVerbType,
     selectFamily,
+    startFromSearch,
     goBack,
     goToLevelDetails,
     handleHome,
