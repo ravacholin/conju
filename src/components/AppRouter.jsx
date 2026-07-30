@@ -499,6 +499,8 @@ function AppRouter() {
         getConjugationExample={onboardingFlow.getConjugationExample}
         onGoToProgress={handleGoToProgress}
         onStartLearningNewTense={handleStartLearningNewTense}
+        setOnboardingStep={onboardingFlow.setOnboardingStep}
+        startFromSearch={onboardingFlow.startFromSearch}
       />
     )
   }

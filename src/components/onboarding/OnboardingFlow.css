@@ -241,6 +241,7 @@
 
 .vo-focal-word {
   font-family: var(--font-display);
+  font-size: var(--vo-focal-size, clamp(44px, 12vw, 180px));
   font-weight: 600;
   font-style: italic;
   letter-spacing: -0.03em;
@@ -293,7 +294,39 @@
   color: var(--border-strong);
 }
 
-.vo-options-list { display: flex; flex-direction: column; }
+/* With the search field present the panel is top-aligned and the counter
+   flows below the input instead of floating over it. */
+.vo-right.has-search {
+  justify-content: flex-start;
+  padding-top: 20px;
+}
+
+.vo-right.has-search .vo-options-label {
+  position: static;
+  margin: 0 0 6px;
+}
+
+/* Focal-word caret (was inline styles before the search refactor). */
+.vo-focal-cursor {
+  display: inline-block;
+  width: 0.07em;
+  height: 0.68em;
+  margin-left: 0.05em;
+  background: var(--accent-primary);
+  vertical-align: baseline;
+  transform: translateY(-0.05em);
+}
+
+.vo-options-list {
+  display: flex;
+  flex-direction: column;
+  /* Row sizing lives in custom properties rather than inline styles so the
+     mobile breakpoint can shrink it. */
+  --vo-pad-idle: 52px;
+  --vo-pad-active: 76px;
+  --vo-option-size: 26px;
+  --vo-row-pad: 14px;
+}
 
 .vo-option {
   position: relative;
@@ -302,8 +335,11 @@
   display: flex;
   align-items: baseline;
   gap: 14px;
+  padding: var(--vo-row-pad) 0 var(--vo-row-pad) var(--vo-pad-idle);
   transition: padding-left 0.18s cubic-bezier(0.2, 0.9, 0.3, 1);
 }
+
+.vo-option.is-active { padding-left: var(--vo-pad-active); }
 
 .vo-option:last-child { border-bottom: none; }
 
@@ -341,10 +377,11 @@
 
 .vo-option-label {
   font-family: var(--font-ui);
+  font-size: var(--vo-option-size);
   letter-spacing: -0.025em;
   text-transform: lowercase;
   line-height: 1.05;
-  transition: all 0.15s;
+  transition: color 0.15s, font-weight 0.15s;
   flex: 1;
   min-width: 0;
 }
@@ -493,10 +530,83 @@
 
   .vo-options-label { top: 8px; left: 20px; }
   .vo-right { padding-top: 36px; }
+  .vo-right.has-search { padding-top: 8px; }
 
   .vo-breadcrumb { display: none; }
 
   .vo-footer-hints { gap: 10px; }
+  /* The keyboard hints don't apply on touch; only the search cue survives. */
+  .vo-footer-hints span:not(.vo-hint-search) { display: none; }
 
   .vo-left-bottom { margin-top: 20px; }
+
+  /* Smaller rows, but still a 44px touch target. */
+  .vo-options-list {
+    --vo-pad-idle: 34px;
+    --vo-pad-active: 46px;
+    --vo-option-size: clamp(17px, 5.2vw, 21px);
+    --vo-row-pad: 12px;
+  }
+
+  .vo-option { min-height: 44px; }
+  .vo-option-tick { width: 16px; }
+
+  /* While a query is active the search panel comes first and the focal panel
+     shrinks to a caption — on a phone the results are what matters. */
+  .vo-step.is-searching .vo-right { order: -1; }
+
+  .vo-step.is-searching .vo-left {
+    order: 1;
+    padding: 14px 20px 18px;
+    border-bottom: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .vo-step.is-searching .vo-watermark,
+  .vo-step.is-searching .vo-step-tag,
+  .vo-step.is-searching .vo-aux,
+  .vo-step.is-searching .vo-prompt { display: none; }
+
+  .vo-step.is-searching .vo-left-bottom { margin-top: 0; }
+
+  .vo-step.is-searching .vo-focal-word {
+    font-size: clamp(24px, 8vw, 38px);
+    margin-bottom: 12px;
+  }
+}
+
+/* ── Safe areas (iOS notch / home indicator, incl. the Capacitor build) ──
+   Requires viewport-fit=cover on the viewport meta, otherwise every
+   env(safe-area-inset-*) resolves to 0 and these are no-ops. */
+.vo-header {
+  height: calc(44px + env(safe-area-inset-top));
+  padding-top: env(safe-area-inset-top);
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
+}
+
+.vo-footer {
+  height: calc(32px + env(safe-area-inset-bottom));
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: max(20px, env(safe-area-inset-left));
+  padding-right: max(20px, env(safe-area-inset-right));
+}
+
+.vo-step {
+  top: calc(44px + env(safe-area-inset-top));
+  bottom: calc(32px + env(safe-area-inset-bottom));
+}
+
+.vo-placement-overlay {
+  top: calc(44px + env(safe-area-inset-top));
+  bottom: calc(32px + env(safe-area-inset-bottom));
+}
+
+@media (max-width: 680px) {
+  .vo-left { padding-left: max(20px, env(safe-area-inset-left)); }
+  .vo-right {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
 }

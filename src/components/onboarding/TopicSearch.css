@@ -1,0 +1,192 @@
+/* ──────────────────────────────────────────────
+   Topic search — main menu
+   Monochrome, sharp-cornered, underline-only field
+   so it reads as part of the vo-* system.
+────────────────────────────────────────────── */
+
+.vo-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.vo-search {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background: var(--bg);
+  padding: 10px 0 12px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  transition: border-color 140ms ease;
+}
+
+.vo-search.is-focused {
+  border-bottom-color: var(--accent-primary);
+}
+
+.vo-search-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.vo-search-slash {
+  flex-shrink: 0;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--border-strong);
+  transition: color 140ms ease;
+  user-select: none;
+}
+
+.vo-search.is-focused .vo-search-slash {
+  color: var(--accent-primary);
+}
+
+.vo-search-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  padding: 2px 0;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 18px;
+  font-weight: 300;
+  letter-spacing: -0.015em;
+  caret-color: var(--accent-primary);
+}
+
+.vo-search-input::placeholder {
+  color: var(--muted-2);
+  font-weight: 300;
+}
+
+/* Terminal-style blinking block while the field is idle and empty. */
+.vo-search-cursor {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 2px;
+  height: 18px;
+  margin-left: -8px;
+  background: var(--border-strong);
+  pointer-events: none;
+}
+
+.vo-search-clear {
+  flex-shrink: 0;
+  background: none;
+  border: 0;
+  padding: 8px;
+  margin: -8px -8px -8px 0;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 120ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.vo-search-clear:hover,
+.vo-search-clear:focus-visible {
+  color: var(--accent-primary);
+}
+
+/* Matched substring inside a result label. The palette is monochrome, so the
+   highlight is an accent underline rather than a fill. */
+.vo-option-mark {
+  background: none;
+  color: inherit;
+  font-style: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--accent-primary);
+}
+
+/* ── Empty state ── */
+.vo-search-empty {
+  padding: 24px 0 8px;
+}
+
+.vo-search-empty-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-style: italic;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+
+.vo-search-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vo-search-suggestion {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  padding: 8px 12px;
+  min-height: 36px;
+  color: var(--muted);
+  font-family: var(--font-ui);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: lowercase;
+  cursor: pointer;
+  transition: border-color 120ms ease, color 120ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.vo-search-suggestion:hover,
+.vo-search-suggestion:focus-visible {
+  border-color: var(--accent-primary);
+  color: var(--text);
+}
+
+/* ── Mobile ── */
+@media (max-width: 680px) {
+  .vo-search {
+    padding: 8px 0 10px;
+  }
+
+  .vo-search-input {
+    /* Anything below 16px makes iOS Safari zoom on focus. */
+    font-size: 16px;
+  }
+
+  .vo-search-input::placeholder {
+    /* The long desktop placeholder overflows a phone; the ellipsis keeps it
+       readable without changing the string per breakpoint. */
+    text-overflow: ellipsis;
+  }
+
+  .vo-search-cursor {
+    height: 16px;
+  }
+
+  .vo-search-empty-title {
+    font-size: 17px;
+  }
+
+  .vo-search-suggestion {
+    min-height: 44px;
+    padding: 12px 14px;
+  }
+}
