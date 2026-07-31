@@ -53,6 +53,7 @@ import {
 } from './specificConstraints.js'
 import { selectNextForm } from './hierarchicalSelection.js'
 import { buildEligibleFormsKey, shouldCacheEligibleForms } from './drillCacheKey.js'
+import { GENERATION_SKIPPED } from './drillGenerationSignals.js'
 import { createLogger } from '../../lib/utils/logger.js'
 
 const logger = createLogger('useDrillGenerator')
@@ -66,6 +67,7 @@ export const useDrillGenerator = () => {
   const [isGenerating, setIsGenerating] = useState(false)
   const [lastGeneratedItem, setLastGeneratedItem] = useState(null)
   const [lastFilteringReport, setLastFilteringReport] = useState(null)
+  const isGeneratingRef = useRef(false)
   const lastFilteringReportRef = useRef(null)
   const formsPoolRef = useRef({ signature: null, forms: null })
   const eligibleFormsCacheRef = useRef({ key: null, forms: null })
@@ -105,9 +107,11 @@ export const useDrillGenerator = () => {
     getAvailableTensesForLevelAndMood,
     history = {}
   ) => {
-    if (isGenerating) {
+    // Ref-based guard: `isGenerating` state lags behind by a render, so two calls
+    // landing in the same tick would both get past a state-only check.
+    if (isGeneratingRef.current) {
       logger.warn('generateNextItem', 'Generation already in progress')
-      return null
+      return GENERATION_SKIPPED
     }
 
     // CRITICAL FIX: Read fresh settings directly from store to avoid stale closures
@@ -115,6 +119,7 @@ export const useDrillGenerator = () => {
 
     const { reviewSessionType, reviewSessionFilter } = getReviewSessionContext(FRESH_SETTINGS)
 
+    isGeneratingRef.current = true
     setIsGenerating(true)
 
     try {
@@ -395,9 +400,10 @@ export const useDrillGenerator = () => {
       setLastGeneratedItem(emergencyItem)
       return emergencyItem
     } finally {
+      isGeneratingRef.current = false
       setIsGenerating(false)
     }
-  }, [isGenerating])
+  }, [getNow])
 
   /**
    * Check if generation is currently possible

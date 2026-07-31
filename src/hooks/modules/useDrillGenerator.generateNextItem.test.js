@@ -159,6 +159,46 @@ describe('useDrillGenerator.generateNextItem integration', () => {
     })
   })
 
+  it('skips a concurrent request instead of reporting a failure', async () => {
+    let releasePool
+    resolveFormsPoolMock.mockImplementationOnce(() => new Promise((resolve) => {
+      releasePool = () => resolve({
+        forms: [{ lemma: 'hablar', mood: 'indicative', tense: 'pres', person: '1s' }],
+        signature: 'sig',
+        reused: false,
+        durationMs: 10,
+        cache: { signature: 'sig', forms: [] }
+      })
+    }))
+
+    const { useDrillGenerator } = await import('./useDrillGenerator.js')
+    const { GENERATION_SKIPPED, isGenerationSkipped } = await import('./drillGenerationSignals.js')
+    const { result } = renderHook(() => useDrillGenerator())
+
+    let firstPromise
+    let secondResult
+    await act(async () => {
+      // Kick off a generation and, before it settles, fire a second one in the same
+      // tick — exactly what the DrillMode retry timer used to do.
+      firstPromise = result.current.generateNextItem()
+      secondResult = await result.current.generateNextItem()
+    })
+
+    expect(secondResult).toBe(GENERATION_SKIPPED)
+    expect(isGenerationSkipped(secondResult)).toBe(true)
+    // Crucially, it is distinguishable from a real failure.
+    expect(secondResult).not.toBeNull()
+
+    let firstItem
+    await act(async () => {
+      releasePool()
+      firstItem = await firstPromise
+    })
+
+    expect(firstItem).toMatchObject({ id: 'drill-1', lemma: 'hablar' })
+    expect(resolveFormsPoolMock).toHaveBeenCalledTimes(1)
+  })
+
   it('exposes last filtering report through getGenerationStats', async () => {
     getFilteringDiagnosticsMock.mockReturnValueOnce({
       filtered: [],

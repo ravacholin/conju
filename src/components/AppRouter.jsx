@@ -204,6 +204,15 @@ function AppRouter() {
   useEffect(() => {
     // Check if we're in drill mode
     if (currentMode === 'drill') {
+      // A generation is already running (an explicit regenerate, or a personalized
+      // session temporarily swapping practiceMode). Reacting to settings now would
+      // clear the item the in-flight generation is about to deliver and kick off a
+      // competing one — a visible reload right after the drill appears. Leave the
+      // snapshot untouched so the comparison below still runs once it settles.
+      if (drillMode.isGenerating) {
+        return;
+      }
+
       // CRITICAL: Always read fresh settings from store to avoid stale closures
       const LATEST_SETTINGS = useSettings.getState();
 
@@ -221,7 +230,7 @@ function AppRouter() {
       }
 
       // Generate new item if we don't have one (either new entry or after clearing)
-      if (!drillMode.currentItem && !drillMode.isGenerating) {
+      if (!drillMode.currentItem) {
         // Add a delay to ensure settings have fully propagated through all stores
         scheduleDrillGeneration(() => {
           const helpers = onboardingFlowRef.current
@@ -528,6 +537,7 @@ function AppRouter() {
           onNavigateToTimeline={handleStartTimelineMode}
           getGenerationStats={drillMode.getGenerationStats}
           isGenerationViable={drillMode.isGenerationViable}
+          isGenerating={drillMode.isGenerating}
         />
       </React.Suspense>
     )
