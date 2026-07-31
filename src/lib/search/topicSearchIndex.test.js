@@ -78,8 +78,8 @@ describe('topic search index', () => {
         .filter(e => e.kind === TOPIC_KINDS.FAMILY)
         .forEach(entry => {
           const { specificTense, selectedFamily, verbType } = entry.payload
-          // The family filter only runs for practiceMode 'theme' AND requires
-          // verbType 'irregular' for the pedagogical preterite branch.
+          // The family filter requires verbType 'irregular' — it returns early
+          // for any other verb type.
           expect(verbType, entry.id).toBe('irregular')
           const valid = [
             ...(getSimplifiedGroupsForTense(specificTense) || []),

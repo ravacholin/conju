@@ -121,7 +121,9 @@ export async function chooseNext({ forms, history: _history, currentItem, sessio
     }
   })()
 
-  const filterKey = `filter|${level}|${region}|${useVoseo}|${useTuteo}|${useVosotros}|${practiceMode}|${specificMood}|${specificTense}|${practicePronoun}|${verbType}|${selectedFamily}|${currentBlock?.id || 'none'}|allowed:${allowedSig}|levelMode:${effectiveLevelPracticeMode}|userLevel:${effectiveUserLevel}`
+  // cameFromTema belongs in the key: it still drives applyLemmaRestrictions, so
+  // two otherwise identical settings would share a pool they disagree about.
+  const filterKey = `filter|${level}|${region}|${useVoseo}|${useTuteo}|${useVosotros}|${practiceMode}|${specificMood}|${specificTense}|${practicePronoun}|${verbType}|${selectedFamily}|tema:${cameFromTema ? 1 : 0}|${currentBlock?.id || 'none'}|allowed:${allowedSig}|levelMode:${effectiveLevelPracticeMode}|userLevel:${effectiveUserLevel}`
 
   // CACHE CLEARING: Force fresh calculation for specific practice navigation from progress module
   if (practiceMode === 'specific' && specificMood && specificTense) {

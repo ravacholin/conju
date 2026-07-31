@@ -5,7 +5,7 @@ import { buildLevelSettingsUpdate } from '../core/levelSettingsPresets.js'
  *
  * Every key here must exist in SETTINGS_STATE_KEYS (src/state/settings.js) —
  * the store's sanitizer drops unknown keys silently, so a typo would produce a
- * quietly wrong drill. src/lib/search/searchPayloads.test.js guards that.
+ * quietly wrong drill. searchPayloads.test.js guards that.
  */
 
 // Same pedagogy defaults selectPracticeMode('theme') applies, so a drill
@@ -28,12 +28,11 @@ const THEME_POLICY = {
 /**
  * Payload for a mood+tense topic, optionally narrowed by verb type or family.
  *
- * practiceMode MUST be 'theme'. It is the only value for which the family
- * filter actually runs (src/lib/core/FormFilterService.js:371 and
- * src/hooks/modules/DrillFormFilters.js:593) — under 'specific' a
- * selectedFamily is accepted and then ignored. 'theme' also short-circuits the
- * curriculum gate, which is what lets someone search "subjuntivo imperfecto"
- * while their stored level is A1.
+ * practiceMode is 'theme' because it short-circuits the curriculum gate, which
+ * is what lets someone search "subjuntivo imperfecto" while their stored level
+ * is A1. (The family filter itself is mode-agnostic — see applyFamilyFilter in
+ * src/lib/core/FormFilterService.js and applyFamilyFiltering in
+ * src/hooks/modules/DrillFormFilters.js.)
  *
  * Both mood and tense are required: buildSpecificConstraints only narrows when
  * both are set, so a mood-only payload would silently drill everything.

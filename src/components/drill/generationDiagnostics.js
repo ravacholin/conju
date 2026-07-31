@@ -5,7 +5,7 @@ const REASON_SUGGESTION_MAP = {
     { id: 'clear-family', recommended: true },
     { id: 'verb-type-all', recommended: false }
   ],
-  family_theme_filter: [{ id: 'clear-family', recommended: true }],
+  family_filter: [{ id: 'clear-family', recommended: true }],
   pronoun_region_filter: [{ id: 'pronoun-all', recommended: true }],
   level_gate_filter: [{ id: 'switch-to-mixed', recommended: true }]
 }
@@ -42,7 +42,7 @@ const REASON_DETAIL_MAP = {
   specific_practice_constraints: 'No hay formas para el modo específico elegido.',
   verb_type_filter: 'El filtro de tipo de verbo dejó sin opciones al ejercicio.',
   pedagogical_preterite_filter: 'El filtro pedagógico de pretérito dejó el pool vacío.',
-  family_theme_filter: 'La familia irregular seleccionada no tiene formas disponibles.',
+  family_filter: 'La familia irregular seleccionada no tiene formas disponibles.',
   pronoun_region_filter: 'Los pronombres/dialecto activos no tienen formas elegibles.',
   level_gate_filter: 'El nivel actual bloqueó todas las combinaciones disponibles.'
 }

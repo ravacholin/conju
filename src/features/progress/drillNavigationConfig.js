@@ -2,6 +2,9 @@ const DEFAULT_DRILL_SETTINGS = {
   practiceMode: 'mixed',
   specificMood: null,
   specificTense: null,
+  // Progress-module drills never target a family; clear any left over from a
+  // previous onboarding session, which would now actually narrow the pool.
+  selectedFamily: null,
   reviewSessionType: 'due',
   reviewSessionFilter: {},
   currentBlock: null

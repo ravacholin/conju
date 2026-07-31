@@ -108,7 +108,8 @@ export function filterEligibleForms(forms, settings, context = {}) {
       allowedLemmas,
       verbType,
       practiceMode,
-      cameFromTema
+      cameFromTema,
+      selectedFamily
     })) {
       return false
     }
@@ -124,11 +125,7 @@ export function filterEligibleForms(forms, settings, context = {}) {
     // Irregular family filtering
     if (!applyFamilyFilter(form, verb, {
       verbType,
-      selectedFamily,
-      practiceMode,
-      cameFromTema,
-      shouldApplyLevelFiltering,
-      levelForFiltering
+      selectedFamily
     })) {
       return false
     }
@@ -232,7 +229,10 @@ function applyVerbLevelRestrictions(form, verb, options) {
     // Bypass level filtering for regular verbs in regular practice mode
     const isRegularPracticeMode = verbType === 'regular'
     const verbIsActuallyRegular = verb?.type === 'regular' || form.type === 'regular'
-    const shouldBypassLevelFiltering = isRegularPracticeMode && verbIsActuallyRegular
+    // ...and whenever a family was chosen by hand: the family outranks the
+    // level, so a B2+ verb that belongs to it stays in an A1 drill.
+    const shouldBypassLevelFiltering =
+      Boolean(selectedFamily) || (isRegularPracticeMode && verbIsActuallyRegular)
 
     if (!shouldBypassLevelFiltering) {
       const shouldFilter = !isPedagogicalDrill &&
@@ -280,9 +280,13 @@ function applyVerbLevelRestrictions(form, verb, options) {
  * Apply lemma restrictions from level/packs
  */
 function applyLemmaRestrictions(form, options) {
-  const { allowedLemmas, verbType, practiceMode, cameFromTema } = options
+  const { allowedLemmas, verbType, practiceMode, cameFromTema, selectedFamily } = options
 
   const shouldBypassLemmaRestrictions =
+    // An explicitly chosen family outranks the level: the level's verb pack
+    // would otherwise starve the family (some families have no verb at all in
+    // the A1/A2 packs) and leave the drill with nothing to serve.
+    Boolean(selectedFamily) ||
     (verbType === 'all') ||
     (practiceMode === 'theme' || (practiceMode === 'specific' && cameFromTema === true))
 
@@ -331,16 +335,15 @@ function applyVerbTypeFilter(form, verb, {verbType, verbLookupMap}) {
 
 /**
  * Apply irregular family filtering
+ *
+ * A selectedFamily is only ever set after the user picks one at the family
+ * step, so it is honoured in every practice mode. Level-based thinning of the
+ * family (allowedLemmas, shouldFilterVerbByLevel) is deliberately not applied
+ * here — see applyLemmaRestrictions and applyVerbLevelRestrictions, where the
+ * family outranks the level.
  */
 function applyFamilyFilter(form, verb, options) {
-  const {
-    verbType,
-    selectedFamily,
-    practiceMode,
-    cameFromTema,
-    shouldApplyLevelFiltering,
-    levelForFiltering
-  } = options
+  const { verbType, selectedFamily } = options
 
   if (verbType !== 'irregular') {
     return true // Only apply to irregular verb practice
@@ -369,49 +372,17 @@ function applyFamilyFilter(form, verb, options) {
   }
 
   // Standard family filtering
-  if (selectedFamily && (practiceMode === 'theme' || !cameFromTema)) {
+  if (selectedFamily) {
     const verbFamilies = categorizeVerb(form.lemma, verb)
 
     // Check if it's a simplified group
     const expandedFamilies = expandSimplifiedGroup(selectedFamily)
     if (expandedFamilies.length > 0) {
-      const isMatch = verbFamilies.some(vf => expandedFamilies.includes(vf))
-      if (!isMatch) {
-        return false
-      }
-    } else {
-      // Regular family - direct match
-      if (!verbFamilies.includes(selectedFamily)) {
-        return false
-      }
+      return verbFamilies.some(vf => expandedFamilies.includes(vf))
     }
 
-    // Level-based filtering for families
-    const isPedagogicalDrill = selectedFamily === 'PRETERITE_THIRD_PERSON'
-    const shouldApplyThematicLevelFiltering =
-      (practiceMode === 'theme' && selectedFamily) ||
-      (!cameFromTema && !isPedagogicalDrill)
-
-    if (shouldApplyThematicLevelFiltering &&
-        shouldApplyLevelFiltering &&
-        !isPedagogicalDrill &&
-        shouldFilterVerbByLevel(form.lemma, verbFamilies, levelForFiltering, form.tense)) {
-      return false
-    }
-  } else if (selectedFamily) {
-    // Apply level filtering even without family selection
-    const verbFamilies = categorizeVerb(form.lemma, verb)
-    const isPedagogicalDrill = selectedFamily === 'PRETERITE_THIRD_PERSON'
-    const shouldApplyThematicLevelFiltering =
-      (practiceMode === 'theme' && selectedFamily) ||
-      (!cameFromTema && !isPedagogicalDrill)
-
-    if (shouldApplyThematicLevelFiltering &&
-        shouldApplyLevelFiltering &&
-        !isPedagogicalDrill &&
-        shouldFilterVerbByLevel(form.lemma, verbFamilies, levelForFiltering, form.tense)) {
-      return false
-    }
+    // Regular family - direct match
+    return verbFamilies.includes(selectedFamily)
   }
 
   return true

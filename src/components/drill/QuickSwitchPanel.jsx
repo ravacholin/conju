@@ -46,7 +46,12 @@ function QuickSwitchPanel({
   }
 
   const handleVerbTypeChange = (verbType) => {
-    settings.set({ verbType })
+    // A family only makes sense for irregular practice; leaving a stale one
+    // behind would narrow the pool for a verb type the user just widened.
+    settings.set({
+      verbType,
+      selectedFamily: verbType === 'irregular' ? settings.selectedFamily : null
+    })
   }
 
   const handleApply = () => {

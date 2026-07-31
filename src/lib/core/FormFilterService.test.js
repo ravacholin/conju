@@ -418,4 +418,68 @@ describe('FormFilterService', () => {
       expect(result.length).toBeGreaterThanOrEqual(0)
     })
   })
+
+  describe('selectedFamily', () => {
+    // pensar/entender are DIPHT_E_IE; poder/contar are DIPHT_O_UE
+    const familyForms = [
+      { lemma: 'pensar', mood: 'indicative', tense: 'pres', person: '1s', value: 'pienso', type: 'irregular' },
+      { lemma: 'entender', mood: 'indicative', tense: 'pres', person: '1s', value: 'entiendo', type: 'irregular' },
+      { lemma: 'poder', mood: 'indicative', tense: 'pres', person: '1s', value: 'puedo', type: 'irregular' },
+      { lemma: 'contar', mood: 'indicative', tense: 'pres', person: '1s', value: 'cuento', type: 'irregular' }
+    ]
+
+    const baseSettings = {
+      level: 'ALL',
+      region: 'la_general',
+      verbType: 'irregular',
+      selectedFamily: 'DIPHT_E_IE',
+      specificMood: 'indicative',
+      specificTense: 'pres',
+      shouldApplyLevelFiltering: false,
+      levelForFiltering: 'ALL'
+    }
+
+    // The family used to be honoured only for practiceMode 'theme' (and for
+    // 'specific'/'mixed' only when cameFromTema was false), so a family picked
+    // from "por nivel" or from "todo mezclado" was stored and then ignored.
+    it.each([
+      ['theme', { practiceMode: 'theme', cameFromTema: true }],
+      ['specific from por nivel', { practiceMode: 'specific', cameFromTema: false }],
+      ['specific from progress navigation', { practiceMode: 'specific', cameFromTema: true }],
+      ['mixed', { practiceMode: 'mixed', cameFromTema: false }]
+    ])('keeps only the selected family in %s', (_label, modeSettings) => {
+      const result = filterEligibleForms(familyForms, { ...baseSettings, ...modeSettings }, {})
+
+      expect(result.map(f => f.lemma).sort()).toEqual(['entender', 'pensar'])
+    })
+
+    it('lets the family outrank the level verb pack', () => {
+      const settings = {
+        ...baseSettings,
+        practiceMode: 'specific',
+        cameFromTema: false,
+        // A level pack that contains none of the family's verbs would otherwise
+        // leave the drill with nothing to serve.
+        allowedLemmas: new Set(['hablar', 'comer'])
+      }
+
+      const result = filterEligibleForms(familyForms, settings, {})
+
+      expect(result.map(f => f.lemma).sort()).toEqual(['entender', 'pensar'])
+    })
+
+    it('still applies the level verb pack when no family is selected', () => {
+      const settings = {
+        ...baseSettings,
+        practiceMode: 'specific',
+        cameFromTema: false,
+        selectedFamily: null,
+        allowedLemmas: new Set(['pensar'])
+      }
+
+      const result = filterEligibleForms(familyForms, settings, {})
+
+      expect(result.map(f => f.lemma)).toEqual(['pensar'])
+    })
+  })
 })
