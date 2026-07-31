@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useLayoutEffect, useState, useRef } from 'react'
 import { getSafeMoodTenseLabels } from '../../lib/utils/moodTenseValidator.js'
 
 /**
@@ -26,7 +26,10 @@ export default function ReverseInputs({
   const showMoodField = !inSpecific
   const showTenseField = !inSpecific
 
-  useEffect(() => {
+  // Layout effect for the same reason as Drill's reset: clearing the guesses after
+  // paint let the browser show the new item for a frame with the previous answers
+  // still typed in.
+  useLayoutEffect(() => {
     setInfinitiveGuess('')
     setPersonGuess('')
     setMoodGuess('')

@@ -243,6 +243,11 @@ function AppRouter() {
             helpers.getAvailableTensesForLevelAndMood
           )
         }, 100);
+      } else {
+        // We have an item, so any generation still sitting in the 100 ms delay was
+        // queued back when we had none. Letting it fire would swap the exercise the
+        // user is already reading for a different one a beat later.
+        clearDrillGenerationTimeout();
       }
 
       // Update previous settings reference with LATEST settings
@@ -263,7 +268,8 @@ function AppRouter() {
     settings.specificTense,
     settings.verbType,
     settings.selectedFamily,
-    scheduleDrillGeneration
+    scheduleDrillGeneration,
+    clearDrillGenerationTimeout
   ])
 
   useEffect(() => {
