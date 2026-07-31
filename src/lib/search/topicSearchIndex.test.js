@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { getTopicSearchIndex, TOPIC_KINDS } from './topicSearchIndex.js'
+import { getTopicSearchIndex, TOPIC_KINDS, tenseHasBothVerbTypes } from './topicSearchIndex.js'
 import { getFamiliesForTense } from '../data/irregularFamilies.js'
 import { getSimplifiedGroupsForTense } from '../data/simplifiedFamilyGroups.js'
 
@@ -87,6 +87,35 @@ describe('topic search index', () => {
           ].map(f => f.id)
           expect(valid, entry.id).toContain(selectedFamily)
         })
+    })
+
+    it('offers an unfiltered mix for every tense that has both verb types', () => {
+      const tenseEntries = index.filter(e => e.kind === TOPIC_KINDS.TENSE)
+      expect(tenseEntries.length).toBeGreaterThan(0)
+
+      tenseEntries.forEach(entry => {
+        const { specificTense } = entry.payload
+        // The mix is exactly "no verb-type filter".
+        expect(entry.payload.verbType, entry.id).toBe('all')
+        expect(entry.payload.selectedFamily, entry.id).toBeNull()
+
+        if (!tenseHasBothVerbTypes(specificTense)) {
+          expect(entry.label, entry.id).not.toContain('todos los verbos')
+          return
+        }
+        // Both narrowed variants exist, so the broad one must announce itself
+        // as the third choice instead of looking like their heading.
+        expect(entry.label, entry.id).toContain('· todos los verbos')
+        expect(entry.gloss, entry.id).toContain('regulares e irregulares')
+        expect(
+          index.some(e => e.id === `verbType:${entry.payload.specificMood}:${specificTense}:regular`),
+          entry.id
+        ).toBe(true)
+        expect(
+          index.some(e => e.id === `verbType:${entry.payload.specificMood}:${specificTense}:irregular`),
+          entry.id
+        ).toBe(true)
+      })
     })
 
     it('keeps the level gate on for level entries', () => {

@@ -118,6 +118,30 @@ const LEVEL_GLOSS = {
 
 const uniq = (values) => Array.from(new Set(values.filter(Boolean)))
 
+/**
+ * Suffix that marks the broad, unfiltered variant of a tense — the drill that
+ * mixes regular and irregular verbs. Without it the row reads as a bare tense
+ * name sitting above "· regulares" and "· irregulares", and nobody guesses it
+ * is the "both" option.
+ *
+ * Deliberately does NOT contain the word "irregulares": the label feeds the
+ * ranker, so a literal "regulares e irregulares" would make this entry beat
+ * `verbType:*:irregular` on a query like "participio irregulares".
+ */
+const MIXED_SUFFIX = 'todos los verbos'
+
+// Words a learner types when they mean "don't filter by verb type".
+const MIXED_KEYWORDS = [
+  ...VERB_TYPE_ALIASES.all,
+  'mezclado',
+  'mezclados',
+  'mezcla',
+  'ambos',
+  'ambas',
+  'completo',
+  'todos los verbos'
+]
+
 const MAX_FOCAL_LENGTH = 28
 
 /**
@@ -133,14 +157,29 @@ function shortenFocal(name) {
   return (lastSpace > 8 ? clipped.slice(0, lastSpace) : clipped).trim()
 }
 
-// Fold once at build time so matching never re-normalises the index.
+/**
+ * Fold once at build time so matching never re-normalises the index.
+ *
+ * `matchLabel` lets an entry be scored on a shorter label than the one it
+ * displays. It must be a **prefix** of `label`: computeHighlightRanges() maps
+ * offsets from foldedLabel straight onto label, and foldForSearch is
+ * length-preserving, so a prefix keeps every range aligned. It exists so the
+ * mixed-verb-type suffix can be added for the reader without demoting the entry
+ * from an exact-label match to a prefix match (and without the label-length
+ * penalty) — the broad entry has to stay above its own narrowed variants.
+ */
 function finalize(entry) {
   const keywords = uniq(entry.keywords.map(foldForSearch))
+  const matchLabel = entry.matchLabel || entry.label
+  if (!entry.label.startsWith(matchLabel)) {
+    throw new Error(`matchLabel must be a prefix of label (${entry.id})`)
+  }
   return {
     ...entry,
+    matchLabel,
     focal: entry.focal || entry.label,
     keywords,
-    foldedLabel: foldForSearch(entry.label),
+    foldedLabel: foldForSearch(matchLabel),
     haystack: `${foldForSearch(entry.label)} ${keywords.join(' ')}`
   }
 }
@@ -155,28 +194,6 @@ function tenseKeywords(mood, tense) {
   ]
 }
 
-function buildTenseEntries() {
-  const entries = []
-  Object.entries(MOOD_TENSES).forEach(([mood, tenses]) => {
-    tenses.forEach(tense => {
-      const level = getFirstLevelForCombo(mood, tense)
-      entries.push(finalize({
-        id: `tense:${mood}:${tense}`,
-        kind: TOPIC_KINDS.TENSE,
-        label: TENSE_LABEL[tense],
-        focal: TENSE_FOCAL[tense],
-        tag: level || MOOD_TAG[mood],
-        gloss: getMoodLabel(mood).toLowerCase(),
-        ex: TENSE_EXAMPLE[tense],
-        level,
-        keywords: [...tenseKeywords(mood, tense), ...(level ? LEVEL_ALIASES[level] : [])],
-        payload: buildTopicPayload({ mood, tense })
-      }))
-    })
-  })
-  return entries
-}
-
 /**
  * Tenses whose "irregulares" variant has no forms at all and must not be
  * offered. Empty today: the compound tenses used to look empty only because
@@ -186,6 +203,48 @@ function buildTenseEntries() {
  * both directions.
  */
 export const TENSES_WITHOUT_IRREGULARS = Object.freeze([])
+
+/** A tense only gets a "mixed" reading when both verb types actually exist. */
+export function tenseHasBothVerbTypes(tense) {
+  return !TENSES_WITHOUT_IRREGULARS.includes(tense)
+}
+
+/**
+ * One entry per mood+tense, with no verb-type filter (`verbType: 'all'`).
+ *
+ * This is the row that mixes regular and irregular verbs. It is labelled as
+ * such whenever the tense has both, so it sits alongside its "· regulares" and
+ * "· irregulares" siblings as an obvious third choice rather than looking like
+ * a heading for them.
+ */
+function buildTenseEntries() {
+  const entries = []
+  Object.entries(MOOD_TENSES).forEach(([mood, tenses]) => {
+    tenses.forEach(tense => {
+      const level = getFirstLevelForCombo(mood, tense)
+      const mixed = tenseHasBothVerbTypes(tense)
+      const moodLabel = getMoodLabel(mood).toLowerCase()
+      entries.push(finalize({
+        id: `tense:${mood}:${tense}`,
+        kind: TOPIC_KINDS.TENSE,
+        label: mixed ? `${TENSE_LABEL[tense]} · ${MIXED_SUFFIX}` : TENSE_LABEL[tense],
+        matchLabel: TENSE_LABEL[tense],
+        focal: TENSE_FOCAL[tense],
+        tag: level || MOOD_TAG[mood],
+        gloss: mixed ? `${moodLabel} · regulares e irregulares` : moodLabel,
+        ex: TENSE_EXAMPLE[tense],
+        level,
+        keywords: [
+          ...tenseKeywords(mood, tense),
+          ...(level ? LEVEL_ALIASES[level] : []),
+          ...(mixed ? MIXED_KEYWORDS : [])
+        ],
+        payload: buildTopicPayload({ mood, tense })
+      }))
+    })
+  })
+  return entries
+}
 
 /**
  * Families whose irregularity is purely orthographic — a tilde (envío,
@@ -211,9 +270,9 @@ function buildVerbTypeEntries() {
   Object.entries(MOOD_TENSES).forEach(([mood, tenses]) => {
     tenses.forEach(tense => {
       const level = getFirstLevelForCombo(mood, tense)
-      const verbTypes = TENSES_WITHOUT_IRREGULARS.includes(tense)
-        ? ['regular']
-        : ['regular', 'irregular']
+      const verbTypes = tenseHasBothVerbTypes(tense)
+        ? ['regular', 'irregular']
+        : ['regular']
       ;verbTypes.forEach(verbType => {
         const suffix = verbType === 'regular' ? 'regulares' : 'irregulares'
         entries.push(finalize({

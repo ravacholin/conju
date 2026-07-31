@@ -5,7 +5,6 @@ import { foldForSearch, tokenize, editDistanceWithin } from './searchText.js'
 
 const index = getTopicSearchIndex()
 const run = (query, options) => searchTopics(query, index, options)
-const labels = (query, options) => run(query, options).map(r => r.entry.label)
 const ids = (query, options) => run(query, options).map(r => r.entry.id)
 
 describe('searchText', () => {
@@ -17,8 +16,11 @@ describe('searchText', () => {
   it('preserves length so highlight ranges stay aligned', () => {
     const source = 'Pretérito pluscuamperfecto'
     expect(foldForSearch(source)).toHaveLength(source.length)
+    // foldedLabel offsets are applied straight to label, so it has to be a
+    // length-preserving fold of a label *prefix* (see finalize()).
     index.forEach(entry => {
-      expect(entry.foldedLabel, entry.id).toHaveLength(entry.label.length)
+      expect(entry.foldedLabel, entry.id).toHaveLength(entry.matchLabel.length)
+      expect(foldForSearch(entry.label).startsWith(entry.foldedLabel), entry.id).toBe(true)
     })
   })
 
@@ -49,19 +51,19 @@ describe('searchTopics', () => {
   })
 
   it('surfaces every perfect tense for "perfecto"', () => {
-    const found = labels('perfecto', { limit: 12 })
-    expect(found).toContain('pretérito perfecto')
-    expect(found).toContain('futuro compuesto')
-    expect(found).toContain('perfecto de subjuntivo')
-    expect(found).toContain('condicional compuesto')
+    const found = ids('perfecto', { limit: 12 })
+    expect(found).toContain('tense:indicative:pretPerf')
+    expect(found).toContain('tense:indicative:futPerf')
+    expect(found).toContain('tense:subjunctive:subjPerf')
+    expect(found).toContain('tense:conditional:condPerf')
   })
 
   it('surfaces every subjunctive tense for "subjuntivo"', () => {
-    const found = labels('subjuntivo', { limit: 12 })
-    expect(found).toContain('presente de subjuntivo')
-    expect(found).toContain('imperfecto de subjuntivo')
-    expect(found).toContain('perfecto de subjuntivo')
-    expect(found).toContain('pluscuamperfecto de subjuntivo')
+    const found = ids('subjuntivo', { limit: 12 })
+    expect(found).toContain('tense:subjunctive:subjPres')
+    expect(found).toContain('tense:subjunctive:subjImpf')
+    expect(found).toContain('tense:subjunctive:subjPerf')
+    expect(found).toContain('tense:subjunctive:subjPlusc')
   })
 
   it('narrows with a second token', () => {
@@ -81,6 +83,36 @@ describe('searchTopics', () => {
   it('prefers the plain tense when no verb type is mentioned', () => {
     expect(ids('presente')[0]).toBe('tense:indicative:pres')
     expect(ids('presente irregulares')[0]).toBe('verbType:indicative:pres:irregular')
+  })
+
+  describe('mixed regular + irregular option', () => {
+    it('offers it next to the two narrowed variants', () => {
+      const found = ids('gerundio', { limit: 8 })
+      expect(found).toContain('tense:nonfinite:ger')
+      expect(found).toContain('verbType:nonfinite:ger:regular')
+      expect(found).toContain('verbType:nonfinite:ger:irregular')
+      // The broad one has to lead: it is what a bare "gerundio" asks for.
+      expect(found[0]).toBe('tense:nonfinite:ger')
+    })
+
+    it('says so in the label, so it does not read as a bare heading', () => {
+      const mixed = run('gerundio')[0].entry
+      expect(mixed.label).toBe('gerundio · todos los verbos')
+      expect(mixed.payload.verbType).toBe('all')
+      expect(mixed.gloss).toContain('regulares e irregulares')
+    })
+
+    it('is reachable by asking for the mix directly', () => {
+      expect(ids('gerundio todos', { limit: 5 })[0]).toBe('tense:nonfinite:ger')
+      expect(ids('gerundio mezclado', { limit: 5 })[0]).toBe('tense:nonfinite:ger')
+      expect(ids('participio mixto', { limit: 5 })[0]).toBe('tense:nonfinite:part')
+      expect(ids('subjuntivo presente ambos', { limit: 5 })[0]).toBe('tense:subjunctive:subjPres')
+    })
+
+    it('still loses to the narrowed variant when a verb type is named', () => {
+      expect(ids('gerundio irregulares')[0]).toBe('verbType:nonfinite:ger:irregular')
+      expect(ids('gerundio regulares')[0]).toBe('verbType:nonfinite:ger:regular')
+    })
   })
 
   it('finds a CEFR level and its tenses', () => {
