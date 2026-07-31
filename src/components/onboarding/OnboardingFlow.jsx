@@ -6,13 +6,7 @@ import { isTextEntryTarget } from './textEntry.js'
 import { getTopicSearchIndex } from '../../lib/search/topicSearchIndex.js'
 import { searchTopics } from '../../lib/search/searchTopics.js'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
-import { getFamiliesForMood, getFamiliesForTense } from '../../lib/data/irregularFamilies.js'
-import {
-  getSimplifiedGroupsForMood,
-  getSimplifiedGroupsForTense,
-  shouldUseSimplifiedGroupingForMood,
-  shouldUseSimplifiedGrouping,
-} from '../../lib/data/simplifiedFamilyGroups.js'
+import { getFamilyChoices } from '../../lib/data/familyChoices.js'
 
 /* ── Design tokens ── */
 const ACCENT = 'var(--accent-primary)'
@@ -337,18 +331,8 @@ function buildLevelTopicOptions({ level, selectMood, selectTense, themeSubMenu, 
   return options
 }
 
-const FALLBACK_FAMILIES = [
-  { id: 'G_VERBS',   name: 'Irregulares en YO',  description: 'tener, poner, salir, conocer, vencer' },
-  { id: 'UIR_Y',     name: '-uir (inserción y)',  description: 'construir, huir' },
-  { id: 'PRET_UV',   name: 'Pretérito -uv-',      description: 'andar, estar, tener' },
-  { id: 'PRET_U',    name: 'Pretérito -u-',       description: 'poder, poner, saber' },
-  { id: 'PRET_J',    name: 'Pretérito -j-',       description: 'decir, traer' },
-]
-
 /* ── Family options builder ── */
 function buildFamilyOptions(settings, selectFamily, onStartPractice) {
-  const { specificTense, specificMood } = settings
-
   const allOpt = {
     id: '__all__',
     label: 'todas las familias',
@@ -358,12 +342,7 @@ function buildFamilyOptions(settings, selectFamily, onStartPractice) {
     onSelect: () => selectFamily(null, onStartPractice),
   }
 
-  let groups = []
-  if (specificTense && shouldUseSimplifiedGrouping(specificTense)) {
-    groups = getSimplifiedGroupsForTense(specificTense) || []
-  } else if (specificMood && !specificTense && shouldUseSimplifiedGroupingForMood(specificMood)) {
-    groups = getSimplifiedGroupsForMood(specificMood) || []
-  }
+  const { groups, families } = getFamilyChoices(settings)
 
   if (groups.length > 0) {
     return [
@@ -379,22 +358,16 @@ function buildFamilyOptions(settings, selectFamily, onStartPractice) {
     ]
   }
 
-  const families = specificTense
-    ? getFamiliesForTense(specificTense)
-    : specificMood
-      ? getFamiliesForMood(specificMood)
-      : FALLBACK_FAMILIES
-
   return [
     allOpt,
-    ...((families || FALLBACK_FAMILIES).slice(0, 8).map(f => ({
+    ...families.map(f => ({
       id: f.id,
       label: f.name,
       tag: 'FAMILIA',
       gloss: f.description || '',
       ex: f.description || '',
       onSelect: () => selectFamily(f.id, onStartPractice),
-    }))),
+    })),
   ]
 }
 

@@ -178,14 +178,33 @@ function buildTenseEntries() {
 }
 
 /**
- * Compound tenses conjugate only *haber*, so their "irregulares" variant is
- * whatever haber does in that tense. `he/has/ha` and `haya` are irregular, but
- * `había`, `habré`, `hubiera` and `habría` are regular for their tense — those
- * four variants have an empty form pool and must not be offered.
+ * Tenses whose "irregulares" variant has no forms at all and must not be
+ * offered. Empty today: the compound tenses used to look empty only because
+ * the forms pool dropped every verb carrying a spurious `region` tag, so their
+ * irregular participles (había hecho, habré dicho…) never reached the filter.
  * topicSearchIndex.integrity.test.js asserts this list is exactly right, in
  * both directions.
  */
-export const TENSES_WITHOUT_IRREGULARS = Object.freeze(['plusc', 'futPerf', 'subjPlusc', 'condPerf'])
+export const TENSES_WITHOUT_IRREGULARS = Object.freeze([])
+
+/**
+ * Families whose irregularity is purely orthographic — a tilde (envío,
+ * continúo, prohíbo) or a diéresis (averigüé). The verb-type filter compares
+ * against the regular paradigm accent-insensitively, so it classifies those
+ * forms as regular and an "irregulares" drill for them has an empty pool.
+ * Offering them would drop the user into an emergency fallback.
+ * Keyed `${tense}:${familyId}`, and asserted in both directions by
+ * topicSearchIndex.integrity.test.js.
+ */
+export const FAMILIES_WITHOUT_IRREGULAR_FORMS = Object.freeze([
+  'pres:IAR_VERBS',
+  'pres:UAR_VERBS',
+  'pres:ACCENT_CHANGES',
+  'pretIndef:ORTH_GUAR',
+  'subjPres:IAR_VERBS',
+  'subjPres:UAR_VERBS',
+  'subjPres:ORTH_GUAR'
+])
 
 function buildVerbTypeEntries() {
   const entries = []
@@ -239,6 +258,7 @@ function buildFamilyEntries() {
       }))
 
       ;[...groups, ...families].forEach(family => {
+        if (FAMILIES_WITHOUT_IRREGULAR_FORMS.includes(`${tense}:${family.id}`)) return
         entries.push(finalize({
           id: `family:${mood}:${tense}:${family.id}`,
           kind: TOPIC_KINDS.FAMILY,

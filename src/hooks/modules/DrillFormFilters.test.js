@@ -8,11 +8,13 @@ import {
   generateAllFormsForRegion,
   clearFormsCache,
   filterForSpecificPractice,
+  applyComprehensiveFiltering,
   getFilteringDiagnostics,
   FILTER_DISCARD_REASONS
 } from './DrillFormFilters.js'
 import { getFormsForRegion } from '../../lib/core/verbDataService.js'
 import { createFormsCombinationIndex } from './formsPoolService.js'
+import { VERB_LOOKUP_MAP } from '../../lib/core/optimizedCache.js'
 
 describe('DrillFormFilters - global pool', () => {
   const sharedForm = {
@@ -156,6 +158,90 @@ describe('DrillFormFilters - specific practice indexing', () => {
 
     expect(result).toHaveLength(1)
     expect(result[0].region).toBe('la_general')
+  })
+})
+
+describe('DrillFormFilters - irregular family filtering', () => {
+  // lemmaFamiliesCache is module level and only clearFormsCache() resets it.
+  beforeEach(() => {
+    clearFormsCache()
+  })
+
+  // pensar/entender are DIPHT_E_IE; poder/contar are DIPHT_O_UE
+  const forms = [
+    { lemma: 'pensar', mood: 'indicative', tense: 'pres', person: '1s', value: 'pienso' },
+    { lemma: 'entender', mood: 'indicative', tense: 'pres', person: '1s', value: 'entiendo' },
+    { lemma: 'poder', mood: 'indicative', tense: 'pres', person: '1s', value: 'puedo' },
+    { lemma: 'contar', mood: 'indicative', tense: 'pres', person: '1s', value: 'cuento' }
+  ]
+
+  const baseSettings = {
+    region: 'la_general',
+    verbType: 'irregular',
+    selectedFamily: 'DIPHT_E_IE',
+    practicePronoun: 'all',
+    level: 'ALL'
+  }
+
+  // This pass builds eligibleForms, and hierarchicalSelection often picks
+  // straight out of it (SRS / adaptive) without ever reaching the generator.
+  // Gating the family stage on practiceMode 'theme' therefore made a family
+  // chosen from "por nivel" or "todo mezclado" silently inert.
+  it.each([
+    ['theme', 'theme'],
+    ['specific', 'specific'],
+    ['mixed', 'mixed']
+  ])('keeps only the selected family in %s practice', (_label, practiceMode) => {
+    const result = applyComprehensiveFiltering(forms, { ...baseSettings, practiceMode })
+
+    expect(result.map(f => f.lemma).sort()).toEqual(['entender', 'pensar'])
+  })
+
+  it('runs the family stage instead of skipping it', () => {
+    const { stages } = getFilteringDiagnostics(forms, { ...baseSettings, practiceMode: 'specific' })
+    const familyStage = stages.find(stage => stage.id === 'family')
+
+    expect(familyStage).toMatchObject({
+      reason: FILTER_DISCARD_REASONS.FAMILY,
+      skipped: false,
+      dropped: 2
+    })
+  })
+
+  it('skips the family stage when no family is selected', () => {
+    const settings = { ...baseSettings, practiceMode: 'specific', selectedFamily: null }
+    const { filtered, stages } = getFilteringDiagnostics(forms, settings)
+
+    expect(stages.find(stage => stage.id === 'family')).toMatchObject({ skipped: true })
+    expect(filtered).toHaveLength(4)
+  })
+
+  it('skips the family stage when the verb type is not irregular', () => {
+    // QuickSwitchPanel can leave a stale family behind when the verb type
+    // changes; the family must not narrow a regular-verb pool.
+    const settings = { ...baseSettings, practiceMode: 'specific', verbType: 'all' }
+    const { stages } = getFilteringDiagnostics(forms, settings)
+
+    expect(stages.find(stage => stage.id === 'family')).toMatchObject({ skipped: true })
+  })
+
+  it('filters by family even when VERB_LOOKUP_MAP is empty', () => {
+    // This pass runs before initializeMaps() fills VERB_LOOKUP_MAP. A lookup
+    // miss used to be memoized as "no families" for the rest of the session,
+    // which disabled family filtering everywhere — including theme practice.
+    VERB_LOOKUP_MAP.clear()
+
+    const result = applyComprehensiveFiltering(forms, { ...baseSettings, practiceMode: 'theme' })
+
+    expect(result.map(f => f.lemma).sort()).toEqual(['entender', 'pensar'])
+  })
+
+  it('reports the family as the empty reason when it matches nothing', () => {
+    const settings = { ...baseSettings, practiceMode: 'specific', selectedFamily: 'PRET_UV' }
+    const { filtered, emptyReason } = getFilteringDiagnostics(forms, settings)
+
+    expect(filtered).toHaveLength(0)
+    expect(emptyReason).toBe(FILTER_DISCARD_REASONS.FAMILY)
   })
 })
 

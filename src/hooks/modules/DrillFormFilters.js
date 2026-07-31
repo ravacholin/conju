@@ -33,13 +33,14 @@ let specificPracticeIndexCache = new WeakMap()
 const allowedPersonPredicateCache = new Map()
 
 const FAMILY_ERROR = Symbol('FAMILY_ERROR')
+const DIALECT_REGIONS = new Set(['rioplatense', 'peninsular', 'la_general', 'global'])
 const PEDAGOGICAL_THIRD_PERSON_FAMILIES = new Set(['E_I_IR', 'O_U_GER_IR', 'HIATUS_Y'])
 const STRONG_PRETERITE_IRREGULARITIES = new Set(['PRET_UV', 'PRET_U', 'PRET_I', 'PRET_J', 'PRET_SUPPL'])
 export const FILTER_DISCARD_REASONS = Object.freeze({
   SPECIFIC_PRACTICE: 'specific_practice_constraints',
   VERB_TYPE: 'verb_type_filter',
   PEDAGOGICAL_PRETERITE: 'pedagogical_preterite_filter',
-  FAMILY_THEME: 'family_theme_filter',
+  FAMILY: 'family_filter',
   PRONOUN_REGION: 'pronoun_region_filter',
   LEVEL_GATE: 'level_gate_filter'
 })
@@ -50,8 +51,16 @@ export const getFormsCacheKey = (region = 'la_general', settings = {}) =>
   `forms:${region}:${settings.enableChunks !== false ? 'chunks' : 'nochunks'}`
 
 async function buildFormsPool(region = 'la_general', settings = {}) {
+  // Part of the verb data carries a `region: 'es'` tag that is not a dialect
+  // (it sits on universal forms like "hablaría"). Keeping it would bucket those
+  // forms under a region nothing ever asks for, and the region-aware index in
+  // getSpecificPracticeCandidates would then serve specific practice from the
+  // untagged remainder only. Only real dialects survive as a region tag.
   const normalizeForms = (forms = [], sourceRegion = region) =>
-    forms.map(form => ({ ...form, region: form.region || sourceRegion }))
+    forms.map(form => ({
+      ...form,
+      region: DIALECT_REGIONS.has(form.region) ? form.region : sourceRegion
+    }))
 
   let forms
 
@@ -132,13 +141,13 @@ const getLemmaType = (lemma, fallback) => {
 const getVerbFamilies = (lemma) => {
   if (!lemma) return null
   if (lemmaFamiliesCache.has(lemma)) return lemmaFamiliesCache.get(lemma)
-  const verb = lookupVerb(lemma)
-  if (!verb) {
-    lemmaFamiliesCache.set(lemma, null)
-    return null
-  }
+  // categorizeVerb classifies from the lemma alone (its verb argument is
+  // unused), so do NOT bail out on a VERB_LOOKUP_MAP miss: the map is filled
+  // asynchronously (optimizedCache auto-init, or chooseNext) while this pass
+  // runs earlier, and a miss used to be memoized as null for the rest of the
+  // session — silently turning family filtering into a no-op in every mode.
   try {
-    const families = categorizeVerb(lemma, verb)
+    const families = categorizeVerb(lemma, lookupVerb(lemma) || null)
     lemmaFamiliesCache.set(lemma, families)
     return families
   } catch {
@@ -589,11 +598,11 @@ const runFilteringPipeline = (forms, settings, specificConstraints = {}, formsIn
   }
 
   if (applyStage(
-    { id: 'family_theme', reason: FILTER_DISCARD_REASONS.FAMILY_THEME },
-    !!settings.selectedFamily && settings.practiceMode === 'theme',
+    { id: 'family', reason: FILTER_DISCARD_REASONS.FAMILY },
+    !!settings.selectedFamily && settings.verbType === 'irregular',
     (current) => applyFamilyFiltering(current, settings)
   )) {
-    return { filtered, stages, emptyReason: FILTER_DISCARD_REASONS.FAMILY_THEME }
+    return { filtered, stages, emptyReason: FILTER_DISCARD_REASONS.FAMILY }
   }
 
   if (applyStage(
@@ -727,14 +736,22 @@ const applyPedagogicalFiltering = (forms, settings) => {
 }
 
 /**
- * Apply irregular family filtering for theme practice
+ * Apply irregular family filtering
+ *
+ * Runs in every practice mode: a selectedFamily is only ever set after the user
+ * picks one at the family step, so honouring it does not depend on how they got
+ * there. Gating this on practiceMode 'theme' is what made the family silently
+ * inert when the family step was reached from "por nivel" or "todo mezclado".
+ *
+ * The verbType gate mirrors FormFilterService.applyFamilyFilter, so both passes
+ * agree on when a family applies.
+ *
  * @param {Array} forms - Forms to filter
  * @param {Object} settings - User settings
  * @returns {Array} - Filtered forms
  */
 const applyFamilyFiltering = (forms, settings) => {
-  // Only apply family filtering when specifically requested (theme practice with selectedFamily)
-  if (!settings.selectedFamily || settings.practiceMode !== 'theme') {
+  if (!settings.selectedFamily || settings.verbType !== 'irregular') {
     return forms // No family filtering needed
   }
 
