@@ -8,7 +8,7 @@
  * - Improves testability and maintainability
  */
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { useSettings } from '../state/settings.js'
 import { useSessionStore } from '../state/session.js'
@@ -35,6 +35,16 @@ const logger = createLogger('useDrillMode')
 export function useDrillMode() {
   const [currentItem, setCurrentItem] = useState(null)
   const [history, setHistory] = useState({})
+  // `useDrillGenerator`'s own `isGenerating` drops the moment the generator function
+  // returns, but the item only reaches `setCurrentItem` a few microtasks later (the
+  // Promise.race unwrap, then validation). React commits a render inside that gap
+  // where there is no item AND nothing looks like it is generating — exactly the
+  // state AppRouter and DrillMode's safety net read as "nobody is working on this,
+  // start a generation". They queued a second one that landed about a second after
+  // the first item and silently replaced it on screen. This flag stays up until the
+  // item has actually been handed over, so that window never becomes observable.
+  const [isDeliveringItem, setIsDeliveringItem] = useState(false)
+  const pendingGenerationsRef = useRef(0)
   const settings = useSettings(
     useShallow((state) => ({
       set: state.set,
@@ -61,8 +71,12 @@ export function useDrillMode() {
     generateNextItem: generateNextItemInternal,
     isGenerationViable,
     getGenerationStats,
-    isGenerating
+    isGenerating: isGeneratorRunning
   } = useDrillGenerator()
+
+  // What consumers must branch on: true from the moment a generation is requested
+  // until its item has been committed, not just while the generator itself runs.
+  const isGenerating = isGeneratorRunning || isDeliveringItem
 
   const {
     handleResponse,
@@ -290,17 +304,31 @@ export function useDrillMode() {
     getAvailableMoodsForLevel,
     getAvailableTensesForLevelAndMood
   ) => {
-    // Handle personalized session mode
-    if (settings.practiceMode === 'personalized_session') {
-      return await handleSessionGeneration(
-        itemToExclude,
-        getAvailableMoodsForLevel,
-        getAvailableTensesForLevelAndMood
-      )
-    }
+    // Raised synchronously, before the first await, so a caller in the same tick
+    // already sees the request as in flight.
+    pendingGenerationsRef.current += 1
+    setIsDeliveringItem(true)
 
-    // Default to normal generation
-    return await generateNormalItem(itemToExclude, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
+    try {
+      // Handle personalized session mode
+      if (settings.practiceMode === 'personalized_session') {
+        return await handleSessionGeneration(
+          itemToExclude,
+          getAvailableMoodsForLevel,
+          getAvailableTensesForLevelAndMood
+        )
+      }
+
+      // Default to normal generation
+      return await generateNormalItem(itemToExclude, getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood)
+    } finally {
+      pendingGenerationsRef.current = Math.max(0, pendingGenerationsRef.current - 1)
+      if (pendingGenerationsRef.current === 0) {
+        // Same tick as the `setCurrentItem` above, so React commits both together and
+        // no render ever shows "no item, nothing generating".
+        setIsDeliveringItem(false)
+      }
+    }
   }
 
   /**

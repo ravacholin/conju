@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { grade } from '../../lib/core/grader.js';
 import { stripAccents } from '../../lib/utils/accentUtils.js';
 import { PERSON_LABELS } from '../../lib/utils/verbLabels.js';
@@ -64,7 +64,14 @@ export default function Drill({
     };
   };
 
-  useEffect(() => {
+  // useLayoutEffect, not useEffect: this reset has to be part of the same paint as
+  // the new item. With a passive effect the browser painted the new verb once while
+  // it still carried the previous answer (its feedback box, the old input text) and
+  // without the `fade-in` class — i.e. fully opaque — and only afterwards did the
+  // effect clear everything and re-add `fade-in`, sending the card back to opacity 0
+  // to animate in a second time. That double paint is what looked like the drill
+  // reloading itself for no reason, and it got worse the slower the device.
+  useLayoutEffect(() => {
     setInput('');
     setSecondInput('');
     setResult(null);
