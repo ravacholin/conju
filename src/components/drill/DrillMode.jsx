@@ -53,6 +53,7 @@
  * @param {Function} props.onNavigateToTimeline - Lanzar el modo línea de tiempo
  * @param {Function} props.getGenerationStats - Obtener estadísticas de generación (diagnóstico)
  * @param {Function} props.isGenerationViable - Verificar si la generación es viable
+ * @param {boolean} props.isGenerating - Si hay una generación de ítem en curso (evita reintentos que compiten con ella)
  * 
  * @requires Drill - Componente core de práctica de conjugaciones
  * @requires DrillHeader - Header con botones de navegación y paneles
@@ -79,6 +80,11 @@ import Drill from '../../features/drill/Drill.jsx'
 
 const logger = createLogger('drill:mode')
 
+// Only used when no generation is in flight, so it can afford to be patient:
+// a shorter window used to fire while the first generation was still loading the
+// verb dataset on slower (mobile) devices.
+const QUICK_RETRY_DELAY_MS = 1200
+
 /**
  * Componente principal del modo práctica rápida
  * 
@@ -101,7 +107,8 @@ function DrillMode({
   onNavigateToStory,
   onNavigateToTimeline,
   getGenerationStats,
-  isGenerationViable
+  isGenerationViable,
+  isGenerating = false
 }) {
   const [showQuickSwitch, setShowQuickSwitch] = useState(false)
   const [showAccentKeys, setShowAccentKeys] = useState(false)
@@ -296,54 +303,73 @@ function DrillMode({
     onRegenerateItem()
   }, [onPracticeModeChange, onRegenerateItem, settings])
 
+  // Keep the latest callbacks in refs so the safety-net timers below are not torn
+  // down and rescheduled on every parent render (their identities change each time,
+  // which used to make the retry clock restart unpredictably).
+  const canRegenerateItem = typeof onRegenerateItem === 'function'
+  const onRegenerateItemRef = React.useRef(onRegenerateItem)
+  const buildGenerationDiagnosticsRef = React.useRef(buildGenerationDiagnostics)
+  useEffect(() => {
+    onRegenerateItemRef.current = onRegenerateItem
+    buildGenerationDiagnosticsRef.current = buildGenerationDiagnostics
+  })
+
   // Enhanced safety net: if no item is present, trigger regeneration with escalating timeouts
   useEffect(() => {
-    if (!currentItem && typeof onRegenerateItem === 'function') {
-      // Clear any previous error states
-      setLoadingError(null)
-      setLoadingTimeout(false)
-      setGenerationIssue(null)
-
-      // First attempt after 300ms (quick retry)
-      const quickRetryId = setTimeout(() => {
-        try {
-          logger.debug('🔄 DrillMode: Quick retry for missing currentItem')
-          onRegenerateItem()
-        } catch (error) {
-          logger.error('Quick retry failed', error)
-        }
-      }, 300)
-
-      // Timeout warning after 8 seconds
-      const timeoutWarningId = setTimeout(() => {
-        if (!currentItem) {
-          logger.warn('Item generation taking longer than expected')
-          setLoadingTimeout(true)
-          buildGenerationDiagnostics().then(setGenerationIssue)
-        }
-      }, 8000)
-
-      // Final timeout and error after 15 seconds
-      const finalTimeoutId = setTimeout(() => {
-        if (!currentItem) {
-          logger.error('Item generation failed - timeout after 15 seconds')
-          setLoadingError('La generación de ejercicios está tardando más de lo esperado. Esto puede deberse a una configuración muy restrictiva.')
-          buildGenerationDiagnostics().then(setGenerationIssue)
-        }
-      }, 15000)
-
-      return () => {
-        clearTimeout(quickRetryId)
-        clearTimeout(timeoutWarningId)
-        clearTimeout(finalTimeoutId)
-      }
-    } else {
+    if (currentItem || !canRegenerateItem) {
       // Clear error states when we have an item
       setLoadingError(null)
       setLoadingTimeout(false)
       setGenerationIssue(null)
+      return
     }
-  }, [buildGenerationDiagnostics, currentItem, onRegenerateItem])
+
+    // Clear any previous error states
+    setLoadingError(null)
+    setLoadingTimeout(false)
+    setGenerationIssue(null)
+
+    // Timeout warning after 8 seconds
+    const timeoutWarningId = setTimeout(() => {
+      logger.warn('Item generation taking longer than expected')
+      setLoadingTimeout(true)
+      buildGenerationDiagnosticsRef.current().then(setGenerationIssue)
+    }, 8000)
+
+    // Final timeout and error after 15 seconds
+    const finalTimeoutId = setTimeout(() => {
+      logger.error('Item generation failed - timeout after 15 seconds')
+      setLoadingError('La generación de ejercicios está tardando más de lo esperado. Esto puede deberse a una configuración muy restrictiva.')
+      buildGenerationDiagnosticsRef.current().then(setGenerationIssue)
+    }, 15000)
+
+    // A generation is already running: it will deliver an item on its own. Firing a
+    // retry here would race it, and the loser overwrites the winner's item — that is
+    // what made the drill visibly reload itself a moment after the first render.
+    // This effect re-runs when `isGenerating` drops back to false, so a genuinely
+    // stuck generation still gets retried.
+    if (isGenerating) {
+      return () => {
+        clearTimeout(timeoutWarningId)
+        clearTimeout(finalTimeoutId)
+      }
+    }
+
+    const quickRetryId = setTimeout(() => {
+      try {
+        logger.debug('🔄 DrillMode: Quick retry for missing currentItem')
+        onRegenerateItemRef.current()
+      } catch (error) {
+        logger.error('Quick retry failed', error)
+      }
+    }, QUICK_RETRY_DELAY_MS)
+
+    return () => {
+      clearTimeout(quickRetryId)
+      clearTimeout(timeoutWarningId)
+      clearTimeout(finalTimeoutId)
+    }
+  }, [canRegenerateItem, currentItem, isGenerating])
 
   // Listen for navigation requests from ProgressDashboard
   useEffect(() => {

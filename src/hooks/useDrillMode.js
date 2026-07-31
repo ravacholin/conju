@@ -17,6 +17,7 @@ import { useSessionStore } from '../state/session.js'
 import { useDrillGenerator } from './modules/useDrillGenerator.js'
 import { useDrillProgress } from './modules/useDrillProgress.js'
 import { useDrillValidation } from './modules/useDrillValidation.js'
+import { isGenerationSkipped } from './modules/drillGenerationSignals.js'
 
 // Import remaining functionality that wasn't modularized
 import { getMotivationalInsights } from '../lib/progress/personalizedCoaching.js'
@@ -154,7 +155,9 @@ export function useDrillMode() {
         history
       )
 
-      if (newItem) {
+      if (isGenerationSkipped(newItem)) {
+        logger.debug('handleSessionGeneration', 'Generation already in flight, keeping current item')
+      } else if (newItem) {
         const validation = validateItem(newItem)
         if (!validation.valid) {
           logger.warn('handleSessionGeneration', 'Generated session item failed validation', validation)
@@ -224,6 +227,13 @@ export function useDrillMode() {
         if (timeoutId) {
           clearTimeout(timeoutId)
         }
+      }
+
+      // Another generation owns the current request; bailing out keeps the item
+      // that generation is about to produce instead of flashing a fallback first.
+      if (isGenerationSkipped(newItem)) {
+        logger.debug('generateNormalItem', 'Generation already in flight, skipping duplicate request')
+        return
       }
     } catch (error) {
       logger.error('generateNormalItem', 'Generation failed or timed out', error)
