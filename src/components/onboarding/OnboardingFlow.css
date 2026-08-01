@@ -101,6 +101,11 @@
 .vo-footer-hints { display: flex; gap: 16px; }
 .vo-footer-hints span { white-space: nowrap; }
 .vo-footer-hints em { font-style: normal; color: var(--muted); }
+/* Cue for the drag-to-preview gesture — pointless without a finger. */
+.vo-hint-touch { display: none; }
+@media (hover: none) and (pointer: coarse) {
+  .vo-hint-touch { display: inline; }
+}
 
 .vo-header-left {
   display: flex;
@@ -332,6 +337,12 @@
   position: relative;
   border-bottom: 1px solid var(--border);
   cursor: pointer;
+  /* Dragging a finger across the rows previews them (see useTouchHover), so
+     the press must not raise a selection, a callout or the tap flash. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
   display: flex;
   align-items: baseline;
   gap: 14px;
@@ -536,7 +547,9 @@
 
   .vo-footer-hints { gap: 10px; }
   /* The keyboard hints don't apply on touch; only the search cue survives. */
-  .vo-footer-hints span:not(.vo-hint-search) { display: none; }
+  .vo-footer-hints span:not(.vo-hint-search):not(.vo-hint-touch) { display: none; }
+  /* The touch cue needs the room, and the kicker already leads the left panel. */
+  .vo-footer-kicker { display: none; }
 
   .vo-left-bottom { margin-top: 20px; }
 

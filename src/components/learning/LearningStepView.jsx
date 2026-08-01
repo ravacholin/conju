@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import '../onboarding/OnboardingFlow.css'
+import useTouchHover, { touchHoverItemProps } from '../../hooks/useTouchHover.js'
 
 const ACCENT = 'var(--accent-primary)'
 const INK    = 'var(--text)'
@@ -48,6 +49,14 @@ function StepPanel({ stepConfig, onSelect, selectedId }) {
     window.addEventListener('keydown', handle)
     return () => window.removeEventListener('keydown', handle)
   }, [focusIdx, options, onSelect])
+
+  // Sliding a finger over the rows focuses them like a mouse would. The
+  // release that ends such a scrub must not count as a tap on the last row.
+  const { containerRef: listRef, shouldIgnoreSelect } = useTouchHover(setFocusIdx)
+  const handleSelect = useCallback((opt) => {
+    if (shouldIgnoreSelect()) return
+    onSelect(opt)
+  }, [shouldIgnoreSelect, onSelect])
 
   const focused = options[focusIdx] || options[0]
 
@@ -115,7 +124,7 @@ function StepPanel({ stepConfig, onSelect, selectedId }) {
           OPCIONES · {String(options.length).padStart(2, '0')} ────
         </div>
 
-        <div className="vo-options-list">
+        <div className="vo-options-list" ref={listRef}>
           {options.map((opt, i) => {
             const active = i === focusIdx
             const selected = selectedId != null && opt.id === selectedId
@@ -128,8 +137,9 @@ function StepPanel({ stepConfig, onSelect, selectedId }) {
                 aria-label={opt.label}
                 style={{ paddingLeft: active ? 76 : 52, paddingTop: 14, paddingBottom: 14 }}
                 onMouseEnter={() => setFocusIdx(i)}
-                onClick={() => onSelect(opt)}
+                onClick={() => handleSelect(opt)}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelect(opt) }}
+                {...touchHoverItemProps(i)}
               >
                 <div className="vo-option-num" style={{ color: active || selected ? ACCENT : INK2 }}>
                   <span

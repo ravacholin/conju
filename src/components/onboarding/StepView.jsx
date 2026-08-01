@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import VoOptionRow from './VoOptionRow.jsx'
 import TopicSearch from './TopicSearch.jsx'
 import { isTextEntryTarget } from './textEntry.js'
+import useTouchHover from '../../hooks/useTouchHover.js'
 
 const ACCENT = 'var(--accent-primary)'
 const INK3 = 'var(--border-strong)'
@@ -61,6 +62,14 @@ function StepView({ stepConfig, animKey, onSelect, search }) {
     const target = visibleOptions[Math.min(safeIdx, visibleOptions.length - 1)]
     if (target) onSelect(target)
   }, [visibleOptions, safeIdx, onSelect])
+
+  // Sliding a finger over the rows focuses them like a mouse would. The
+  // release that ends such a scrub must not count as a tap on the last row.
+  const { containerRef: listRef, shouldIgnoreSelect } = useTouchHover(setFocusIdx)
+  const handleSelect = useCallback((option) => {
+    if (shouldIgnoreSelect()) return
+    onSelect(option)
+  }, [shouldIgnoreSelect, onSelect])
 
   // Keyboard navigation for the list. Events originating in a text field are
   // handled by the field itself (see TopicSearch), so they are skipped here —
@@ -183,6 +192,7 @@ function StepView({ stepConfig, animKey, onSelect, search }) {
           </div>
         ) : (
           <div
+            ref={listRef}
             className="vo-options-list"
             id={hasQuery ? LISTBOX_ID : undefined}
             role={hasQuery ? 'listbox' : undefined}
@@ -198,7 +208,7 @@ function StepView({ stepConfig, animKey, onSelect, search }) {
                 optionId={`vo-opt-${opt.id}`}
                 matchRanges={hasQuery ? results[i]?.ranges : null}
                 onFocus={setFocusIdx}
-                onSelect={onSelect}
+                onSelect={handleSelect}
               />
             ))}
           </div>
