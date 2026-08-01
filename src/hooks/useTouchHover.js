@@ -7,10 +7,12 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 const INDEX_ATTR = 'data-touch-hover-index'
 const ITEM_SELECTOR = `[${INDEX_ATTR}]`
 
-/** How long the finger must rest before a drag scrubs instead of scrolling. */
-const HOLD_MS = 180
-/** Finger jitter tolerated while waiting for the hold to elapse. */
+/** Finger travel beyond this reads as a scrub, so the release must not select. */
 const MOVE_TOLERANCE_PX = 10
+/** Band at each end of the scroller where a scrub keeps pulling the list along. */
+const EDGE_ZONE_PX = 56
+/** Peak auto-scroll speed inside that band, in pixels per frame. */
+const EDGE_SPEED_PX = 14
 
 /** Props every hoverable row must spread so the hook can identify it. */
 export function touchHoverItemProps(index) {
@@ -25,17 +27,44 @@ function indexAtPoint(x, y) {
 }
 
 /**
- * A drag can only be mistaken for a scroll when something around the list can
- * actually scroll. When nothing can, scrubbing may start on contact.
+ * Nearest ancestor that actually scrolls. The scrub owns the finger, so this is
+ * what has to be moved for rows past the fold to come within reach.
  */
-function hasScrollableAncestor(node) {
-  for (let el = node; el && el !== document.body; el = el.parentElement) {
+function scrollParentOf(node) {
+  for (let el = node?.parentElement; el && el !== document.body; el = el.parentElement) {
     const { overflowY } = window.getComputedStyle(el)
     const scrollable = overflowY === 'auto' || overflowY === 'scroll' || overflowY === 'overlay'
-    if (scrollable && el.scrollHeight > el.clientHeight + 1) return true
+    if (scrollable && el.scrollHeight > el.clientHeight + 1) return el
   }
   const root = document.scrollingElement
-  return root ? root.scrollHeight > root.clientHeight + 1 : false
+  return root && root.scrollHeight > root.clientHeight + 1 ? root : null
+}
+
+/** Where the scroller sits on screen, which is what the finger is measured against. */
+function scrollerBounds(scroller) {
+  if (scroller === document.scrollingElement) {
+    return { top: 0, bottom: window.innerHeight || 0 }
+  }
+  const rect = scroller.getBoundingClientRect()
+  return { top: rect.top, bottom: rect.bottom }
+}
+
+/**
+ * How far to scroll for a finger held at `y`: nothing in the middle of the
+ * scroller, ramping up to `EDGE_SPEED_PX` as it reaches either end.
+ */
+function edgeDelta(scroller, y) {
+  const { top, bottom } = scrollerBounds(scroller)
+  if (bottom - top < EDGE_ZONE_PX * 2) return 0
+  if (y < top + EDGE_ZONE_PX) {
+    const depth = Math.min(1, (top + EDGE_ZONE_PX - y) / EDGE_ZONE_PX)
+    return -EDGE_SPEED_PX * depth
+  }
+  if (y > bottom - EDGE_ZONE_PX) {
+    const depth = Math.min(1, (y - (bottom - EDGE_ZONE_PX)) / EDGE_ZONE_PX)
+    return EDGE_SPEED_PX * depth
+  }
+  return 0
 }
 
 /**
@@ -44,9 +73,14 @@ function hasScrollableAncestor(node) {
  * so the highlight animation and the preview panel follow the finger.
  *
  * Touch devices fire no `mouseenter` while the finger travels, so the position
- * is resolved from the touch point on every move. Scrolling is preserved by
- * only taking over the gesture once the finger has rested for `HOLD_MS` — a
- * drag that starts moving right away is a scroll and is left to the browser.
+ * is resolved from the touch point on every move. A touch that lands on a row
+ * takes the gesture straight away — waiting for the finger to settle first only
+ * loses the swipes that start moving at once, which is most of them. The list
+ * therefore does not scroll under the finger (see the `touch-action` rule on
+ * `.vo-options-list`); instead, holding the finger against either end of the
+ * scroller pulls the list along so rows past the fold stay reachable. A touch
+ * that starts anywhere else — the padding, the panel around the list — is left
+ * to the browser and scrolls as usual.
  *
  * @param {(index: number) => void} onHover called with the row under the finger
  * @returns {{ containerRef: (el: HTMLElement|null) => void, shouldIgnoreSelect: () => boolean }}
@@ -68,67 +102,93 @@ export default function useTouchHover(onHover) {
     if (!container) return undefined
 
     let gesture = null
-    let holdTimer = null
+    let frame = null
 
-    const clearHold = () => {
-      if (holdTimer) {
-        clearTimeout(holdTimer)
-        holdTimer = null
+    const stopAutoScroll = () => {
+      if (frame !== null) {
+        cancelAnimationFrame(frame)
+        frame = null
       }
     }
 
+    // Rows the finger never left are skipped, so a scrub only re-renders the
+    // step when the focused row actually changes.
     const hoverAt = (x, y) => {
       const index = indexAtPoint(x, y)
-      if (index >= 0) onHoverRef.current?.(index)
+      if (index < 0 || index === gesture?.index) return
+      if (gesture) gesture.index = index
+      onHoverRef.current?.(index)
+    }
+
+    // While the finger rests against an end of the scroller the list keeps
+    // coming, and each step brings a new row under the (stationary) finger.
+    const autoScrollStep = () => {
+      frame = null
+      if (!gesture?.scroller) return
+      const delta = edgeDelta(gesture.scroller, gesture.y)
+      if (!delta) return
+      const before = gesture.scroller.scrollTop
+      gesture.scroller.scrollTop = before + delta
+      if (gesture.scroller.scrollTop === before) return // reached the end
+      hoverAt(gesture.x, gesture.y)
+      frame = requestAnimationFrame(autoScrollStep)
+    }
+
+    const syncAutoScroll = () => {
+      if (!gesture?.scroller) return
+      if (frame === null && edgeDelta(gesture.scroller, gesture.y)) {
+        frame = requestAnimationFrame(autoScrollStep)
+      }
     }
 
     const handleStart = (e) => {
-      clearHold()
-      if (e.touches.length !== 1) {
-        gesture = null
-        return
-      }
+      stopAutoScroll()
+      gesture = null
+      if (e.touches.length !== 1) return
+
       const touch = e.touches[0]
+      const index = indexAtPoint(touch.clientX, touch.clientY)
+      // Off the rows the list has no business with the gesture: let it scroll.
+      if (index < 0) return
+
       suppressSelectRef.current = false
-      gesture = { x: touch.clientX, y: touch.clientY, scrubbing: false, abandoned: false }
+      gesture = {
+        startX: touch.clientX,
+        startY: touch.clientY,
+        x: touch.clientX,
+        y: touch.clientY,
+        index: -1,
+        scroller: scrollParentOf(container)
+      }
 
       // Contact alone already reads as the pointer arriving on the row.
       hoverAt(touch.clientX, touch.clientY)
-
-      if (!hasScrollableAncestor(container)) {
-        gesture.scrubbing = true
-        return
-      }
-      holdTimer = setTimeout(() => {
-        holdTimer = null
-        if (gesture && !gesture.abandoned) gesture.scrubbing = true
-      }, HOLD_MS)
     }
 
     const handleMove = (e) => {
       if (!gesture || e.touches.length !== 1) return
       const touch = e.touches[0]
-      const travelled =
-        Math.abs(touch.clientX - gesture.x) > MOVE_TOLERANCE_PX ||
-        Math.abs(touch.clientY - gesture.y) > MOVE_TOLERANCE_PX
+      gesture.x = touch.clientX
+      gesture.y = touch.clientY
 
-      if (!gesture.scrubbing) {
-        // Moving before the hold elapsed means the user is scrolling.
-        if (travelled) {
-          gesture.abandoned = true
-          clearHold()
-        }
-        return
+      if (
+        Math.abs(touch.clientX - gesture.startX) > MOVE_TOLERANCE_PX ||
+        Math.abs(touch.clientY - gesture.startY) > MOVE_TOLERANCE_PX
+      ) {
+        suppressSelectRef.current = true
       }
 
-      // The list owns the gesture now, so the page must not scroll under it.
+      // The list owns the gesture, so the page must not scroll under it. CSS
+      // `touch-action` already says as much; this covers the browsers that
+      // only honour the event.
       if (e.cancelable) e.preventDefault()
-      if (travelled) suppressSelectRef.current = true
+
       hoverAt(touch.clientX, touch.clientY)
+      syncAutoScroll()
     }
 
     const handleEnd = () => {
-      clearHold()
+      stopAutoScroll()
       gesture = null
     }
 
@@ -139,7 +199,7 @@ export default function useTouchHover(onHover) {
     container.addEventListener('touchcancel', handleEnd, { passive: true })
 
     return () => {
-      clearHold()
+      stopAutoScroll()
       container.removeEventListener('touchstart', handleStart)
       container.removeEventListener('touchmove', handleMove)
       container.removeEventListener('touchend', handleEnd)
