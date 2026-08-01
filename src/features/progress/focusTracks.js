@@ -66,7 +66,7 @@ export function buildFocusTracks({ heatMapData = null, userStats = {} } = {}) {
     title: mastery < 50 ? 'Base guiada' : 'Mixto de consolidación',
     level: mastery < 50 ? 'Baja' : 'Media',
     description: mastery < 50
-      ? 'Bloque corto para recuperar precisión general.'
+      ? 'Práctica corta para recuperar precisión general.'
       : 'Práctica variada para mantener velocidad y retención.',
     drillConfig: {
       practiceMode: mastery < 50 ? 'review' : 'mixed',

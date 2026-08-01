@@ -50,7 +50,7 @@ function MoodTenseSelection({
               badge="MODO"
               title={getMoodLabel(mood)}
               subtitle="Modo verbal"
-              description="Activa solo este bloque para filtrar tiempos y ejemplos relevantes."
+              description="Activa solo este tema para filtrar tiempos y ejemplos relevantes."
               detail="yo hablo, tú hablas, él/ella habla"
               onClick={() => onSelectMood(mood)}
               cardTitle={`Seleccionar ${getMoodLabel(mood)}`}
@@ -98,7 +98,7 @@ function MoodTenseSelection({
         badge="01"
         title="INDICATIVO"
         subtitle="Hechos, hábitos y relato"
-        description="El bloque más amplio para tiempos de uso central."
+        description="El tema más amplio para tiempos de uso central."
         detail="yo hablo, tú hablas, él/ella habla"
         onClick={() => onSelectMood('indicative')}
         cardTitle="Seleccionar modo indicativo"
@@ -173,7 +173,7 @@ function MoodTenseSelection({
               badge="TEMA"
               title={getTenseLabel(tense)}
               subtitle="Tiempo verbal"
-              description="Entrada temática directa para practicar un bloque concreto."
+              description="Entrada directa para practicar un tema concreto."
               detail={getConjugationExample(settings.specificMood, tense)}
               onClick={() => onSelectTense(tense)}
               cardTitle={`Seleccionar ${getTenseLabel(tense)}`}

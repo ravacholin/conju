@@ -462,11 +462,11 @@ function buildStep(step, settings, handlers) {
       }
       return {
         n: '05',
-        kicker: themeSubMenu ? (kickerMapLevel[themeSubMenu] || themeSubMenu.toUpperCase()) : 'BLOQUE',
+        kicker: themeSubMenu ? (kickerMapLevel[themeSubMenu] || themeSubMenu.toUpperCase()) : 'TEMA',
         prompt: 'Trabajás...',
         aux: themeSubMenu
           ? 'Elegí un tiempo para seguir con el tipo de verbos.'
-          : 'Elegí un bloque para practicar.',
+          : 'Elegí un tema para practicar.',
         options: buildLevelTopicOptions({
           level: settings.level,
           selectMood, selectTense,

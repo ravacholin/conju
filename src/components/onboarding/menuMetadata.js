@@ -90,7 +90,7 @@ export function getStepMeta(step, settings = {}) {
           step: '05',
           kicker: 'FOCO',
           title: 'Elegí el modo o tiempo que querés atacar',
-          description: 'Segmentá la práctica para trabajar un bloque verbal bien definido sin tocar la lógica de conjugación.'
+          description: 'Segmentá la práctica para trabajar un tema verbal bien definido sin tocar la lógica de conjugación.'
         },
     6: settings.practiceMode === 'mixed'
       ? {

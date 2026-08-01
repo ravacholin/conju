@@ -20,7 +20,7 @@ function PracticeModeSelection({ onSelectPracticeMode, onBack }) {
           eyebrow="PRECISA"
           badge="FOCUS"
           title="ESPECÍFICA"
-          subtitle="Un bloque a la vez"
+          subtitle="Un tema a la vez"
           description="Aísla un modo y un tiempo para practicar con intención y repetición útil."
           detail="Ideal para dominar formas particulares"
           onClick={() => onSelectPracticeMode('specific')}

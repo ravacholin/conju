@@ -32,7 +32,7 @@ function DurationSelectionStep({
     n: '03',
     kicker: 'DURACIÓN',
     prompt: 'La sesión dura...',
-    aux: 'Ajustá el bloque antes de entrar al recorrido guiado.',
+    aux: 'Ajustá la duración antes de entrar al recorrido guiado.',
     options,
   }
 
