@@ -427,7 +427,7 @@ function buildStep(step, settings, handlers) {
         prompt: 'Querés trabajar...', aux: 'Mezcla amplia o foco quirúrgico.',
         options: [
           { id: 'mixed',    label: 'todo mezclado',     tag: 'AMPLIO',  gloss: 'panorama', ex: 'todos los modos y tiempos', onSelect: () => selectPracticeMode('mixed', onStartPractice) },
-          { id: 'specific', label: 'un bloque puntual', tag: 'PRECISO', gloss: 'foco',     ex: 'un modo, un tiempo',        onSelect: () => selectPracticeMode('specific') },
+          { id: 'specific', label: 'un tema puntual', tag: 'PRECISO', gloss: 'foco',     ex: 'un modo, un tiempo',        onSelect: () => selectPracticeMode('specific') },
         ],
       }
 
