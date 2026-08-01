@@ -1622,8 +1622,17 @@ body {
 }
 
 
+/* `.drill-container` is deliberately not in this list. It is the only one of these
+   whose class list changes at runtime: Drill.jsx adds `fade-in` when an exercise
+   arrives and removes it 500ms later. While that class is on, the more specific
+   `.verbos-drill .fade-in` rule (DrillVerbos.css) wins with `vdLiftIn`; removing it
+   used to hand the element back to this rule, flipping animation-name to `fadeIn`
+   and making the browser restart the animation. The card faded in a second time,
+   half a second after the exercise appeared, on every single exercise — which read
+   as the drill reloading itself for no reason. Without this rule the class removal
+   sets animation-name to `none`, which stops rather than starts, and `vdLiftIn`
+   already ends on the element's natural state so nothing moves. */
 .option-card,
-.drill-container,
 .settings-panel {
   animation: fadeIn 0.3s ease;
 }

@@ -14,7 +14,34 @@ import { test, expect } from '@playwright/test'
  * src/hooks/useDrillMode.generation-window.test.js, since it is a state-machine
  * race rather than something a browser test can provoke on demand. The "exercise is
  * not replaced" assertion below is the end-to-end smoke guard for it.
+ *
+ * A third defect hid from both of those for two releases, because the DOM state this
+ * file records looks perfectly healthy while it happens: the exercise never changes
+ * and the `fade-in` class is added and removed exactly when it should be. The card
+ * was simply animating *twice* — `vdLiftIn` on arrival, then `fadeIn` restarting
+ * 500ms later when the class came off and a bare `.drill-container` rule in App.css
+ * took over as the fallback. Same verb, same person, but the whole card dropped back
+ * to opacity 0.04 and faded in again, on every single exercise. Watching classes
+ * cannot see that; only the animations themselves can, hence OBSERVE_ANIMATIONS.
  */
+
+const OBSERVE_ANIMATIONS = () => {
+  window.__drillAnimations = []
+  document.addEventListener(
+    'animationstart',
+    (event) => {
+      const target = event.target
+      if (!(target instanceof Element)) return
+      if (!target.classList.contains('drill-container')) return
+      window.__drillAnimations.push({
+        t: Math.round(performance.now()),
+        name: event.animationName,
+        lemma: document.querySelector('.verb-lemma')?.textContent || null
+      })
+    },
+    true
+  )
+}
 
 const OBSERVE_DRILL = () => {
   window.__drillStates = []
@@ -86,6 +113,35 @@ function firstStatePerExercise(states) {
   return firsts
 }
 
+/**
+ * Every exercise must run exactly one entrance animation. A second one on the same
+ * exercise is the card visibly reloading itself with identical content.
+ */
+async function expectOneAnimationPerExercise(page) {
+  const animations = await page.evaluate(() => window.__drillAnimations || [])
+
+  expect(
+    animations.length,
+    'no drill animations were recorded, so this assertion would pass vacuously'
+  ).toBeGreaterThan(0)
+
+  const byExercise = new Map()
+  for (const animation of animations) {
+    const list = byExercise.get(animation.lemma) || []
+    list.push(animation.name)
+    byExercise.set(animation.lemma, list)
+  }
+
+  const repeated = [...byExercise.entries()]
+    .filter(([, names]) => names.length > 1)
+    .map(([lemma, names]) => `${lemma}: ${names.join(' → ')}`)
+
+  expect(
+    repeated,
+    'an exercise animated more than once, so the card faded in again with the same content'
+  ).toEqual([])
+}
+
 function expectNoLateFadeIn(states) {
   expect(
     firstStatePerExercise(states).filter((state) => !state.fadeIn),
@@ -100,6 +156,7 @@ test.describe('Drill stability', () => {
   test('the first exercise is not replaced on its own', async ({ page, browserName }) => {
     await throttleCpu(page, browserName, 6)
     await page.addInitScript(OBSERVE_DRILL)
+    await page.addInitScript(OBSERVE_ANIMATIONS)
     await page.goto('/drill')
 
     const lemma = page.locator('.verb-lemma')
@@ -114,11 +171,13 @@ test.describe('Drill stability', () => {
     expect(await page.locator('.person-display').textContent()).toBe(firstPerson)
 
     expectNoLateFadeIn(await readDrillStates(page))
+    await expectOneAnimationPerExercise(page)
   })
 
   test('advancing to the next exercise does not flash the previous answer', async ({ page, browserName }) => {
     await throttleCpu(page, browserName, 6)
     await page.addInitScript(OBSERVE_DRILL)
+    await page.addInitScript(OBSERVE_ANIMATIONS)
     await page.goto('/drill')
 
     const input = page.locator('input#conjugation-input')
@@ -143,5 +202,6 @@ test.describe('Drill stability', () => {
     ).toEqual([])
 
     expectNoLateFadeIn(states)
+    await expectOneAnimationPerExercise(page)
   })
 })
