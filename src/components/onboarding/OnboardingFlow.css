@@ -333,6 +333,14 @@
   --vo-row-pad: 14px;
 }
 
+/* A finger dragged over the rows previews them (see useTouchHover), so the
+   browser must not read that same drag as a scroll and pull the list out from
+   under it. Two-finger zoom stays available; scrolling past the fold is handled
+   by the hook, which pulls the list along when the finger reaches either end. */
+@media (pointer: coarse) {
+  .vo-options-list { touch-action: pinch-zoom; }
+}
+
 .vo-option {
   position: relative;
   border-bottom: 1px solid var(--border);
