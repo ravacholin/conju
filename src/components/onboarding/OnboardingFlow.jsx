@@ -912,8 +912,9 @@ function OnboardingFlow({
           <span><em>↵ / →</em> seleccioná</span>
           <span><em>← / esc</em> volver</span>
           <span className="vo-hint-search"><em>/</em> buscar</span>
+          <span className="vo-hint-touch"><em>↕</em> deslizá</span>
         </div>
-        <div style={{ color: INK2 }}>{stepConfig?.kicker}</div>
+        <div className="vo-footer-kicker" style={{ color: INK2 }}>{stepConfig?.kicker}</div>
         <div>SISTEMA · OK</div>
       </footer>
     </div>

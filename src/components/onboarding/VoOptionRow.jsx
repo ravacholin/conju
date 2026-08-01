@@ -1,4 +1,5 @@
 import React from 'react'
+import { touchHoverItemProps } from '../../hooks/useTouchHover.js'
 
 /* ── Design tokens (mirrors OnboardingFlow.jsx) ── */
 const ACCENT = 'var(--accent-primary)'
@@ -61,6 +62,7 @@ function VoOptionRow({
         }
       }}
       {...listboxProps}
+      {...touchHoverItemProps(index)}
     >
       {/* Number box */}
       <div className="vo-option-num" style={{ color: active ? ACCENT : INK3 }}>
