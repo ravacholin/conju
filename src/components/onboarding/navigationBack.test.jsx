@@ -170,7 +170,7 @@ describe('Navegación y Back (flujo actual)', () => {
       await user.click(nivelC1)
     })
 
-    // Paso 4: práctica mezclada / bloque puntual
+    // Paso 4: práctica mezclada / tema puntual
     await screen.findByRole('button', { name: /todo mezclado/i })
 
     // Back → paso 3 (level selection)
@@ -186,8 +186,8 @@ describe('Navegación y Back (flujo actual)', () => {
     const nivelB1 = await screen.findByRole('button', { name: /Seleccionar nivel B1/i })
     await user.click(nivelB1)
 
-    // Paso 4: elegir "un bloque puntual"
-    const especificas = await screen.findByRole('button', { name: /un bloque puntual/i })
+    // Paso 4: elegir "un tema puntual"
+    const especificas = await screen.findByRole('button', { name: /un tema puntual/i })
     await user.click(especificas)
 
     // Paso 5: selección de modo (Indicativo/Subjuntivo...)
