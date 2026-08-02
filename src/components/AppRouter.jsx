@@ -47,12 +47,6 @@ const DrillMode = lazy(lazyWithRetry(
 const LearnTenseFlowContainer = lazy(lazyWithRetry(
   () => import('./learning/LearnTenseFlow.jsx')
 ))
-const StoryMode = lazy(lazyWithRetry(
-  () => import('../features/story/StoryMode.jsx')
-))
-const TimelineMode = lazy(lazyWithRetry(
-  () => import('../features/timeline/TimelineMode.jsx')
-))
 import { useDrillMode } from '../hooks/useDrillMode.js'
 import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 import router from '../lib/routing/Router.js'
@@ -173,14 +167,6 @@ function AppRouter() {
 
   const handleStartPractice = () => {
     router.navigate(ROUTES.drill())
-  }
-
-  const handleStartStoryMode = () => {
-    router.navigate(ROUTES.story())
-  }
-
-  const handleStartTimelineMode = () => {
-    router.navigate(ROUTES.timeline())
   }
 
   const handleHome = () => {
@@ -539,33 +525,9 @@ function AppRouter() {
           getAvailableMoodsForLevel={onboardingFlow.getAvailableMoodsForLevel}
           getAvailableTensesForLevelAndMood={onboardingFlow.getAvailableTensesForLevelAndMood}
           onNavigateToProgress={handleGoToProgress}
-          onNavigateToStory={handleStartStoryMode}
-          onNavigateToTimeline={handleStartTimelineMode}
           getGenerationStats={drillMode.getGenerationStats}
           isGenerationViable={drillMode.isGenerationViable}
           isGenerating={drillMode.isGenerating}
-        />
-      </React.Suspense>
-    )
-  }
-
-  if (currentMode === 'story') {
-    return (
-      <React.Suspense fallback={<div className="loading">Cargando historias...</div>}>
-        <StoryMode
-          onBack={handleStartPractice}
-          onHome={handleHome}
-        />
-      </React.Suspense>
-    )
-  }
-
-  if (currentMode === 'timeline') {
-    return (
-      <React.Suspense fallback={<div className="loading">Cargando línea de tiempo...</div>}>
-        <TimelineMode
-          onBack={handleStartPractice}
-          onHome={handleHome}
         />
       </React.Suspense>
     )
@@ -592,8 +554,6 @@ function AppRouter() {
             // This ensures settings are fully applied before regeneration
             router.navigate(ROUTES.drill())
           }}
-          onNavigateToStory={handleStartStoryMode}
-          onNavigateToTimeline={handleStartTimelineMode}
         />
       </React.Suspense>
     )

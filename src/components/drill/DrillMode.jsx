@@ -49,8 +49,6 @@
  * @param {Function} props.getAvailableMoodsForLevel - Obtener modos disponibles por nivel
  * @param {Function} props.getAvailableTensesForLevelAndMood - Obtener tiempos por nivel/modo
  * @param {Function} props.onNavigateToProgress - Navegar al dashboard de progreso
- * @param {Function} props.onNavigateToStory - Lanzar el modo historias
- * @param {Function} props.onNavigateToTimeline - Lanzar el modo línea de tiempo
  * @param {Function} props.getGenerationStats - Obtener estadísticas de generación (diagnóstico)
  * @param {Function} props.isGenerationViable - Verificar si la generación es viable
  * @param {boolean} props.isGenerating - Si hay una generación de ítem en curso (evita reintentos que compiten con ella)
@@ -104,8 +102,6 @@ function DrillMode({
   getAvailableMoodsForLevel,
   getAvailableTensesForLevelAndMood,
   onNavigateToProgress,
-  onNavigateToStory,
-  onNavigateToTimeline,
   getGenerationStats,
   isGenerationViable,
   isGenerating = false
@@ -506,8 +502,6 @@ function DrillMode({
         onToggleGames={handleToggleGames}
         onTogglePronunciation={handleTogglePronunciation}
         onNavigateToProgress={onNavigateToProgress}
-        onNavigateToStory={onNavigateToStory}
-        onNavigateToTimeline={onNavigateToTimeline}
         onHome={onHome}
         showQuickSwitch={showQuickSwitch}
         showGames={showGames}

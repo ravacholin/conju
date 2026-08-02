@@ -1,4 +1,5 @@
 import { useSettings, PRACTICE_MODES } from '../../state/settings.js'
+import { getRuntimeDrillSettings } from '../../state/session.js'
 import { categorizeVerb } from '../data/irregularFamilies.js'
 import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
 import { shouldFilterVerbByLevel } from './levelVerbFiltering.js'
@@ -79,8 +80,9 @@ export async function chooseNext({ forms, history: _history, currentItem, sessio
     return null
   }
 
-  // Use sessionSettings if provided, otherwise fallback to global settings
-  const allSettings = sessionSettings || useSettings.getState()
+  // Use sessionSettings if provided, otherwise fallback to global settings merged
+  // with the ephemeral session state (game modes, rotation cursors).
+  const allSettings = sessionSettings || getRuntimeDrillSettings(useSettings.getState())
   const {
     level: rawLevel, useVoseo, useTuteo, useVosotros,
     practiceMode: rawPracticeMode, specificMood, specificTense, practicePronoun, verbType: rawVerbType,

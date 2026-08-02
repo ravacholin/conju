@@ -23,7 +23,7 @@ import { getPersonWeightsForLevel, applyLevelFormWeighting } from './practicePol
 import { varietyEngine } from './advancedVarietyEngine.js'
 import { VERB_LOOKUP_MAP, clearAllCaches } from './optimizedCache.js'
 import { isIrregularInTense } from '../utils/irregularityUtils.js'
-import { useSettings } from '../../state/settings.js'
+import { useSessionStore } from '../../state/session.js'
 import { createLogger } from '../utils/logger.js'
 import { getAdaptiveEngine } from '../progress/AdaptiveDifficultyEngine.js'
 
@@ -223,7 +223,7 @@ export async function selectForm(eligible, settings, context = {}) {
       eligible = boosted
 
       // Avanzar el índice solo una posición desde el índice realmente usado
-      useSettings.getState().set({ conmutacionIdx: (usedIdx + 1) % seq.length })
+      useSessionStore.getState().setGameMode({ conmutacionIdx: (usedIdx + 1) % seq.length })
     } catch (error) {
       if (!import.meta?.vitest) logger.warn('C2 conmutación fallback (no variety boost applied)', error)
     }
@@ -384,7 +384,7 @@ export async function selectForm(eligible, settings, context = {}) {
   }
   // Update rotation pointer
   if (rot && (randomPerson === '2s_tu' || randomPerson === '2s_vos')) {
-    useSettings.getState().set({ nextSecondPerson: randomPerson === '2s_tu' ? '2s_vos' : '2s_tu' })
+    useSessionStore.getState().setGameMode({ nextSecondPerson: randomPerson === '2s_tu' ? '2s_vos' : '2s_tu' })
   }
 
 

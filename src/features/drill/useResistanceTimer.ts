@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSettings, RESISTANCE_MAX_MS } from '../../state/settings.js'
+import { useSessionStore } from '../../state/session.js'
 
 /**
  * useResistanceTimer.ts
@@ -10,11 +11,15 @@ import { useSettings, RESISTANCE_MAX_MS } from '../../state/settings.js'
  * store on every tick used to fan out a re-render (and a persist middleware
  * write) 10x/second to every component subscribed to useSettings(), for the
  * whole duration of resistance mode. Only the rare, meaningful transitions
- * (start/stop, new best time) still touch the store — GamesPanel seeds the
+ * (start/stop, new best time) still touch a store — GamesPanel seeds the
  * initial resistanceMsLeft/resistanceStartTs when toggling resistance mode on.
+ *
+ * The mode's on/off state is ephemeral and lives in useSessionStore, so it does
+ * not survive a reload. Only the best-time record is a durable setting.
  */
 export function useResistanceTimer() {
-  const resistanceActive = useSettings((s) => s.resistanceActive)
+  const resistanceActive = useSessionStore((s) => s.resistanceActive)
+  const setGameMode = useSessionStore((s) => s.setGameMode)
   const set = useSettings((s) => s.set)
   const [msLeft, setMsLeft] = useState(0)
   const [showExplosion, setShowExplosion] = useState(false)
@@ -52,7 +57,7 @@ export function useResistanceTimer() {
     }
 
     // Seed the local countdown from the value GamesPanel wrote when starting resistance mode.
-    const initialMs = (useSettings as any).getState().resistanceMsLeft || 0
+    const initialMs = useSessionStore.getState().resistanceMsLeft || 0
     msLeftRef.current = initialMs
     setMsLeft(initialMs)
 
@@ -85,12 +90,13 @@ export function useResistanceTimer() {
           const latest = (useSettings as any).getState()
           const lvl = latest.level || 'A1'
           const best = latest.resistanceBestMsByLevel || {}
-          const survived = Date.now() - (latest.resistanceStartTs || Date.now())
+          const startTs = useSessionStore.getState().resistanceStartTs
+          const survived = Date.now() - (startTs || Date.now())
           if (!best[lvl] || survived > best[lvl]) {
             best[lvl] = survived
             set({ resistanceBestMsByLevel: { ...best } })
           }
-          set({ resistanceActive: false })
+          setGameMode({ resistanceActive: false })
         }, 2000)
       }
     }, 100)
@@ -99,7 +105,7 @@ export function useResistanceTimer() {
       clearTimer()
       clearPendingTimeouts()
     }
-  }, [resistanceActive, set])
+  }, [resistanceActive, set, setGameMode])
 
   // Clear any pending timeouts if the component using this hook unmounts, so a stale
   // callback can't fire setState or write to the global settings store after unmount.

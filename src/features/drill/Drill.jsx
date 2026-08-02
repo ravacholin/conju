@@ -5,6 +5,7 @@ import { PERSON_LABELS } from '../../lib/utils/verbLabels.js';
 import { useProgressTracking } from './useProgressTracking.js';
 import Diff from './Diff.jsx';
 import { useSettings, warmupCachesIfNeeded } from '../../state/settings.js';
+import { useSessionStore } from '../../state/session.js';
 import { getSafeMoodTenseLabels } from '../../lib/utils/moodTenseValidator.js';
 import ReverseInputs from './ReverseInputs.jsx';
 import ResistanceHUD from './ResistanceHUD.jsx';
@@ -41,6 +42,10 @@ export default function Drill({
   const firstRef = useRef(null);
   const secondRef = useRef(null);
   const settings = useSettings();
+  // Los modos de juego son estado efímero de sesión, no preferencias persistidas.
+  const resistanceActive = useSessionStore((s) => s.resistanceActive);
+  const reverseActive = useSessionStore((s) => s.reverseActive);
+  const doubleActive = useSessionStore((s) => s.doubleActive);
 
   const { handleResult } = useProgressTracking(currentItem, onResult);
 
@@ -77,9 +82,9 @@ export default function Drill({
     setResult(null);
     setShowDiff(false);
     setShowAnimation(true);
-    if (inputRef.current && !settings.doubleActive && !settings.reverseActive) {
+    if (inputRef.current && !doubleActive && !reverseActive) {
       inputRef.current.focus();
-    } else if (settings.doubleActive && firstRef.current) {
+    } else if (doubleActive && firstRef.current) {
       firstRef.current.focus();
     }
     const timer = setTimeout(() => setShowAnimation(false), 500);
@@ -89,8 +94,8 @@ export default function Drill({
   // Resistance countdown moved to useResistanceTimer hook
 
   // Game mode helpers and configuration
-  const isReverse = !!settings.reverseActive;
-  const isDouble = !!settings.doubleActive;
+  const isReverse = !!reverseActive;
+  const isDouble = !!doubleActive;
   const inSpecific = settings.practiceMode === 'specific' && settings.specificMood && settings.specificTense;
 
   // Reverse inputs and options moved to ReverseInputs component
@@ -105,7 +110,7 @@ export default function Drill({
     let gradeResult;
     let extendedResult;
 
-    if (settings.reverseActive) {
+    if (reverseActive) {
       // Reverse mode: check against lemma (accent-tolerant, matching lenient grading)
       const correctAnswer = currentItem?.lemma || '';
       const normalize = (s) => stripAccents(s.trim().toLowerCase());
@@ -120,7 +125,7 @@ export default function Drill({
         userAnswer: input.trim(),
         correctAnswer: correctAnswer
       };
-    } else if (settings.doubleActive && currentItem?.secondForm) {
+    } else if (doubleActive && currentItem?.secondForm) {
       // Double mode: expect both forms separated by space
       const form1 = currentItem?.value || currentItem?.form?.value || '';
       const form2 = currentItem?.secondForm?.value || '';
@@ -153,7 +158,7 @@ export default function Drill({
     }
 
     // Resistance: add time on correct answer
-    if (gradeResult.correct && settings.resistanceActive) {
+    if (gradeResult.correct && resistanceActive) {
       const lvl = useSettings.getState().level || 'A1';
       // Incrementos por nivel: A1 +6s, A2 +5s, B1 +4s, B2 +3s, C1 +2.5s, C2 +2s
       const inc = lvl === 'C2' ? 2000 : lvl === 'C1' ? 2500 : lvl === 'B2' ? 3000 : lvl === 'B1' ? 4000 : lvl === 'A2' ? 5000 : 6000;
@@ -626,9 +631,9 @@ export default function Drill({
 
 
       {/* Resistance HUD */}
-      {(settings.resistanceActive || showExplosion) && (
+      {(resistanceActive || showExplosion) && (
         <ResistanceHUD
-          isActive={settings.resistanceActive}
+          isActive={resistanceActive}
           msLeft={resistanceMsLeft}
           showExplosion={showExplosion}
           urgentTick={urgentTick}

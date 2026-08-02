@@ -76,8 +76,6 @@ const createProps = () => ({
   getAvailableMoodsForLevel: vi.fn(() => ['indicative']),
   getAvailableTensesForLevelAndMood: vi.fn(() => ['pres']),
   onNavigateToProgress: vi.fn(),
-  onNavigateToStory: vi.fn(),
-  onNavigateToTimeline: vi.fn(),
   getGenerationStats: vi.fn(async () => ({ totalForms: 1, eligibleForms: 1 })),
   isGenerationViable: vi.fn(async () => true)
 })

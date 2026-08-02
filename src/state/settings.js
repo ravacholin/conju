@@ -19,7 +19,7 @@ export const PRACTICE_MODES = {
   BY_TOPIC: 'by_topic'
 }
 
-const SETTINGS_VERSION = 3
+const SETTINGS_VERSION = 4
 
 const createDefaultSettings = () => ({
   // Sync tracking
@@ -65,25 +65,20 @@ const createDefaultSettings = () => ({
   allowedLemmas: null,
 
   // Features
-  resistanceActive: false,
-  resistanceMsLeft: 0,
-  resistanceStartTs: null,
+  // Nota: los flags efímeros de los modos de juego (resistanceActive, reverseActive,
+  // doubleActive, ...) viven en `useSessionStore`; acá solo queda el récord durable.
   resistanceBestMsByLevel: {},
-  reverseActive: false,
-  doubleActive: false,
 
   // Configuración de futuro subjuntivo
   enableFuturoSubjProd: false,
   enableFuturoSubjRead: false,
 
-  // C2 conmutación
+  // C2 conmutación (el cursor `conmutacionIdx` es efímero: vive en `useSessionStore`)
   enableC2Conmutacion: false,
   conmutacionSeq: ['2s_vos', '3p', '3s'],
-  conmutacionIdx: 0,
 
-  // Rotación de segunda persona
+  // Rotación de segunda persona (el puntero `nextSecondPerson` vive en `useSessionStore`)
   rotateSecondPerson: false,
-  nextSecondPerson: '2s_vos',
 
   // Porcentaje de clíticos en imperativo afirmativo
   cliticsPercent: 0,
@@ -180,9 +175,7 @@ const PERSISTED_SETTINGS_KEYS = [
   'enableFuturoSubjRead',
   'enableC2Conmutacion',
   'conmutacionSeq',
-  'conmutacionIdx',
   'rotateSecondPerson',
-  'nextSecondPerson',
   'cliticsPercent',
   'c2RareBoostLemmas',
   'resistanceBestMsByLevel',
@@ -239,12 +232,12 @@ const persistedSettingsSchema = z.object({
   enableFuturoSubjRead: z.boolean().optional(),
   enableC2Conmutacion: z.boolean().optional(),
   conmutacionSeq: z.array(z.string()).optional(),
-  conmutacionIdx: z.number().optional(),
   rotateSecondPerson: z.boolean().optional(),
-  nextSecondPerson: z.string().optional(),
   cliticsPercent: z.number().optional(),
   c2RareBoostLemmas: z.array(z.string()).optional(),
-  resistanceBestMsByLevel: z.record(z.number()).optional(),
+  // zod v4 reads a single-argument z.record(...) as the KEY type, so the
+  // one-arg form silently rejected every snapshot and wiped the record.
+  resistanceBestMsByLevel: z.record(z.string(), z.number()).optional(),
   dailyGoalType: z.string().optional(),
   dailyGoalValue: z.number().optional(),
   practiceReminderEnabled: z.boolean().optional(),
@@ -287,6 +280,17 @@ const migrateLegacyPersistedState = (persistedState, fromVersion = 0) => {
     delete next.currentBlock
     delete next.reviewSessionType
     delete next.reviewSessionFilter
+  }
+
+  // Legacy ephemeral game state was moved to session store.
+  if (fromVersion < 4) {
+    delete next.resistanceActive
+    delete next.resistanceMsLeft
+    delete next.resistanceStartTs
+    delete next.reverseActive
+    delete next.doubleActive
+    delete next.conmutacionIdx
+    delete next.nextSecondPerson
   }
 
   // Older snapshots may include "both" dialect marker.
@@ -381,13 +385,6 @@ const useSettings = create(
         setVerbType: (type) => set({ verbType: type }),
         setSelectedFamily: (family) => set({ selectedFamily: family }),
         setAllowedLemmas: (lemmas) => set({ allowedLemmas: lemmas }),
-        toggleResistance: () => set((state) => ({
-          resistanceActive: !state.resistanceActive,
-          resistanceMsLeft: !state.resistanceActive ? 30000 : 0,
-          resistanceStartTs: !state.resistanceActive ? Date.now() : null
-        })),
-        toggleReverse: () => set((state) => ({ reverseActive: !state.reverseActive })),
-        toggleDouble: () => set((state) => ({ doubleActive: !state.doubleActive })),
         toggleFuturoSubjProd: () => set((state) => ({ enableFuturoSubjProd: !state.enableFuturoSubjProd })),
         toggleFuturoSubjRead: () => set((state) => ({ enableFuturoSubjRead: !state.enableFuturoSubjRead })),
         setCliticsPercent: (percent) => set({ cliticsPercent: percent }),

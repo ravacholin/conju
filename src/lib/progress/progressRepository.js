@@ -1,8 +1,8 @@
 /**
  * progressRepository.js
  * Repositorio centralizado para consultar y persistir datos del sistema de progreso.
- * Ofrece una API estable para capas superiores (p.ej. meaningful-practice) sin exponer
- * los detalles de IndexedDB ni estructuras internas.
+ * Ofrece una API estable para capas superiores sin exponer los detalles de IndexedDB
+ * ni estructuras internas.
  */
 
 import { STORAGE_CONFIG } from './config.js'

@@ -9,12 +9,7 @@ import { createSafeLogger } from './safeLogger.js'
 import { getCurrentUserId } from './userSettingsStore.js'
 import { getAuthenticatedUser } from './authBridge.js'
 import { setGlobalUserLevel } from '../../lib/levels/userLevelProfile.js'
-import {
-  toTimestamp,
-  getMeaningfulPracticeUpdatedAt,
-  getMeaningfulPracticeStats,
-  writeMeaningfulPracticeStats
-} from './gamificationSync.js'
+import { toTimestamp } from './gamificationSync.js'
 
 const safeLogger = createSafeLogger('progress:userManager')
 
@@ -515,7 +510,7 @@ export async function mergeAccountDataLocally(accountData) {
   // prefer server when there is no local IndexedDB record for this user's settings.
   if (accountData?.settings) {
     try {
-      const { useSettings } = await import('../../state/settings.js')
+      const { useSettings, SETTINGS_STATE_KEYS } = await import('../../state/settings.js')
       const { saveUserSettings, getUserSettings } = await import('./database.js')
       const currentSettings = useSettings.getState()
 
@@ -551,8 +546,15 @@ export async function mergeAccountDataLocally(accountData) {
 
       if (shouldApplyServer) {
         // Server has newer settings, apply them
-        // Merge with existing state to preserve any local-only properties
-        const mergedSettings = { ...currentSettings, ...actualServerSettings, lastUpdated: serverUpdatedAt }
+        // Merge with existing state to preserve any local-only properties.
+        // Only contractual settings keys survive: a snapshot from an older client can
+        // carry keys that no longer belong here (e.g. the ephemeral game flags that
+        // now live in useSessionStore), and setState would reinstate them verbatim.
+        const rawMerged = { ...currentSettings, ...actualServerSettings }
+        const mergedSettings = { lastUpdated: serverUpdatedAt }
+        SETTINGS_STATE_KEYS.forEach((key) => {
+          if (key !== 'lastUpdated' && key in rawMerged) mergedSettings[key] = rawMerged[key]
+        })
 
         useSettings.setState(mergedSettings)
 
@@ -606,11 +608,6 @@ export async function mergeAccountDataLocally(accountData) {
       const localProgressUpdatedAt = localHasProgress
         ? toTimestamp(localUser?.progressUpdatedAt || localUser?.updatedAt || localUser?.createdAt)
         : 0
-      const localMeaningfulUpdatedAt = Math.max(
-        toTimestamp(localUser?.meaningfulPracticeUpdatedAt),
-        getMeaningfulPracticeUpdatedAt(localUser?.meaningfulPractice || {})
-      )
-
       const remoteHasProgress = !!(remoteStats && (
         remoteStats.totalXP !== undefined ||
         remoteStats.streaks ||
@@ -620,11 +617,6 @@ export async function mergeAccountDataLocally(accountData) {
       const remoteProgressUpdatedAt = remoteHasProgress
         ? toTimestamp(remoteStats?.progressUpdatedAt || remoteStats?.updatedAt || remoteStats?.createdAt)
         : 0
-      const remoteMeaningfulUpdatedAt = Math.max(
-        toTimestamp(remoteStats?.meaningfulPracticeUpdatedAt),
-        getMeaningfulPracticeUpdatedAt(remoteStats?.meaningfulPractice || {})
-      )
-
       let mergedUser = localUser ? { ...localUser } : null
 
       if (remoteProgressUpdatedAt > localProgressUpdatedAt) {
@@ -634,22 +626,9 @@ export async function mergeAccountDataLocally(accountData) {
           id: currentUserId,
           userId: currentUserId
         }
-      }
 
-      if (remoteStats?.meaningfulPractice && remoteMeaningfulUpdatedAt > localMeaningfulUpdatedAt) {
-        mergedUser = {
-          ...(mergedUser || {}),
-          meaningfulPractice: remoteStats.meaningfulPractice,
-          meaningfulPracticeUpdatedAt: remoteStats.meaningfulPracticeUpdatedAt || remoteMeaningfulUpdatedAt,
-          id: currentUserId,
-          userId: currentUserId
-        }
-      }
-
-      if (mergedUser && (remoteProgressUpdatedAt > localProgressUpdatedAt || remoteMeaningfulUpdatedAt > localMeaningfulUpdatedAt)) {
         const finalProgressUpdatedAt = Math.max(localProgressUpdatedAt, remoteProgressUpdatedAt)
-        const finalMeaningfulUpdatedAt = Math.max(localMeaningfulUpdatedAt, remoteMeaningfulUpdatedAt)
-        const finalUpdatedAt = Math.max(finalProgressUpdatedAt, finalMeaningfulUpdatedAt, toTimestamp(mergedUser.updatedAt))
+        const finalUpdatedAt = Math.max(finalProgressUpdatedAt, toTimestamp(mergedUser.updatedAt))
 
         mergedUser.progressUpdatedAt = finalProgressUpdatedAt || mergedUser.progressUpdatedAt || null
         mergedUser.updatedAt = finalUpdatedAt ? new Date(finalUpdatedAt).toISOString() : mergedUser.updatedAt
@@ -660,23 +639,13 @@ export async function mergeAccountDataLocally(accountData) {
         results.gamification = 1
         safeLogger.info('mergeAccountDataLocally: applied gamification stats from server', {
           remoteProgressUpdatedAt,
-          localProgressUpdatedAt,
-          remoteMeaningfulUpdatedAt,
-          localMeaningfulUpdatedAt
+          localProgressUpdatedAt
         })
       } else {
         safeLogger.info('mergeAccountDataLocally: kept local gamification stats (newer or equal)', {
           remoteProgressUpdatedAt,
-          localProgressUpdatedAt,
-          remoteMeaningfulUpdatedAt,
-          localMeaningfulUpdatedAt
+          localProgressUpdatedAt
         })
-      }
-
-      // Sync meaningful-practice stats into localStorage if server is newer
-      const localMp = getMeaningfulPracticeStats(currentUserId)
-      if (remoteStats?.meaningfulPractice && remoteMeaningfulUpdatedAt > localMp.updatedAt) {
-        writeMeaningfulPracticeStats(currentUserId, remoteStats.meaningfulPractice)
       }
     } catch (error) {
       safeLogger.warn('mergeAccountDataLocally: error merging gamification stats', {
