@@ -1,25 +1,12 @@
-import { describe, it, expect, beforeAll, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { renderHook, act } from '@testing-library/react'
 
 import { useResistanceTimer } from './useResistanceTimer'
-import { useSettings, RESISTANCE_MAX_MS } from '../../state/settings.js'
+import { RESISTANCE_MAX_MS } from '../../state/settings.js'
+import { useSessionStore } from '../../state/session.js'
 
 describe('useResistanceTimer', () => {
-  let defaultResistanceState: {
-    resistanceActive: boolean
-    resistanceMsLeft: number
-    resistanceStartTs: number | null
-  }
   let intervalSpy: ReturnType<typeof vi.spyOn> | null
-
-  beforeAll(() => {
-    const state = useSettings.getState()
-    defaultResistanceState = {
-      resistanceActive: state.resistanceActive,
-      resistanceMsLeft: state.resistanceMsLeft,
-      resistanceStartTs: state.resistanceStartTs
-    }
-  })
 
   beforeEach(() => {
     vi.useFakeTimers()
@@ -28,7 +15,7 @@ describe('useResistanceTimer', () => {
     )
 
     act(() => {
-      useSettings.setState({
+      useSessionStore.getState().setGameMode({
         resistanceActive: true,
         resistanceMsLeft: RESISTANCE_MAX_MS - 1000,
         resistanceStartTs: Date.now()
@@ -45,7 +32,7 @@ describe('useResistanceTimer', () => {
     intervalSpy = null
 
     act(() => {
-      useSettings.setState(defaultResistanceState)
+      useSessionStore.getState().clearGameSession()
     })
   })
 
@@ -57,19 +44,19 @@ describe('useResistanceTimer', () => {
       result.current.handleClockClick()
     })
 
-    // The live countdown is local state now (not written to the global store
+    // The live countdown is local state now (not written to the session store
     // on every tick/click — see useResistanceTimer.ts), so assert against it
-    // directly instead of useSettings.getState().resistanceMsLeft.
+    // directly instead of useSessionStore.getState().resistanceMsLeft.
     expect(result.current.msLeft).toBe(RESISTANCE_MAX_MS)
   })
 
-  it('does not write the live countdown to the global settings store', () => {
+  it('does not write the live countdown to the session store', () => {
     const { result } = renderHook(() => useResistanceTimer())
 
     act(() => {
       result.current.handleClockClick()
     })
 
-    expect(useSettings.getState().resistanceMsLeft).toBe(RESISTANCE_MAX_MS - 1000)
+    expect(useSessionStore.getState().resistanceMsLeft).toBe(RESISTANCE_MAX_MS - 1000)
   })
 })

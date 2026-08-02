@@ -16,6 +16,31 @@ describe('settings migrations', () => {
     expect(migrated.reviewSessionFilter).toBeUndefined()
   })
 
+  it('drops legacy ephemeral game state from persisted snapshots', () => {
+    const migrated = migratePersistedSettings({
+      level: 'B2',
+      resistanceBestMsByLevel: { B2: 45000 },
+      resistanceActive: true,
+      resistanceMsLeft: 12000,
+      resistanceStartTs: 1700000000000,
+      reverseActive: true,
+      doubleActive: true,
+      conmutacionIdx: 2,
+      nextSecondPerson: '2s_tu'
+    }, 3)
+
+    expect(migrated.level).toBe('B2')
+    // El récord es una preferencia durable y tiene que sobrevivir.
+    expect(migrated.resistanceBestMsByLevel).toEqual({ B2: 45000 })
+    expect(migrated.resistanceActive).toBeUndefined()
+    expect(migrated.resistanceMsLeft).toBeUndefined()
+    expect(migrated.resistanceStartTs).toBeUndefined()
+    expect(migrated.reverseActive).toBeUndefined()
+    expect(migrated.doubleActive).toBeUndefined()
+    expect(migrated.conmutacionIdx).toBeUndefined()
+    expect(migrated.nextSecondPerson).toBeUndefined()
+  })
+
   it('normalizes reminder days from mixed legacy formats', () => {
     const migrated = migratePersistedSettings({
       practiceReminderDays: ['1', 8, -1, 'x', 2]

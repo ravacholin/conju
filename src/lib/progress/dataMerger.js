@@ -510,7 +510,7 @@ export async function mergeAccountDataLocally(accountData) {
   // prefer server when there is no local IndexedDB record for this user's settings.
   if (accountData?.settings) {
     try {
-      const { useSettings } = await import('../../state/settings.js')
+      const { useSettings, SETTINGS_STATE_KEYS } = await import('../../state/settings.js')
       const { saveUserSettings, getUserSettings } = await import('./database.js')
       const currentSettings = useSettings.getState()
 
@@ -546,8 +546,15 @@ export async function mergeAccountDataLocally(accountData) {
 
       if (shouldApplyServer) {
         // Server has newer settings, apply them
-        // Merge with existing state to preserve any local-only properties
-        const mergedSettings = { ...currentSettings, ...actualServerSettings, lastUpdated: serverUpdatedAt }
+        // Merge with existing state to preserve any local-only properties.
+        // Only contractual settings keys survive: a snapshot from an older client can
+        // carry keys that no longer belong here (e.g. the ephemeral game flags that
+        // now live in useSessionStore), and setState would reinstate them verbatim.
+        const rawMerged = { ...currentSettings, ...actualServerSettings }
+        const mergedSettings = { lastUpdated: serverUpdatedAt }
+        SETTINGS_STATE_KEYS.forEach((key) => {
+          if (key !== 'lastUpdated' && key in rawMerged) mergedSettings[key] = rawMerged[key]
+        })
 
         useSettings.setState(mergedSettings)
 

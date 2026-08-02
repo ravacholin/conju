@@ -130,6 +130,7 @@ describe('dataMerger', () => {
     }))
     // Mock settings store: local has recent defaults, but server has newer settings
     vi.doMock('../../state/settings.js', () => ({
+      SETTINGS_STATE_KEYS: ['lastUpdated', 'userLevel', 'level'],
       useSettings: {
         getState: () => ({ userLevel: 'A1', level: 'A1', lastUpdated: Date.now() - 2000 }),
         setState: (next) => { applied.called = true; applied.state = next }

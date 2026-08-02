@@ -96,7 +96,8 @@ Spanish Conjugator is a full-stack application with a React frontend and Node.js
   - `Drill.jsx` - Main practice component
   - `useProgressTracking.js` - Progress integration hook
 
-- **`src/state/settings.js`** - Global Zustand store for user preferences
+- **`src/state/settings.js`** - Global Zustand store for durable user preferences (persisted)
+- **`src/state/session.js`** - Zustand store for ephemeral session state (not persisted)
 
 ### Key Concepts
 
@@ -188,7 +189,13 @@ The app uses IndexedDB for local storage with these stores:
 
 ## Code Style Notes
 
-- Use Zustand for global state management
+- Use Zustand for global state management. Durable user preferences go in
+  `src/state/settings.js` (persisted to localStorage + IndexedDB); anything that should
+  not survive a reload — game modes, rotation cursors, the active drill block — belongs in
+  the session store `src/state/session.js`, and reaches the generator through
+  `getRuntimeDrillSettings(baseSettings)` rather than by reading the store directly.
+  Note that `settings.js` writes the WHOLE store state to IndexedDB, so a "runtime only"
+  field parked there still comes back after a reload or a cross-device sync.
 - Follow React functional components with hooks
 - Prefer explicit imports from specific modules
 - Cache performance is critical - always consider lookup efficiency
