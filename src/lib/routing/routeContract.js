@@ -4,9 +4,7 @@ export const ROUTE_MODES = Object.freeze([
   'onboarding',
   'drill',
   'learning',
-  'progress',
-  'story',
-  'timeline'
+  'progress'
 ])
 
 export const ONBOARDING_STEP_MIN = 1
@@ -21,9 +19,7 @@ export const ROUTES = Object.freeze({
   homeMenu: () => normalizeRoute({ mode: 'onboarding', step: 2 }),
   drill: () => normalizeRoute({ mode: 'drill' }),
   learning: () => normalizeRoute({ mode: 'learning' }),
-  progress: () => normalizeRoute({ mode: 'progress' }),
-  story: () => normalizeRoute({ mode: 'story' }),
-  timeline: () => normalizeRoute({ mode: 'timeline' })
+  progress: () => normalizeRoute({ mode: 'progress' })
 })
 
 const routeSchema = z.object({
@@ -63,7 +59,7 @@ export function normalizeRoute(route = {}, { withTimestamp = true } = {}) {
 }
 
 export function parseRouteFromURL({ pathname = '/', search = '' } = {}) {
-  const pathMatch = String(pathname).match(/^\/(onboarding|drill|learning|progress|story|timeline)(?:\/(\d+))?\/?$/)
+  const pathMatch = String(pathname).match(/^\/(onboarding|drill|learning|progress)(?:\/(\d+))?\/?$/)
   if (pathMatch) {
     const route = normalizeRoute({
       mode: pathMatch[1],

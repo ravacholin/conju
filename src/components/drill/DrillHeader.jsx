@@ -47,8 +47,6 @@ function DrillHeader({
   onToggleGames,
   onTogglePronunciation,
   onNavigateToProgress,
-  onNavigateToStory: _onNavigateToStory,
-  onNavigateToTimeline: _onNavigateToTimeline,
   onHome,
   showQuickSwitch,
   showGames,

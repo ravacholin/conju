@@ -142,7 +142,7 @@ export function createRoutes() {
               useNowWhenMissing: true
             })
             const updatedAt = normalizeDate(
-              rec.updatedAt ?? rec.lastUpdated ?? rec.meaningfulPracticeUpdatedAt,
+              rec.updatedAt ?? rec.lastUpdated,
               'updatedAt',
               id,
               { useNowWhenMissing: true }

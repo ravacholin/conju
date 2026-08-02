@@ -493,8 +493,6 @@ export function mergeAccountData(accountId) {
 
   let latestProgress = null
   let latestProgressAt = 0
-  let latestMeaningful = null
-  let latestMeaningfulAt = 0
 
   for (const row of userStatsRows) {
     try {
@@ -514,32 +512,16 @@ export function mergeAccountData(accountId) {
         latestProgressAt = progressAt
         latestProgress = payload
       }
-
-      const meaningfulAt = Number(payload?.meaningfulPracticeUpdatedAt) ||
-        new Date(payload?.meaningfulPractice?.lastActivityDate || payload?.meaningfulPractice?.updatedAt || 0).getTime() || 0
-
-      if (meaningfulAt > latestMeaningfulAt) {
-        latestMeaningfulAt = meaningfulAt
-        latestMeaningful = payload
-      }
     } catch (err) {
       console.warn('Failed to parse gamification payload', err)
     }
   }
 
-  let latestGamification = latestProgress
-    ? { ...latestProgress }
-    : (latestMeaningful ? { ...latestMeaningful } : null)
+  const latestGamification = latestProgress ? { ...latestProgress } : null
   if (latestGamification) {
-    if (latestMeaningful?.meaningfulPractice) {
-      latestGamification.meaningfulPractice = latestMeaningful.meaningfulPractice
-      latestGamification.meaningfulPracticeUpdatedAt = latestMeaningful.meaningfulPracticeUpdatedAt || latestMeaningfulAt
-    }
-
-    const overallUpdatedAt = Math.max(latestProgressAt, latestMeaningfulAt, 0)
-    if (overallUpdatedAt) {
+    if (latestProgressAt) {
       latestGamification.progressUpdatedAt = latestProgressAt || latestGamification.progressUpdatedAt || null
-      latestGamification.updatedAt = new Date(overallUpdatedAt).toISOString()
+      latestGamification.updatedAt = new Date(latestProgressAt).toISOString()
     }
 
     latestGamification.id = accountId

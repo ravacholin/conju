@@ -139,32 +139,6 @@ import { useProgressTracking } from './features/drill/useProgressTracking.js'
 const { handleResult, handleHintShown } = useProgressTracking(currentItem, onResult)
 ```
 
-### SRS Integration in Learning Components
-Learning components (`MeaningfulPractice`, `CommunicativePractice`) require `eligibleForms` prop for SRS integration:
-
-```javascript
-// In LearnTenseFlow.jsx - generate eligible forms for SRS integration
-const eligibleForms = useMemo(() => {
-  if (!selectedTense?.tense || !selectedTense?.mood) return [];
-
-  const basePool = buildFormsForRegion(settings.region || 'la_general');
-  const learningSettings = {
-    ...settings,
-    practiceMode: 'specific',
-    specificMood: selectedTense.mood,
-    specificTense: selectedTense.tense,
-    verbType: verbType || 'all',
-    selectedFamilies
-  };
-
-  return getEligibleFormsForSettings(basePool, learningSettings);
-}, [selectedTense, settings, verbType, selectedFamilies]);
-
-// Pass to learning components
-<MeaningfulPractice eligibleForms={eligibleForms} ... />
-<CommunicativePractice eligibleForms={eligibleForms} ... />
-```
-
 ### Sync Debugging
 ```javascript
 // In browser console

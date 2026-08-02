@@ -14,7 +14,6 @@ import { createSafeLogger } from './safeLogger.js'
 import { mergeAccountDataLocally } from './dataMerger.js'
 import {
   buildGamificationPayload,
-  getMeaningfulPracticeStats,
   toTimestamp
 } from './gamificationSync.js'
 import {
@@ -599,7 +598,7 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
         safeLogger.error('syncAccountData: events upload failed', { message: e?.message || String(e), stack: e?.stack })
       }
 
-      // Gamification (user stats + meaningful practice stats)
+      // Gamification (user stats)
       try {
         const { getUserById, batchSaveToDB } = await import('./database.js')
         if (typeof getUserById !== 'function' || typeof batchSaveToDB !== 'function') {
@@ -607,31 +606,11 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
           throw new Error('gamification_helpers_missing')
         }
         const localUser = await getUserById(resolvedUserId)
-        const localMp = getMeaningfulPracticeStats(resolvedUserId)
-        const localMpUpdatedAt = Math.max(
-          localMp.updatedAt || 0,
-          toTimestamp(localUser?.meaningfulPracticeUpdatedAt)
-        )
         const localUserUpdatedAt = toTimestamp(localUser?.progressUpdatedAt || localUser?.updatedAt || localUser?.createdAt)
         const localUserSyncedAt = toTimestamp(localUser?.syncedAt)
-        const latestLocalUpdate = Math.max(localUserUpdatedAt, localMpUpdatedAt)
+        const latestLocalUpdate = localUserUpdatedAt
 
-        let userRecord = localUser
-
-        if (!userRecord && localMp.stats) {
-          const minimalRecord = {
-            id: resolvedUserId,
-            userId: resolvedUserId,
-            meaningfulPractice: localMp.stats,
-            meaningfulPracticeUpdatedAt: localMpUpdatedAt || new Date().toISOString(),
-            progressUpdatedAt: 0,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date(localMpUpdatedAt || Date.now()).toISOString(),
-            syncedAt: 0
-          }
-          await batchSaveToDB(STORAGE_CONFIG.STORES.USERS, [minimalRecord], { skipTimestamps: true })
-          userRecord = minimalRecord
-        }
+        const userRecord = localUser
 
         if (userRecord && (localUserSyncedAt === 0 || localUserSyncedAt < latestLocalUpdate || latestLocalUpdate === 0)) {
           const payload = buildGamificationPayload(userRecord, resolvedUserId)

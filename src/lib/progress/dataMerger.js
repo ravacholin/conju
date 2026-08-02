@@ -9,12 +9,7 @@ import { createSafeLogger } from './safeLogger.js'
 import { getCurrentUserId } from './userSettingsStore.js'
 import { getAuthenticatedUser } from './authBridge.js'
 import { setGlobalUserLevel } from '../../lib/levels/userLevelProfile.js'
-import {
-  toTimestamp,
-  getMeaningfulPracticeUpdatedAt,
-  getMeaningfulPracticeStats,
-  writeMeaningfulPracticeStats
-} from './gamificationSync.js'
+import { toTimestamp } from './gamificationSync.js'
 
 const safeLogger = createSafeLogger('progress:userManager')
 
@@ -606,11 +601,6 @@ export async function mergeAccountDataLocally(accountData) {
       const localProgressUpdatedAt = localHasProgress
         ? toTimestamp(localUser?.progressUpdatedAt || localUser?.updatedAt || localUser?.createdAt)
         : 0
-      const localMeaningfulUpdatedAt = Math.max(
-        toTimestamp(localUser?.meaningfulPracticeUpdatedAt),
-        getMeaningfulPracticeUpdatedAt(localUser?.meaningfulPractice || {})
-      )
-
       const remoteHasProgress = !!(remoteStats && (
         remoteStats.totalXP !== undefined ||
         remoteStats.streaks ||
@@ -620,11 +610,6 @@ export async function mergeAccountDataLocally(accountData) {
       const remoteProgressUpdatedAt = remoteHasProgress
         ? toTimestamp(remoteStats?.progressUpdatedAt || remoteStats?.updatedAt || remoteStats?.createdAt)
         : 0
-      const remoteMeaningfulUpdatedAt = Math.max(
-        toTimestamp(remoteStats?.meaningfulPracticeUpdatedAt),
-        getMeaningfulPracticeUpdatedAt(remoteStats?.meaningfulPractice || {})
-      )
-
       let mergedUser = localUser ? { ...localUser } : null
 
       if (remoteProgressUpdatedAt > localProgressUpdatedAt) {
@@ -634,22 +619,9 @@ export async function mergeAccountDataLocally(accountData) {
           id: currentUserId,
           userId: currentUserId
         }
-      }
 
-      if (remoteStats?.meaningfulPractice && remoteMeaningfulUpdatedAt > localMeaningfulUpdatedAt) {
-        mergedUser = {
-          ...(mergedUser || {}),
-          meaningfulPractice: remoteStats.meaningfulPractice,
-          meaningfulPracticeUpdatedAt: remoteStats.meaningfulPracticeUpdatedAt || remoteMeaningfulUpdatedAt,
-          id: currentUserId,
-          userId: currentUserId
-        }
-      }
-
-      if (mergedUser && (remoteProgressUpdatedAt > localProgressUpdatedAt || remoteMeaningfulUpdatedAt > localMeaningfulUpdatedAt)) {
         const finalProgressUpdatedAt = Math.max(localProgressUpdatedAt, remoteProgressUpdatedAt)
-        const finalMeaningfulUpdatedAt = Math.max(localMeaningfulUpdatedAt, remoteMeaningfulUpdatedAt)
-        const finalUpdatedAt = Math.max(finalProgressUpdatedAt, finalMeaningfulUpdatedAt, toTimestamp(mergedUser.updatedAt))
+        const finalUpdatedAt = Math.max(finalProgressUpdatedAt, toTimestamp(mergedUser.updatedAt))
 
         mergedUser.progressUpdatedAt = finalProgressUpdatedAt || mergedUser.progressUpdatedAt || null
         mergedUser.updatedAt = finalUpdatedAt ? new Date(finalUpdatedAt).toISOString() : mergedUser.updatedAt
@@ -660,23 +632,13 @@ export async function mergeAccountDataLocally(accountData) {
         results.gamification = 1
         safeLogger.info('mergeAccountDataLocally: applied gamification stats from server', {
           remoteProgressUpdatedAt,
-          localProgressUpdatedAt,
-          remoteMeaningfulUpdatedAt,
-          localMeaningfulUpdatedAt
+          localProgressUpdatedAt
         })
       } else {
         safeLogger.info('mergeAccountDataLocally: kept local gamification stats (newer or equal)', {
           remoteProgressUpdatedAt,
-          localProgressUpdatedAt,
-          remoteMeaningfulUpdatedAt,
-          localMeaningfulUpdatedAt
+          localProgressUpdatedAt
         })
-      }
-
-      // Sync meaningful-practice stats into localStorage if server is newer
-      const localMp = getMeaningfulPracticeStats(currentUserId)
-      if (remoteStats?.meaningfulPractice && remoteMeaningfulUpdatedAt > localMp.updatedAt) {
-        writeMeaningfulPracticeStats(currentUserId, remoteStats.meaningfulPractice)
       }
     } catch (error) {
       safeLogger.warn('mergeAccountDataLocally: error merging gamification stats', {
