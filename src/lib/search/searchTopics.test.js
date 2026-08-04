@@ -126,6 +126,28 @@ describe('searchTopics', () => {
     expect(ids('irregulares en yo')[0]).toContain('FIRST_PERSON_IRREGULAR')
   })
 
+  it('surfaces the simplified group on a partial query, not just its families', () => {
+    // Typing "dipt"/"diptong" prefix-matches the technical "Diptongación …"
+    // families; the broad "Verbos que diptongan" group must not be crowded out
+    // of the (capped) family results by its own children.
+    for (const q of ['dipt', 'diptong']) {
+      const found = ids(q, { limit: 8 })
+      const stem = found.findIndex(id => id.includes('STEM_CHANGES'))
+      const firstDipht = found.findIndex(id => /DIPHT_/.test(id))
+      expect(stem, q).toBeGreaterThanOrEqual(0)
+      // The group ranks at or above the first technical family it expands to.
+      if (firstDipht !== -1) expect(stem, q).toBeLessThanOrEqual(firstDipht)
+    }
+  })
+
+  it('surfaces simplified groups generally, not just diptongación', () => {
+    expect(ids('pret fuerte', { limit: 8 }).some(id => id.includes('PRETERITE_STRONG_STEM'))).toBe(true)
+  })
+
+  it('still lets a named tense outrank the simplified groups', () => {
+    expect(ids('presente', { limit: 8 })[0]).toBe('tense:indicative:pres')
+  })
+
   it('caps family results so they never crowd out tenses', () => {
     const found = run('irregulares', { limit: 8 })
     const families = found.filter(r => r.entry.kind === 'family')

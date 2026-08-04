@@ -1,5 +1,6 @@
 import { foldForSearch, tokenize, editDistanceWithin } from './searchText.js'
 import { TOPIC_KINDS } from './topicSearchIndex.js'
+import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
 
 /**
  * Ranking for the menu topic search.
@@ -111,6 +112,44 @@ export function computeHighlightRanges(entry, tokens) {
 }
 
 /**
+ * Lift each matched simplified group to just above the best-scoring technical
+ * family it expands to.
+ *
+ * A learner-facing group ("Verbos que diptongan") and its technical families
+ * ("Diptongación e→ie", …) match the same query, but a short query prefix-matches
+ * the family label harder ("dipt" hits the *start* of "Diptongación" yet only
+ * mid-word in the group). Combined with MAX_FAMILY_RESULTS that buries the group
+ * behind its own children, so a partial query never surfaces the whole-group
+ * option. This makes the group lead its cluster instead.
+ *
+ * The lift is bounded by the children's scores, and every child is a FAMILY
+ * entry, so it can never push a group past a tense or verb-type row the user
+ * actually named ("presente irregulares" still resolves to the verb-type row).
+ */
+function liftSimplifiedGroups(scored) {
+  const familyKey = (payload) =>
+    `${payload.specificMood}:${payload.specificTense}:${payload.selectedFamily}`
+
+  const familyScores = new Map()
+  for (const item of scored) {
+    if (item.entry.kind === TOPIC_KINDS.FAMILY && item.entry.payload) {
+      familyScores.set(familyKey(item.entry.payload), item.score)
+    }
+  }
+
+  for (const item of scored) {
+    if (!item.entry.simplified || !item.entry.payload) continue
+    const { specificMood, specificTense, selectedFamily } = item.entry.payload
+    let bestChild = -Infinity
+    for (const memberId of expandSimplifiedGroup(selectedFamily)) {
+      const childScore = familyScores.get(`${specificMood}:${specificTense}:${memberId}`)
+      if (childScore !== undefined) bestChild = Math.max(bestChild, childScore)
+    }
+    if (bestChild >= item.score) item.score = bestChild + 1
+  }
+}
+
+/**
  * @param {string} query - raw user input
  * @param {Array} index - from getTopicSearchIndex()
  * @param {{limit?: number}} options
@@ -146,6 +185,8 @@ export function searchTopics(query, index, { limit = 8 } = {}) {
 
     scored.push({ entry, score: total, order: i })
   }
+
+  liftSimplifiedGroups(scored)
 
   scored.sort((a, b) => (b.score - a.score) || (a.order - b.order))
 
