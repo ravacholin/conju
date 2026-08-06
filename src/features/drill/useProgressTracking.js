@@ -20,6 +20,7 @@ import { useSessionStore } from '../../state/session.js'
 import { initProgressSystem as initProgressSystemCore } from '../../lib/progress/index.js'
 import { getAdaptiveEngine } from '../../lib/progress/AdaptiveDifficultyEngine.js'
 import { useShallow } from 'zustand/react/shallow'
+import { playFeedbackSound } from '../../lib/audio/soundEffects.js'
 
 const logger = createLogger('useProgressTracking')
 
@@ -128,6 +129,9 @@ export function useProgressTracking(currentItem, onResult) {
     if (onResult) {
       onResult(result)
     }
+
+    // Feedback de sonido de acierto/error (no-op si el sonido está desactivado)
+    playFeedbackSound(result?.correct ? 'correct' : 'incorrect')
 
     // Latencia del intento (una sola medición reutilizada por los consumidores)
     const latencyMs = itemStartTimeRef.current ? Date.now() - itemStartTimeRef.current : 0

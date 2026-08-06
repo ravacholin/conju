@@ -1,7 +1,7 @@
 import React from 'react'
 import { useSettings } from '../../state/settings.js'
 import { getSafeMoodTenseLabels } from '../../lib/utils/moodTenseValidator.js'
-import { ConfigSvg, AccentsSvg, MicSvg, DiceSvg, ChartSvg } from '../shared/DrillIcons.jsx'
+import { ConfigSvg, AccentsSvg, MicSvg, DiceSvg, ChartSvg, SoundOnSvg, SoundOffSvg } from '../shared/DrillIcons.jsx'
 import router from '../../lib/routing/Router.js'
 
 const DIALECT_LABEL = {
@@ -56,6 +56,7 @@ function DrillHeader({
   const settings = useSettings()
   const isReviewMode = settings.practiceMode === 'review'
   const breadcrumb = buildBreadcrumb(settings)
+  const soundEnabled = settings.soundEnabled !== false
 
   return (
     <header className="header">
@@ -143,6 +144,17 @@ function DrillHeader({
           aria-pressed={showGames}
         >
           <DiceSvg />
+        </button>
+
+        <button
+          type="button"
+          onClick={() => settings.toggleSound()}
+          className={`icon-btn${soundEnabled ? ' active' : ''}`}
+          title={soundEnabled ? 'Silenciar sonidos' : 'Activar sonidos'}
+          aria-label={soundEnabled ? 'Silenciar sonidos' : 'Activar sonidos'}
+          aria-pressed={soundEnabled}
+        >
+          {soundEnabled ? <SoundOnSvg /> : <SoundOffSvg />}
         </button>
 
         <button
