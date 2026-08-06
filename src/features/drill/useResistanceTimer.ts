@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useSettings, RESISTANCE_MAX_MS } from '../../state/settings.js'
 import { useSessionStore } from '../../state/session.js'
+import { playGameSound } from '../../lib/audio/soundEffects.js'
 
 /**
  * useResistanceTimer.ts
@@ -27,6 +28,9 @@ export function useResistanceTimer() {
   const [clockClickFeedback, setClockClickFeedback] = useState(false)
   const intervalRef = useRef<number | null>(null)
   const msLeftRef = useRef(0)
+  // Último segundo entero al que ya le sonó el tick, para disparar el pip de
+  // cuenta regresiva una sola vez por segundo (el interval corre cada 100ms).
+  const lastTickSecondRef = useRef<number | null>(null)
   const urgentTickTimeoutRef = useRef<number | null>(null)
   const explosionTimeoutRef = useRef<number | null>(null)
   const clockClickTimeoutRef = useRef<number | null>(null)
@@ -60,6 +64,7 @@ export function useResistanceTimer() {
     const initialMs = useSessionStore.getState().resistanceMsLeft || 0
     msLeftRef.current = initialMs
     setMsLeft(initialMs)
+    lastTickSecondRef.current = null
 
     if (initialMs <= 0 || typeof window === 'undefined') {
       return
@@ -79,10 +84,18 @@ export function useResistanceTimer() {
           urgentTickTimeoutRef.current = null
           setUrgentTick(false)
         }, 150)
+
+        // Pip de cuenta regresiva: una vez por segundo entero (no cada 100ms).
+        const second = Math.ceil(left / 1000)
+        if (lastTickSecondRef.current !== second) {
+          lastTickSecondRef.current = second
+          playGameSound('tick')
+        }
       }
 
       if (left === 0) {
         clearTimer()
+        playGameSound('gameOver')
         setShowExplosion(true)
         explosionTimeoutRef.current = window.setTimeout(() => {
           explosionTimeoutRef.current = null
@@ -122,6 +135,7 @@ export function useResistanceTimer() {
     if (!resistanceActive || msLeftRef.current <= 0) return
     msLeftRef.current = Math.min(msLeftRef.current + 5000, RESISTANCE_MAX_MS)
     setMsLeft(msLeftRef.current)
+    playGameSound('bonus')
     setClockClickFeedback(true)
     if (clockClickTimeoutRef.current !== null) {
       clearTimeout(clockClickTimeoutRef.current)

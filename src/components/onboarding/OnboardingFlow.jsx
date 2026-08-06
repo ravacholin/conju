@@ -7,6 +7,7 @@ import { getTopicSearchIndex } from '../../lib/search/topicSearchIndex.js'
 import { searchTopics } from '../../lib/search/searchTopics.js'
 import { getTensesForMood, getTenseLabel, getMoodLabel } from '../../lib/utils/verbLabels.js'
 import { getFamilyChoices } from '../../lib/data/familyChoices.js'
+import { playUiSound } from '../../lib/audio/soundEffects.js'
 
 /* ── Design tokens ── */
 const ACCENT = 'var(--accent-primary)'
@@ -708,6 +709,7 @@ function OnboardingFlow({
   }, [lastPlacementResult, settings])
 
   const handleBack = useCallback(() => {
+    playUiSound('back')
     if (onboardingStep === 5 && themeSubMenu) {
       setThemeSubMenu(null)
       setAnimKey(k => k + 1)
@@ -717,6 +719,7 @@ function OnboardingFlow({
   }, [onboardingStep, themeSubMenu])
 
   const handleLogoClick = useCallback(() => {
+    playUiSound('back')
     handleHome(setCurrentMode)
   }, [handleHome, setCurrentMode])
 
@@ -828,6 +831,7 @@ function OnboardingFlow({
   }), [searchQuery, searchResults, searchOptions, handleBack])
 
   const handleOptionSelect = useCallback((opt) => {
+    playUiSound('select')
     opt.onSelect()
   }, [])
 

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import { playUiSound } from '../../lib/audio/soundEffects.js'
 
 /**
  * Componente accesible para elementos interactivos
@@ -51,6 +52,7 @@ function ClickableCard({ className = '', onClick, children, title, role = "butto
   }
 
   const handleActivate = (e) => {
+    playUiSound('select')
     triggerClickAnim()
     onClick && onClick(e)
   }
