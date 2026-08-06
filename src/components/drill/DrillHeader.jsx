@@ -3,6 +3,7 @@ import { useSettings } from '../../state/settings.js'
 import { getSafeMoodTenseLabels } from '../../lib/utils/moodTenseValidator.js'
 import { ConfigSvg, AccentsSvg, MicSvg, DiceSvg, ChartSvg, SoundOnSvg, SoundOffSvg } from '../shared/DrillIcons.jsx'
 import router from '../../lib/routing/Router.js'
+import { playUiSound } from '../../lib/audio/soundEffects.js'
 
 const DIALECT_LABEL = {
   rioplatense: 'vos',
@@ -65,7 +66,7 @@ function DrillHeader({
         <button
           type="button"
           className="vd-back-btn"
-          onClick={() => router.back()}
+          onClick={() => { playUiSound('back'); router.back() }}
           title="Volver"
           aria-label="Volver"
         >
@@ -105,7 +106,7 @@ function DrillHeader({
       <div className="icon-row">
         <button
           type="button"
-          onClick={() => onToggleQuickSwitch(showQuickSwitch ? false : true)}
+          onClick={() => { playUiSound('select'); onToggleQuickSwitch(showQuickSwitch ? false : true) }}
           className={`icon-btn${showQuickSwitch ? ' active' : ''}`}
           title="Configuración rápida"
           aria-label="Configuración rápida"
@@ -116,7 +117,7 @@ function DrillHeader({
 
         <button
           type="button"
-          onClick={() => onToggleAccentKeys()}
+          onClick={() => { playUiSound('select'); onToggleAccentKeys() }}
           className="icon-btn"
           title="Tildes especiales"
           aria-label="Tildes especiales"
@@ -126,7 +127,7 @@ function DrillHeader({
 
         <button
           type="button"
-          onClick={() => onTogglePronunciation()}
+          onClick={() => { playUiSound('select'); onTogglePronunciation() }}
           className={`icon-btn${showPronunciation ? ' active' : ''}${isRecording ? ' recording' : ''}`}
           title="Pronunciación"
           aria-label="Pronunciación"
@@ -137,7 +138,7 @@ function DrillHeader({
 
         <button
           type="button"
-          onClick={() => onToggleGames(showGames ? false : true)}
+          onClick={() => { playUiSound('select'); onToggleGames(showGames ? false : true) }}
           className={`icon-btn${showGames ? ' active' : ''}`}
           title="Modos de juego"
           aria-label="Modos de juego"
@@ -148,7 +149,7 @@ function DrillHeader({
 
         <button
           type="button"
-          onClick={() => settings.toggleSound()}
+          onClick={() => { settings.toggleSound(); if (!soundEnabled) playUiSound('select') }}
           className={`icon-btn${soundEnabled ? ' active' : ''}`}
           title={soundEnabled ? 'Silenciar sonidos' : 'Activar sonidos'}
           aria-label={soundEnabled ? 'Silenciar sonidos' : 'Activar sonidos'}
@@ -159,7 +160,7 @@ function DrillHeader({
 
         <button
           type="button"
-          onClick={() => onNavigateToProgress()}
+          onClick={() => { playUiSound('select'); onNavigateToProgress() }}
           className="icon-btn"
           title="Progreso"
           aria-label="Progreso"

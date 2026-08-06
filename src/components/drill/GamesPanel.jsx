@@ -1,5 +1,6 @@
 import React from 'react'
 import { useSessionStore } from '../../state/session.js'
+import { playUiSound } from '../../lib/audio/soundEffects.js'
 
 const RESISTANCE_BASE_MS_BY_LEVEL = {
   C2: 15000,
@@ -76,13 +77,16 @@ function GamesPanel({ settings, onClose, onRegenerateItem }) {
             <button
               key={mode.id}
               className={`vd-game-btn${active ? ' vd-game-btn--active' : ''}`}
-              onClick={() => mode.toggle({
-                game,
-                setGameMode,
-                settings,
-                onClose,
-                onRegen: onRegenerateItem
-              })}
+              onClick={() => {
+                playUiSound('select')
+                mode.toggle({
+                  game,
+                  setGameMode,
+                  settings,
+                  onClose,
+                  onRegen: onRegenerateItem
+                })
+              }}
               aria-pressed={active}
             >
               <img src={mode.icon} alt="" className="vd-game-img" aria-hidden="true" />
@@ -96,7 +100,7 @@ function GamesPanel({ settings, onClose, onRegenerateItem }) {
         })}
       </div>
       <div className="vd-qs-actions">
-        <button className="btn btn-secondary" onClick={onClose}>Cerrar</button>
+        <button className="btn btn-secondary" onClick={() => { playUiSound('back'); onClose() }}>Cerrar</button>
       </div>
     </div>
   )
