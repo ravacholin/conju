@@ -75,3 +75,20 @@ export const SpeakerSvg = ({ size = 18 }) => (
     <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
   </svg>
 )
+
+export const SoundOnSvg = ({ size = SIZE }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M3 9v6h4l5 5V4L7 9H3z"/>
+    <path d="M16 7.5c1.48.74 2.5 2.26 2.5 4.03s-1.02 3.29-2.5 4.02V7.5z"/>
+    <path d="M16 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+  </svg>
+)
+
+export const SoundOffSvg = ({ size = SIZE }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 9v6h4l5 5V4L7 9H3z" fill="currentColor" stroke="none"/>
+    <line x1="16" y1="9" x2="22" y2="15"/>
+    <line x1="22" y1="9" x2="16" y2="15"/>
+  </svg>
+)

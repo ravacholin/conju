@@ -96,6 +96,9 @@ const createDefaultSettings = () => ({
   // Sistema de progreso - toggle para la integración con mastery data
   enableProgressIntegration: true,
 
+  // Efectos de sonido - feedback de acierto/error en los drills
+  soundEnabled: true,
+
   // Metas diarias
   dailyGoalType: 'attempts',
   dailyGoalValue: 20,
@@ -183,7 +186,8 @@ const PERSISTED_SETTINGS_KEYS = [
   'dailyGoalValue',
   'practiceReminderEnabled',
   'practiceReminderTime',
-  'practiceReminderDays'
+  'practiceReminderDays',
+  'soundEnabled'
 ]
 
 const pickPersistedSettings = (state) => {
@@ -242,7 +246,8 @@ const persistedSettingsSchema = z.object({
   dailyGoalValue: z.number().optional(),
   practiceReminderEnabled: z.boolean().optional(),
   practiceReminderTime: z.string().optional(),
-  practiceReminderDays: z.array(z.number()).optional()
+  practiceReminderDays: z.array(z.number()).optional(),
+  soundEnabled: z.boolean().optional()
 })
 
 const sanitizePersistedSettings = (persistedState) => {
@@ -390,6 +395,7 @@ const useSettings = create(
         setCliticsPercent: (percent) => set({ cliticsPercent: percent }),
         setC2RareBoost: (lemmas) => set({ c2RareBoostLemmas: lemmas }),
         toggleChunks: () => set((state) => ({ enableChunks: !state.enableChunks })),
+        toggleSound: () => set((state) => ({ soundEnabled: !state.soundEnabled })),
         toggleProgressIntegration: () => set((state) => ({ enableProgressIntegration: !state.enableProgressIntegration })),
 
         setDailyGoalType: (goalType) =>
