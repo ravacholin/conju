@@ -123,9 +123,27 @@ export async function chooseNext({ forms, history: _history, currentItem, sessio
     }
   })()
 
+  // Progress-module micro-drills build ad-hoc blocks like `{ combos, itemsRemaining }`
+  // with no `id`, so keying only on `currentBlock?.id` collapsed every one of them
+  // (and normal mixed practice) onto the same `none` bucket — the first cached pool
+  // was then served for every combination, which surfaced as "always presente regular".
+  // Sign the block by its actual targeting (combos + cells), falling back to id.
+  const blockSig = (() => {
+    if (!currentBlock) return 'none'
+    const parts = []
+    if (currentBlock.id) parts.push(`id:${currentBlock.id}`)
+    if (Array.isArray(currentBlock.combos) && currentBlock.combos.length) {
+      parts.push('c:' + currentBlock.combos.map(c => `${c.mood}|${c.tense}`).join(','))
+    }
+    if (Array.isArray(currentBlock.cells) && currentBlock.cells.length) {
+      parts.push('x:' + currentBlock.cells.map(c => `${c.mood}|${c.tense}|${c.person}`).join(','))
+    }
+    return parts.length ? parts.join(';') : 'block'
+  })()
+
   // cameFromTema belongs in the key: it still drives applyLemmaRestrictions, so
   // two otherwise identical settings would share a pool they disagree about.
-  const filterKey = `filter|${level}|${region}|${useVoseo}|${useTuteo}|${useVosotros}|${practiceMode}|${specificMood}|${specificTense}|${practicePronoun}|${verbType}|${selectedFamily}|tema:${cameFromTema ? 1 : 0}|${currentBlock?.id || 'none'}|allowed:${allowedSig}|levelMode:${effectiveLevelPracticeMode}|userLevel:${effectiveUserLevel}`
+  const filterKey = `filter|${level}|${region}|${useVoseo}|${useTuteo}|${useVosotros}|${practiceMode}|${specificMood}|${specificTense}|${practicePronoun}|${verbType}|${selectedFamily}|tema:${cameFromTema ? 1 : 0}|${blockSig}|allowed:${allowedSig}|levelMode:${effectiveLevelPracticeMode}|userLevel:${effectiveUserLevel}`
 
   // CACHE CLEARING: Force fresh calculation for specific practice navigation from progress module
   if (practiceMode === 'specific' && specificMood && specificTense) {
