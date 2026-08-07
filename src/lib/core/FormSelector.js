@@ -220,13 +220,12 @@ export class FormSelector {
       })
 
       // Advance index only one position from the actually used index
-      const nextIdx = (usedIdx + 1) % seq.length
       // Note: This would need to update the global state, which should be handled by the caller
 
       // Select from boosted pool
       const idx = Math.floor(Math.random() * boosted.length)
       return boosted[idx]
-    } catch (error) {
+    } catch {
       // Fallback to simple random
       const idx = Math.floor(Math.random() * forms.length)
       return forms[idx]

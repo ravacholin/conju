@@ -185,7 +185,6 @@ function convertRecommendationsToExecutableSessions(recommendations, predictedSe
     const remaining = Math.min(3 - sessions.length, predictedSequence.length)
 
     predictedSequence.slice(0, remaining).forEach((combo, index) => {
-      const sessionIndex = sessions.length
       const formattedMoodTense = formatMoodTense(combo.mood, combo.tense)
       sessions.push({
         id: `session-predicted-${Date.now()}-${index}`,

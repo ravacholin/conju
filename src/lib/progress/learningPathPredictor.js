@@ -40,7 +40,7 @@ export class LearningPathPredictor {
     // Safe logging - avoid TDZ during module initialization
     try {
       logger?.systemInit?.('Predictor de Ruta de Aprendizaje inicializado')
-    } catch (e) {
+    } catch {
       // Logger not ready yet
     }
   }

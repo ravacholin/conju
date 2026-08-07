@@ -780,7 +780,7 @@ export function initializeMomentumTracking() {
   // Safe logging - avoid TDZ during module initialization
   try {
     logger?.systemInit?.('Momentum Tracker')
-  } catch (e) {
+  } catch {
     // Logger not ready yet
   }
   return momentumTracker
@@ -816,7 +816,7 @@ if (typeof window !== 'undefined') {
   // Safe logging - avoid TDZ during module initialization
   try {
     logger?.systemInit?.('Momentum Tracker Debug Interface')
-  } catch (e) {
+  } catch {
     // Logger not ready yet
   }
 }

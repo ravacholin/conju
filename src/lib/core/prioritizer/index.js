@@ -11,7 +11,6 @@
  * - ✅ Clean orchestration pattern
  */
 
-import curriculum from '../../../data/curriculum.json'
 import { createLogger } from '../../utils/logger.js'
 import { LEVEL_PRIORITY_WEIGHTS } from './constants.js'
 import { CurriculumProcessor } from './CurriculumProcessor.js'
@@ -159,7 +158,6 @@ export class LevelDrivenPrioritizer {
   getWeightedSelection(forms, level, userProgress = null) {
     if (!forms || forms.length === 0) return []
 
-    const masteryMap = this.assessor.createMasteryMap(userProgress)
     const adjusted = this.calculator.applyAdvancedProgressAdjustments(
       forms.map(form => ({
         ...form,

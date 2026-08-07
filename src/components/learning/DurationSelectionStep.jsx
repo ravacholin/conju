@@ -7,7 +7,6 @@ function DurationSelectionStep({
   onSelectDuration,
   onStart,
   onBack,
-  onHome,
   durationOptions = getDefaultDurationOptions()
 }) {
   const options = useMemo(() =>

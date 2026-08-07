@@ -4,7 +4,7 @@
  * Comprehensive test suite to ensure functional equivalence with the original generator.js selection logic
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach } from 'vitest'
 import { selectForm } from './FormSelectorService.js'
 
 describe('FormSelectorService', () => {

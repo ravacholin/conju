@@ -43,7 +43,7 @@ export class IntelligentFSRS {
     // Safe logging - avoid TDZ during module initialization
     try {
       logger?.systemInit?.('Intelligent FSRS initialized')
-    } catch (e) {
+    } catch {
       // Logger not ready yet
     }
   }

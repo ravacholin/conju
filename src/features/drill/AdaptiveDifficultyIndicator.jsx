@@ -35,7 +35,7 @@ export default function AdaptiveDifficultyIndicator({ compact = false }) {
       const stats = engine.getSessionStats()
       setFlowState(stats.flowState)
       setDifficultyBoost(stats.currentBoost)
-    } catch (error) {
+    } catch {
       // Engine not available, use defaults
     }
 

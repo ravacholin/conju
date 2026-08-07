@@ -232,7 +232,7 @@ describe('PronunciationPanelSafe', () => {
           configurable: true,
           writable: true
         });
-      } catch (error) {
+      } catch {
         import.meta.env[key] = value;
       }
     };

@@ -399,7 +399,7 @@ export async function getPronunciationStats(userId, signal) {
     const recentAttempts = attemptsWithMetadata
       .sort((a, b) => (b.createdAtMs || 0) - (a.createdAtMs || 0))
       .slice(0, 8)
-      .map(({ createdAtMs, ...rest }) => rest)
+      .map(({ createdAtMs: _createdAtMs, ...rest }) => rest)
 
     const toAverage = (sum, count) => (count > 0 ? Math.round((sum / count) * 10) / 10 : 0)
     const successRate = Math.round((correctCount / pronunciationAttempts.length) * 100)
@@ -789,7 +789,6 @@ export async function getAdvancedAnalytics(userId, signal) {
   const config = PROGRESS_CONFIG.ADVANCED_ANALYTICS_CONFIG || {}
   const retentionWindow = config.RETENTION_WINDOW_DAYS || 30
   const engagementWindow = config.ENGAGEMENT_WINDOW_DAYS || 14
-  const dayMs = 24 * 60 * 60 * 1000
 
   try {
     ensureNotCancelled(signal)

@@ -622,7 +622,7 @@ if (typeof window !== 'undefined') {
   // Safe logging - avoid TDZ during module initialization
   try {
     logger?.systemInit?.('Flow Detector Debug Interface')
-  } catch (e) {
+  } catch {
     // Logger not ready yet
   }
 }

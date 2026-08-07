@@ -137,7 +137,7 @@ class VerbDataRedundancyManager {
     // Safe logging - avoid TDZ during module initialization
     try {
       logger?.info?.('initialize', 'Starting VerbDataRedundancyManager initialization')
-    } catch (e) {
+    } catch {
       // Logger not ready yet
     }
 
@@ -155,7 +155,7 @@ class VerbDataRedundancyManager {
           healthState: this.healthState,
           verbCount: this.getVerbCount()
         })
-      } catch (e) {
+      } catch {
         // Logger not ready yet
       }
 
@@ -163,7 +163,7 @@ class VerbDataRedundancyManager {
       // Safe logging - avoid TDZ during module initialization
       try {
         logger?.error?.('initialize', 'Failed to initialize VerbDataRedundancyManager', error)
-      } catch (e) {
+      } catch {
         // Logger not ready yet
       }
       await this.handleInitializationFailure(error)
@@ -684,7 +684,7 @@ class VerbDataRedundancyManager {
     try {
       const verbs = this.dataCache.get(this.currentLayer)
       return verbs ? verbs.length : 0
-    } catch (error) {
+    } catch {
       return 0
     }
   }

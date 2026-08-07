@@ -69,12 +69,12 @@ export default function SessionProgressHUD() {
     updateProgress()
 
     // Escuchar eventos de progreso de sesión
-    const handleSessionUpdate = (event) => {
+    const handleSessionUpdate = (_event) => {
       updateProgress()
     }
 
     // Escuchar eventos de plan
-    const handlePlanUpdate = (event) => {
+    const handlePlanUpdate = (_event) => {
       updateProgress()
     }
 

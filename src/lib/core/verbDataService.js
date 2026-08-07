@@ -9,7 +9,7 @@ import { expandSimplifiedGroup } from '../data/simplifiedFamilyGroups.js'
 import { convertLearningFamilyToOld, LEARNING_IRREGULAR_FAMILIES } from '../data/learningIrregularFamilies.js'
 import { gateFormsByCurriculumAndDialect } from './curriculumGate.js'
 import { getAllVerbsWithRedundancy } from './VerbDataRedundancyManager.js'
-import { validateAndHealVerbs, getIntegrityGuard } from './DataIntegrityGuard.js'
+import { getIntegrityGuard } from './DataIntegrityGuard.js'
 import { handleErrorWithRecovery } from './AutoRecoverySystem.js'
 import { createLogger } from '../utils/logger.js'
 
@@ -221,7 +221,7 @@ export async function getVerbsByLemmas(lemmas) {
     const lemmaSet = new Set(lemmas)
 
     // Filter efficiently
-    const foundVerbs = allVerbs.filter(verb => {
+    allVerbs.filter(verb => {
       if (lemmaSet.has(verb.lemma)) {
         results.push(verb)
         return true
@@ -299,7 +299,7 @@ export async function getVerbsByLemmas(lemmas) {
 }
 
 // Enhanced build forms for a specific region with comprehensive error handling
-export async function getFormsForRegion(region, settings = {}) {
+export async function getFormsForRegion(region, _settings = {}) {
   if (!region || typeof region !== 'string') {
     logger.warn('getFormsForRegion', 'Invalid region parameter', { region })
     return []
@@ -476,7 +476,7 @@ export async function getFormsForRegion(region, settings = {}) {
 }
 
 // Enhanced get example verbs for learning with comprehensive error handling
-export function getExampleVerbs({ verbType = 'all', families = [], tense = null, region = 'la_general' } = {}) {
+export function getExampleVerbs({ verbType = 'all', families = [], tense: _tense = null, region: _region = 'la_general' } = {}) {
   try {
     // Get verbs with fallback protection
     let candidateVerbs = getAllVerbsSync()
@@ -516,7 +516,7 @@ export function getExampleVerbs({ verbType = 'all', families = [], tense = null,
         candidateVerbs = candidateVerbs.filter(verb => {
           try {
             return verb.type === 'regular' || !verb.type
-          } catch (error) {
+          } catch {
             errorCount++
             return false
           }
@@ -525,7 +525,7 @@ export function getExampleVerbs({ verbType = 'all', families = [], tense = null,
         candidateVerbs = candidateVerbs.filter(verb => {
           try {
             return verb.type === 'irregular'
-          } catch (error) {
+          } catch {
             errorCount++
             return false
           }

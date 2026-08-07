@@ -84,7 +84,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
         setError('Google OAuth no está disponible. Probá con email y contraseña.')
         setLoading(false)
       }
-    } catch (err) {
+    } catch {
       setError('Error con Google OAuth. Probá con email y contraseña.')
       setLoading(false)
     }

@@ -360,7 +360,7 @@ export class DynamicLevelEvaluator {
   /**
    * Genera recomendaciones específicas para el usuario
    */
-  async generateRecommendations(evaluation, currentLevel) {
+  async generateRecommendations(evaluation, _currentLevel) {
     const recommendations = []
     const { accuracy, coverage, consistency, responseTime } = evaluation.evaluation
 

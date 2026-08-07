@@ -36,7 +36,7 @@ class MemoryManager {
     // Safe logging - avoid TDZ errors during module initialization
     try {
       logger?.debug?.(`Interval registrado: ${systemName}`, { intervalMs, description })
-    } catch (e) {
+    } catch {
       // Logger not ready yet - silent fail
     }
     return intervalId
@@ -71,7 +71,7 @@ class MemoryManager {
     // Safe logging - avoid TDZ errors during module initialization
     try {
       logger?.debug?.(`Sistema registrado: ${systemName}`)
-    } catch (e) {
+    } catch {
       // Logger not ready yet - silent fail
     }
   }
@@ -140,7 +140,7 @@ class MemoryManager {
     // Safe logging - avoid TDZ errors
     try {
       logger?.info?.('Iniciando cleanup completo de memoria')
-    } catch (e) {
+    } catch {
       // Logger not ready yet
     }
 
@@ -163,14 +163,14 @@ class MemoryManager {
         // Safe logging - avoid TDZ errors
         try {
           logger?.cleanup?.(systemName, 'Sistema limpiado')
-        } catch (e) {
+        } catch {
           // Logger not ready yet
         }
       } catch (error) {
         // Safe logging - avoid TDZ errors
         try {
           logger?.error?.(`Error en cleanup de ${systemName}:`, error)
-        } catch (e) {
+        } catch {
           // Logger not ready yet
         }
       }
@@ -179,7 +179,7 @@ class MemoryManager {
     // Safe logging - avoid TDZ errors
     try {
       logger?.info?.('Cleanup completo de memoria finalizado')
-    } catch (e) {
+    } catch {
       // Logger not ready yet
     }
     this.isCleaningUp = false

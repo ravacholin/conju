@@ -94,7 +94,7 @@ const buildIrregularCategories = (tenseKey, availableFamilies) => {
   return categories
 }
 
-function TypeSelectionStep({ selectedTense, availableFamilies = [], onSelectType, onBack, onHome }) {
+function TypeSelectionStep({ selectedTense, availableFamilies = [], onSelectType, onBack }) {
   const tenseKey = selectedTense?.tense
 
   const irregularCategories = useMemo(

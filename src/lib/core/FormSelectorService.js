@@ -39,7 +39,7 @@ const dbg = (...args) => { if (isDev && !import.meta?.env?.VITEST) logger.debug(
  * @param {Object} context - Additional context (verbLookupMap, etc.)
  * @returns {Promise<Object>} Selected form with all transformations applied
  */
-export async function selectForm(eligible, settings, context = {}) {
+export async function selectForm(eligible, settings, _context = {}) {
   // Early return for empty eligible pool
   if (!eligible || eligible.length === 0) {
     return null
@@ -133,12 +133,6 @@ export async function selectForm(eligible, settings, context = {}) {
   // ENHANCED: Strong preference for PURE regular lemmas when user selects 'regular'
   if (verbType === 'regular') {
     try {
-      const pureRegularSet = new Set(
-        Array.from(VERB_LOOKUP_MAP.values())
-          .filter(v => v?.type === 'regular')
-          .map(v => v.lemma)
-      )
-
       const isCompound = (t) => (t === 'pretPerf' || t === 'plusc' || t === 'futPerf' || t === 'condPerf' || t === 'subjPerf' || t === 'subjPlusc')
 
       // Keep only pure regular lemmas and forms that are morphologically regular

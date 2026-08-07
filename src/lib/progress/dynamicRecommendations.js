@@ -131,10 +131,8 @@ function getDayOfWeek() {
 function buildRecommendation(context) {
   const {
     stats,
-    timePattern,
     weekPattern,
     flowMetrics,
-    flowRecommendations,
     dueItems,
     masteryData,
     currentTime
@@ -281,7 +279,7 @@ function generateActivities(mode, duration, masteryData, dueItems) {
           .sort((a, b) => a.score - b.score)
           .slice(0, 3)
 
-        weakAreas.forEach((area, index) => {
+        weakAreas.forEach((area, _index) => {
           activities.push({
             type: 'focused_practice',
             title: `Refuerza ${area.tense}`,

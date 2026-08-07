@@ -37,7 +37,7 @@ export class EmergencyFallback {
    * @returns {Object|null} Fallback form or null
    */
   async findFallback(allForms, preferences = {}) {
-    const { specificMood, specificTense, level, verbType, practiceMode } = preferences
+    const { specificMood, specificTense, level } = preferences
 
     logger.info('findFallback', 'Attempting emergency fallback', {
       mood: specificMood,
