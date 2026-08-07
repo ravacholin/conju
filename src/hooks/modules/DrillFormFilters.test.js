@@ -278,3 +278,45 @@ describe('DrillFormFilters - filtering diagnostics', () => {
     })
   })
 })
+
+describe('DrillFormFilters - progress micro-drill blocks (currentBlock.combos)', () => {
+  // Regression for the "Practicar esto always drills presente regular" bug that
+  // PR #205 only half-fixed. #205 taught the generator's own cache (chooseNext) to
+  // honor the ad-hoc block, but this pre-filter — which builds the eligible pool the
+  // SRS "due" shortcut samples directly — still ignored the block, so the shortcut
+  // kept serving due presente items during a targeted micro-drill.
+  const forms = [
+    { lemma: 'hablar', mood: 'indicative', tense: 'pres', person: '1s', value: 'hablo' },
+    { lemma: 'comer', mood: 'indicative', tense: 'pres', person: '3s', value: 'come' },
+    { lemma: 'hablar', mood: 'indicative', tense: 'impf', person: '1s', value: 'hablaba' },
+    { lemma: 'comer', mood: 'subjunctive', tense: 'subjPres', person: '1s', value: 'coma' }
+  ]
+  const baseSettings = {
+    region: 'la_general',
+    verbType: 'all',
+    selectedFamily: null,
+    practiceMode: 'mixed',
+    practicePronoun: 'all',
+    level: 'B1'
+  }
+
+  it('narrows the eligible pool to the block combos in mixed mode', () => {
+    const settings = {
+      ...baseSettings,
+      currentBlock: { combos: [{ mood: 'indicative', tense: 'impf' }], itemsRemaining: 8 }
+    }
+
+    const { filtered } = getFilteringDiagnostics(forms, settings)
+
+    expect(filtered.length).toBeGreaterThan(0)
+    expect(filtered.every(f => f.mood === 'indicative' && f.tense === 'impf')).toBe(true)
+    expect(filtered.some(f => f.tense === 'pres')).toBe(false)
+  })
+
+  it('does not narrow when there is no block (normal mixed practice)', () => {
+    const { filtered } = getFilteringDiagnostics(forms, { ...baseSettings, currentBlock: null })
+
+    // Present indicative is level-appropriate for B1, so it must survive.
+    expect(filtered.some(f => f.mood === 'indicative' && f.tense === 'pres')).toBe(true)
+  })
+})
