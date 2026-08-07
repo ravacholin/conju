@@ -374,6 +374,19 @@ export const allowsLevel = (form, settings) => {
   // This includes both Tema practice and Progress module navigation
   if (settings.practiceMode === 'specific') return true
 
+  // Progress-module micro-drills (and other ad-hoc blocks) target a specific set of
+  // mood/tense combos while staying in 'mixed' mode. Honor that targeting here so the
+  // eligible pool is actually narrowed to the block. Otherwise this pre-filter yields
+  // every level-appropriate form, and the SRS "due" shortcut in hierarchicalSelection
+  // serves due items from any combo (typically presente regular) — the exact leak that
+  // made "Practicar esto" feel like it always drilled presente. Mirrors
+  // FormFilterService.applyLevelFilter, which chooseNext already applies downstream.
+  const blockCombos = settings.currentBlock?.combos
+  if (Array.isArray(blockCombos) && blockCombos.length) {
+    const allowed = new Set(blockCombos.map(c => `${c.mood}|${c.tense}`))
+    return allowed.has(`${form.mood}|${form.tense}`)
+  }
+
   const userLevel = settings.level || 'A1'
   if (userLevel === 'ALL') return true
   const allowed = getAllowedCombosForLevelCached(userLevel)
