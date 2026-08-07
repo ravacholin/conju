@@ -225,7 +225,7 @@ class AutoRecoverySystem {
   /**
    * Determine appropriate recovery strategy
    */
-  determineRecoveryStrategy(classification, context) {
+  determineRecoveryStrategy(classification, _context) {
     const { category, severity, suggestedStrategy } = classification
 
     // Check if we've tried this strategy recently
@@ -322,7 +322,7 @@ class AutoRecoverySystem {
   /**
    * Execute emergency recovery as last resort
    */
-  async executeEmergencyRecovery(error, context) {
+  async executeEmergencyRecovery(error, _context) {
     logger.error('executeEmergencyRecovery', '🚨 EMERGENCY RECOVERY ACTIVATED', { error: error.message })
 
     this.emergencyModeActive = true
@@ -375,7 +375,7 @@ class AutoRecoverySystem {
    */
   setupErrorClassifiers() {
     // Data corruption classifier
-    this.addErrorClassifier('data_corruption', (error, context) => {
+    this.addErrorClassifier('data_corruption', (error, _context) => {
       const patterns = ['corrupt', 'invalid', 'malformed', 'checksum', 'integrity']
       const isDataError = patterns.some(pattern =>
         error.message.toLowerCase().includes(pattern)
@@ -433,7 +433,7 @@ class AutoRecoverySystem {
     })
 
     // Network failure classifier
-    this.addErrorClassifier('network_failure', (error, context) => {
+    this.addErrorClassifier('network_failure', (error, _context) => {
       const patterns = ['network', 'fetch', 'connection', 'timeout', 'offline']
       const isNetworkError = patterns.some(pattern =>
         error.message.toLowerCase().includes(pattern)
@@ -501,7 +501,7 @@ class AutoRecoverySystem {
     })
 
     // Fallback data strategy
-    this.addRecoveryStrategy(RECOVERY_STRATEGIES.FALLBACK_DATA, async (error, context) => {
+    this.addRecoveryStrategy(RECOVERY_STRATEGIES.FALLBACK_DATA, async (_error, _context) => {
       try {
         logger.info('recovery:fallback_data', 'Activating fallback data sources')
 
@@ -521,7 +521,7 @@ class AutoRecoverySystem {
     })
 
     // Cache rebuild strategy
-    this.addRecoveryStrategy(RECOVERY_STRATEGIES.CACHE_REBUILD, async (error, context) => {
+    this.addRecoveryStrategy(RECOVERY_STRATEGIES.CACHE_REBUILD, async (_error, _context) => {
       try {
         logger.info('recovery:cache_rebuild', 'Rebuilding caches')
 
@@ -540,7 +540,7 @@ class AutoRecoverySystem {
     })
 
     // Memory cleanup strategy
-    this.addRecoveryStrategy(RECOVERY_STRATEGIES.MEMORY_CLEANUP, async (error, context) => {
+    this.addRecoveryStrategy(RECOVERY_STRATEGIES.MEMORY_CLEANUP, async (_error, _context) => {
       try {
         logger.info('recovery:memory_cleanup', 'Performing memory cleanup')
 
@@ -559,7 +559,7 @@ class AutoRecoverySystem {
     })
 
     // Graceful degradation strategy
-    this.addRecoveryStrategy(RECOVERY_STRATEGIES.GRACEFUL_DEGRADATION, async (error, context) => {
+    this.addRecoveryStrategy(RECOVERY_STRATEGIES.GRACEFUL_DEGRADATION, async (_error, _context) => {
       try {
         logger.warn('recovery:graceful_degradation', 'Activating graceful degradation')
 
@@ -576,7 +576,7 @@ class AutoRecoverySystem {
     })
 
     // Emergency mode strategy
-    this.addRecoveryStrategy(RECOVERY_STRATEGIES.EMERGENCY_MODE, async (error, context) => {
+    this.addRecoveryStrategy(RECOVERY_STRATEGIES.EMERGENCY_MODE, async (_error, _context) => {
       try {
         logger.error('recovery:emergency_mode', '🚨 Activating emergency mode')
 
@@ -805,7 +805,7 @@ class AutoRecoverySystem {
     this.metrics.lastError = new Date()
   }
 
-  updateRecoveryMetrics(startTime, success) {
+  updateRecoveryMetrics(startTime, _success) {
     const recoveryTime = performance.now() - startTime
 
     // Update average recovery time
@@ -848,7 +848,7 @@ class AutoRecoverySystem {
     this.recoveryAttempts.set(strategy, count + 1)
   }
 
-  escalateStrategy(currentStrategy, severity) {
+  escalateStrategy(currentStrategy, _severity) {
     const escalationMap = {
       [RECOVERY_STRATEGIES.RESTART_COMPONENT]: RECOVERY_STRATEGIES.CACHE_REBUILD,
       [RECOVERY_STRATEGIES.CACHE_REBUILD]: RECOVERY_STRATEGIES.FALLBACK_DATA,

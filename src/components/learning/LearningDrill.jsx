@@ -222,7 +222,6 @@ function LearningDrillContent({ tense, verbType, selectedFamilies, duration, exc
     } else {
       // Old format (backward compatibility) - first arg is isCorrect
       const isCorrect = result;
-      const accuracy = arguments[1];
       const extra = arguments[2] || {};
 
       trackingResult = {

@@ -1,10 +1,7 @@
 import {
-  getAttemptsByUser,
   getMasteryByUser,
-  getFromDB,
   getAllFromDB,
   initDB,
-  getLearningSessionsByUser,
   getUnsyncedItems
 } from './database.js'
 import { STORAGE_CONFIG } from './config.js'
@@ -73,7 +70,7 @@ async function markSynced(storeName, items) {
 
         const updated = { ...existing, syncedAt: new Date() }
         await store.put(updated)
-      } catch (err) {
+      } catch {
         // Ignore individual errors
       }
     }

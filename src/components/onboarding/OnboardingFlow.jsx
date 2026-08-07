@@ -378,7 +378,7 @@ function buildStep(step, settings, handlers) {
     selectDialect, selectLevel, selectPracticeMode, selectMood, selectTense,
     selectVerbType, selectFamily, goToLevelDetails, onStartPractice,
     onGoToProgress, onStartLearningNewTense, onStartLevelTest,
-    getAvailableMoodsForLevel, getAvailableTensesForLevelAndMood,
+    getAvailableTensesForLevelAndMood,
     themeSubMenu, setThemeSubMenu
   } = handlers
 

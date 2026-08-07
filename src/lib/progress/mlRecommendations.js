@@ -37,7 +37,7 @@ export class MLRecommendationEngine {
     // Safe logging - avoid TDZ during module initialization
     try {
       logger?.systemInit?.('ML Recommendation Engine initialized')
-    } catch (e) {
+    } catch {
       // Logger not ready yet
     }
   }

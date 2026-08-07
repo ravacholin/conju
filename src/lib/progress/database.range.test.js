@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { getByIndexRange, getAttemptsByUser, saveAttempt } from './database.js';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { getByIndexRange, saveAttempt } from './database.js';
 
 // Mock dependencies
 const mockOpenDB = vi.fn();

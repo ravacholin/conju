@@ -2,7 +2,6 @@
 // Implements a "Binary Search" style adaptive algorithm for efficient placement
 // CEFR Levels: A1, A2, B1, B2, C1, C2
 
-import { getCurrentUserProfile, setGlobalPlacementTestBaseline } from './userLevelProfile.js'
 import { createLogger } from '../utils/logger.js'
 
 const logger = createLogger('levelAssessment')

@@ -86,10 +86,8 @@ export async function chooseNext({ forms, history: _history, currentItem, sessio
   const {
     level: rawLevel, useVoseo, useTuteo, useVosotros,
     practiceMode: rawPracticeMode, specificMood, specificTense, practicePronoun, verbType: rawVerbType,
-    currentBlock, selectedFamily, region: rawRegion, enableFuturoSubjProd, allowedLemmas,
+    currentBlock, selectedFamily, region: rawRegion, allowedLemmas,
     cameFromTema,
-    enableC2Conmutacion, conmutacionSeq, conmutacionIdx, rotateSecondPerson,
-    nextSecondPerson, cliticsPercent, enableProgressIntegration,
     userLevel, levelPracticeMode
   } = allSettings
 
@@ -262,7 +260,6 @@ export function validateMoodTenseAvailability(mood, tense, settings, allForms) {
     const level = settings.level || 'B1'
     const region = settings.region || 'rioplatense'
     const useVoseo = settings.useVoseo !== false
-    const useTuteo = settings.useTuteo !== false
     const useVosotros = settings.useVosotros !== false
 
 

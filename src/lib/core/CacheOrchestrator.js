@@ -339,7 +339,7 @@ class CacheOrchestrator {
   /**
    * Trigger intelligent preloading based on patterns
    */
-  async triggerIntelligentPreloading(triggerKey, cacheType) {
+  async triggerIntelligentPreloading(triggerKey, _cacheType) {
     if (this.isPreloading || this.strategy === COORDINATION_STRATEGIES.CONSERVATIVE) {
       return
     }
@@ -528,7 +528,7 @@ class CacheOrchestrator {
   /**
    * Take corrective actions based on health status
    */
-  async takeCorrectiveActions(health, healthReport) {
+  async takeCorrectiveActions(health, _healthReport) {
     logger.info('takeCorrectiveActions', `Taking corrective actions for health: ${health}`)
 
     try {
@@ -556,7 +556,7 @@ class CacheOrchestrator {
           this.isPreloading = false
 
           // Disable all non-essential caches
-          for (const [cacheType, cacheInfo] of this.cacheRegistry) {
+          for (const [, cacheInfo] of this.cacheRegistry) {
             if (cacheInfo.level !== CACHE_LEVELS.L1_MEMORY) {
               cacheInfo.isHealthy = false
             }
@@ -705,7 +705,7 @@ class CacheOrchestrator {
       this.performanceMetrics.averageResponseTime * (1 - alpha) + responseTime * alpha
   }
 
-  recordCacheError(cacheType, error) {
+  recordCacheError(cacheType, _error) {
     const cacheInfo = this.cacheRegistry.get(cacheType)
     if (cacheInfo) {
       cacheInfo.errorCount++

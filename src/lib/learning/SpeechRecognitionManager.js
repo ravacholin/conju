@@ -303,7 +303,7 @@ export class SpeechRecognitionManager {
         result.microphone = true
         // Stop the stream immediately
         stream.getTracks().forEach(track => track.stop())
-      } catch (error) {
+      } catch {
         result.microphone = false
         result.recommendations.push('Permite el acceso al micrófono en la configuración del navegador')
       }

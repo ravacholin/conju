@@ -1,10 +1,6 @@
 // Conversation Grader - Evaluates user responses in conversations
 // Uses fuzzy matching and linguistic analysis for natural dialog validation
 
-import { createLogger } from '../utils/logger.js'
-
-const logger = createLogger('learning:conversationGrader')
-
 /**
  * Calculate Levenshtein distance between two strings
  */

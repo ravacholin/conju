@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { syncWithCloud, getSyncStatus, cancelScheduledSync } from './cloudSync.js'
 import { globalMutex } from './SyncMutex.js'
 
@@ -58,7 +58,6 @@ describe('Sync Concurrency Tests', () => {
 
     it('should release mutex after sync error', async () => {
       // Force sync to fail and verify mutex is released
-      const statusBefore = getSyncStatus()
 
       try {
         await syncWithCloud({ include: ['invalid_collection'] })
@@ -178,7 +177,6 @@ describe('Sync Concurrency Tests', () => {
     })
 
     it('should maintain lastSyncTime accuracy across concurrent syncs', async () => {
-      const beforeSync = new Date()
 
       await syncWithCloud({ include: ['attempts'] })
 
@@ -234,7 +232,7 @@ describe('Sync Concurrency Tests', () => {
 
   describe('Performance Under Load', () => {
     it('should handle 10 concurrent sync attempts without crashing', async () => {
-      const attempts = Array.from({ length: 10 }, (_, i) =>
+      const attempts = Array.from({ length: 10 }, (_, _i) =>
         syncWithCloud({ include: ['attempts'] })
       )
 

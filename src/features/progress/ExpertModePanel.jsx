@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react'
-import { toggleExpertMode, setExpertModeSettings } from '../../lib/progress/expertMode.js'
+import { setExpertModeSettings } from '../../lib/progress/expertMode.js'
 import './expert-mode-panel.css'
 import { createLogger } from '../../lib/utils/logger.js'
 

@@ -177,7 +177,7 @@ export class LevelRecommendationEngine {
   /**
    * Genera recomendaciones para cerrar brechas en competencias
    */
-  async generateCompetencyGapRecommendations(progress, evaluation) {
+  async generateCompetencyGapRecommendations(progress, _evaluation) {
     const recommendations = []
 
     if (!progress || !progress.details) return recommendations
@@ -212,7 +212,7 @@ export class LevelRecommendationEngine {
     })
 
     // Recomendaciones para áreas más débiles
-    weakestAreas.slice(0, 2).forEach((area, index) => {
+    weakestAreas.slice(0, 2).forEach((area, _index) => {
       if (area.needsWork) {
         recommendations.push({
           id: `weak-area-${area.mood}-${area.tense}`,
@@ -321,7 +321,7 @@ export class LevelRecommendationEngine {
   /**
    * Genera recomendaciones motivacionales
    */
-  async generateMotivationalRecommendations(profile, progress, evaluation) {
+  async generateMotivationalRecommendations(profile, progress, _evaluation) {
     const recommendations = []
 
     // Celebrar fortalezas

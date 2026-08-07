@@ -18,7 +18,7 @@ describe('schedules index and queries', () => {
   beforeEach(async () => {
     try {
       await deleteDB()
-    } catch (error) {
+    } catch {
       // Ignorar errores cuando la DB aún no existe
     }
     await initDB()

@@ -52,7 +52,6 @@ describe('Partial Sync Failure Scenarios', () => {
         getCurrentUserId: () => 'user-123'
       }))
 
-	      let attemptsSaved = false
 	      let masterySaved = false
 
 	      vi.doMock('./database.js', () => ({
@@ -86,7 +85,6 @@ describe('Partial Sync Failure Scenarios', () => {
 	          postJSON: vi.fn(async () => ({ data: {} })),
 	          tryBulk: vi.fn(async (collection) => {
 	            if (collection === 'attempts') {
-	              attemptsSaved = true
 	              throw new Error('Network error')
 	            }
 	            if (collection === 'mastery') {

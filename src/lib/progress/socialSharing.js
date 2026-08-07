@@ -158,7 +158,6 @@ export async function generateShareableImage(stats) {
 
     // Stats display
     const statsY = 380
-    const statsSpacing = 120
     const statsToShow = [
       { icon: '⚡', label: 'XP', value: stats.xp || 0 },
       { icon: '🔥', label: 'Racha', value: stats.streak || 0 },

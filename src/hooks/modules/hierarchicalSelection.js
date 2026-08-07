@@ -43,7 +43,6 @@ export const selectNextForm = async ({
   // Determine if the user is in an explicit review session vs general practice
   const isExplicitReview = settings.practiceMode === 'review'
   const isSpecificPractice = settings.practiceMode === 'specific' || settings.practiceMode === 'theme'
-  const isGeneralPractice = !isExplicitReview && !isSpecificPractice
 
   // ─── PATH A: Explicit review or specific practice ───
   // Use the traditional hierarchy: SRS → adaptive → chooseNext

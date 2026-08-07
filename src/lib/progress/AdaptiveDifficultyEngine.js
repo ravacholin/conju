@@ -210,7 +210,7 @@ export class AdaptiveDifficultyEngine {
    * Genera recomendaciones para el generator
    * @returns {Object} Configuración para generator.js
    */
-  generateRecommendations(flowAnalysis) {
+  generateRecommendations(_flowAnalysis) {
     const boost = this.currentDifficultyBoost
 
     const recommendations = {

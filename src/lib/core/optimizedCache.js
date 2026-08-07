@@ -512,7 +512,7 @@ if (typeof window !== 'undefined') {
           if (orchestrator.registerIntelligentCaches) {
             orchestrator.registerIntelligentCaches()
           }
-        } catch (error) {
+        } catch {
           // Ignore if orchestrator isn't available yet
           logger.debug('auto-init', 'CacheOrchestrator not available yet for registration')
         }
@@ -527,7 +527,7 @@ if (typeof window !== 'undefined') {
             try {
               const { getRedundancyStats } = await import('./VerbDataRedundancyManager.js')
               return typeof getRedundancyStats === 'function' ? getRedundancyStats() : { error: 'RedundancyManager not available' }
-            } catch (error) {
+            } catch {
               return { error: 'RedundancyManager not available' }
             }
           },
@@ -535,7 +535,7 @@ if (typeof window !== 'undefined') {
             try {
               const { getIntegrityStats } = await import('./DataIntegrityGuard.js')
               return typeof getIntegrityStats === 'function' ? getIntegrityStats() : { error: 'IntegrityGuard not available' }
-            } catch (error) {
+            } catch {
               return { error: 'IntegrityGuard not available' }
             }
           }

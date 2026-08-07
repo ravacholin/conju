@@ -346,8 +346,6 @@ function renderThirdPersonIrregularDeconstruction(exampleVerbs, settings) {
           })
           .map((verbObj, index) => {
             const verb = verbObj.lemma;
-            const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
-            const highlightData = highlightStemVowel(verb);
 
             return (
               <div key={`third-${index}`} className="third-person-verb-item">
@@ -508,7 +506,6 @@ function renderRegularFutureConditionalDeconstruction(exampleVerbs, tense, setti
           })
           .map((verbObj, index) => {
             const verb = verbObj.lemma
-            const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir'
 
             return (
               <div key={`regular-verb-${index}`} className="future-root-item">
@@ -564,7 +561,7 @@ function renderNonFiniteIrregularDeconstruction(exampleVerbs, tense) {
   )
 }
 
-function renderRegularNonFiniteDeconstruction(exampleVerbs, tense, settings) {
+function renderRegularNonFiniteDeconstruction(exampleVerbs, tense, _settings) {
   if (!tense || !['ger', 'part'].includes(tense.tense)) {
     return null
   }
@@ -600,7 +597,6 @@ function renderRegularNonFiniteDeconstruction(exampleVerbs, tense, settings) {
           })
           .map((verbObj, index) => {
             const verb = verbObj.lemma
-            const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir'
             const stem = verb.slice(0, -2)
             const ending = getRegularEnding(verb)
 
@@ -753,7 +749,6 @@ function renderIrregularYoDeconstruction(exampleVerbs, tense, settings) {
             const verb = verbObj.lemma;
             const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
             const forms = getDialectForms(verbObj);
-            const highlightData = highlightStemVowel(verb);
 
             // Obtener la forma YO conjugada para destacarla
             const yoForm = forms[0]; // Primera forma es siempre 1s
@@ -833,7 +828,6 @@ function renderStrongPreteriteDeconstruction(exampleVerbs, settings) {
           })
           .map((verbObj, index) => {
             const verb = verbObj.lemma;
-            const group = verb.endsWith('ar') ? '-ar' : verb.endsWith('er') ? '-er' : '-ir';
             const irregularStem = getIrregularStem(verb);
 
             return (

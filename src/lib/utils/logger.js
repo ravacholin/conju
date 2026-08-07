@@ -220,7 +220,7 @@ export function createLogger(context) {
   const safeCall = (fn, ...args) => {
     try {
       return fn(...args)
-    } catch (e) {
+    } catch {
       // Logger not ready yet - silent fail
       return undefined
     }

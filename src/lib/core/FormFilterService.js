@@ -20,9 +20,7 @@ import {
   isRegularNonfiniteForm
 } from './conjugationRules.js'
 import { gateFormsByCurriculumAndDialect, getAllowedCombosForLevel } from './curriculumGate.js'
-import { createLogger } from '../utils/logger.js'
 
-const logger = createLogger('core:FormFilterService')
 
 /**
  * Filter forms based on comprehensive user settings
@@ -35,7 +33,6 @@ const logger = createLogger('core:FormFilterService')
 export function filterEligibleForms(forms, settings, context = {}) {
   const {
     level,
-    region,
     practiceMode,
     specificMood,
     specificTense,
@@ -300,7 +297,7 @@ function applyLemmaRestrictions(form, options) {
 /**
  * Apply verb type filtering (regular/irregular)
  */
-function applyVerbTypeFilter(form, verb, {verbType, verbLookupMap}) {
+function applyVerbTypeFilter(form, verb, {verbType}) {
   const isMixedPractice = !verbType || verbType === 'mixed' || verbType === 'all'
 
   if (isMixedPractice) {

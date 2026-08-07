@@ -49,7 +49,7 @@ export class ABTestingManager {
     // Safe logging - avoid TDZ during module initialization
     try {
       logger?.systemInit?.('A/B Testing Manager initialized')
-    } catch (e) {
+    } catch {
       // Logger not ready yet
     }
   }
@@ -581,7 +581,7 @@ if (typeof window !== 'undefined') {
   // Safe logging - avoid TDZ during module initialization
   try {
     logger?.systemInit?.('A/B Testing Debug Interface')
-  } catch (e) {
+  } catch {
     // Logger not ready yet
   }
 }
