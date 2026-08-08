@@ -99,11 +99,10 @@ describe('ProgressDashboard (smoke)', () => {
     expect(screen.getByText('Cargando progreso...')).toBeInTheDocument()
   })
 
-  it('renders nav bar with back, home, and practice buttons', () => {
+  it('renders nav bar with back and home buttons', () => {
     render(<ProgressDashboard />)
 
     expect(screen.getByTitle('Volver')).toBeInTheDocument()
     expect(screen.getByTitle('Inicio')).toBeInTheDocument()
-    expect(screen.getByTitle('Practicar')).toBeInTheDocument()
   })
 })

@@ -125,13 +125,15 @@ describe('SyncMutex', () => {
         return 'success'
       }
 
-      // Start withMutex (should retry)
-      const promise = withMutex(testFn, { retries: 3, retryDelay: 50 })
+      // Start withMutex (should retry). Use plenty of retries so that several
+      // acquisition attempts happen after the blocking lock is released, avoiding
+      // a race between the final retry and the release timer.
+      const promise = withMutex(testFn, { retries: 10, retryDelay: 50 })
 
-      // Release blocking lock after short delay
+      // Release blocking lock well before the retries are exhausted
       setTimeout(() => {
         blockingMutex.release()
-      }, 100)
+      }, 60)
 
       const result = await promise
 

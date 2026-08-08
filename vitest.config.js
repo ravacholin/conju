@@ -5,6 +5,11 @@ import { defineConfig } from 'vite'
 const skipServerTests = process.env.VITEST_SKIP_SERVER_TESTS === '1'
 
 export default defineConfig({
+  // Use the automatic JSX runtime (same as @vitejs/plugin-react in the app build) so
+  // source components that rely on it without importing React render correctly in tests.
+  esbuild: {
+    jsx: 'automatic'
+  },
   test: {
     globals: true,
     environment: 'jsdom',

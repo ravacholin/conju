@@ -190,8 +190,8 @@ describe('Navegación y Back (flujo actual)', () => {
     const especificas = await screen.findByRole('button', { name: /un tema puntual/i })
     await user.click(especificas)
 
-    // Paso 5: selección de modo (Indicativo/Subjuntivo...)
-    await screen.findByRole('button', { name: /indicativo/i })
+    // Paso 5: selección de tema (tiempos disponibles para el nivel, ej. "presente")
+    await screen.findByRole('button', { name: /presente/i })
 
     // Back → paso 4
     await clickBack(user)
