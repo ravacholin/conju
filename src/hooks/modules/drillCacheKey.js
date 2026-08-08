@@ -23,6 +23,24 @@ export function buildReviewFilterFingerprint(reviewSessionType, reviewSessionFil
   return `${reviewSessionType}|${stableStringify(reviewSessionFilter || {})}`
 }
 
+export function buildBlockFingerprint(currentBlock) {
+  if (!currentBlock) {
+    return 'no_block'
+  }
+
+  const parts = []
+  if (currentBlock.id) {
+    parts.push(`id:${currentBlock.id}`)
+  }
+  if (Array.isArray(currentBlock.combos) && currentBlock.combos.length) {
+    parts.push('c:' + currentBlock.combos.map((c) => `${c.mood}|${c.tense}`).join(','))
+  }
+  if (Array.isArray(currentBlock.cells) && currentBlock.cells.length) {
+    parts.push('x:' + currentBlock.cells.map((c) => `${c.mood}|${c.tense}|${c.person}`).join(','))
+  }
+  return parts.length ? parts.join(';') : 'block'
+}
+
 export function buildEligibleFormsKey(signature, targetSettings, specificConstraints, reviewSessionType, reviewSessionFilter) {
   return [
     signature,
@@ -38,7 +56,8 @@ export function buildEligibleFormsKey(signature, targetSettings, specificConstra
     specificConstraints?.specificMood || '',
     specificConstraints?.specificTense || '',
     specificConstraints?.specificPerson || '',
-    buildReviewFilterFingerprint(reviewSessionType, reviewSessionFilter)
+    buildReviewFilterFingerprint(reviewSessionType, reviewSessionFilter),
+    buildBlockFingerprint(targetSettings.currentBlock)
   ].join('|')
 }
 

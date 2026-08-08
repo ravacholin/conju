@@ -38,12 +38,48 @@ const PEDAGOGICAL_THIRD_PERSON_FAMILIES = new Set(['E_I_IR', 'O_U_GER_IR', 'HIAT
 const STRONG_PRETERITE_IRREGULARITIES = new Set(['PRET_UV', 'PRET_U', 'PRET_I', 'PRET_J', 'PRET_SUPPL'])
 export const FILTER_DISCARD_REASONS = Object.freeze({
   SPECIFIC_PRACTICE: 'specific_practice_constraints',
+  PROGRESS_BLOCK: 'progress_block_filter',
   VERB_TYPE: 'verb_type_filter',
   PEDAGOGICAL_PRETERITE: 'pedagogical_preterite_filter',
   FAMILY: 'family_filter',
   PRONOUN_REGION: 'pronoun_region_filter',
   LEVEL_GATE: 'level_gate_filter'
 })
+
+/**
+ * Restrict forms to the targeting carried by an ad-hoc drill block.
+ *
+ * Progress-module cards (error heatmap, difficult verbs, "Reglas y tips", the
+ * session HUD "practicar lo pendiente", etc.) build blocks shaped like
+ * `{ combos: [{mood, tense}], itemsRemaining }` or, when they target a single
+ * cell, `{ cells: [{mood, tense, person}] }`. Those blocks run in `mixed`
+ * practice mode, so without this gate the mixed pool (which spans every tense
+ * allowed for the level, including participios/gerundios) leaks through and the
+ * user ends up drilling something other than what they tapped.
+ *
+ * Cells are the finest-grained targeting; when present they win over combos.
+ *
+ * @param {Array} forms - Forms to filter
+ * @param {Object} currentBlock - The active drill block
+ * @returns {Array} - Forms matching the block's combos/cells
+ */
+export const filterByProgressBlock = (forms, currentBlock) => {
+  if (!currentBlock) return forms
+
+  const cells = Array.isArray(currentBlock.cells) ? currentBlock.cells : []
+  if (cells.length > 0) {
+    const cellSet = new Set(cells.map(c => `${c.mood}|${c.tense}|${c.person}`))
+    return forms.filter(f => cellSet.has(`${f.mood}|${f.tense}|${f.person}`))
+  }
+
+  const combos = Array.isArray(currentBlock.combos) ? currentBlock.combos : []
+  if (combos.length > 0) {
+    const comboSet = new Set(combos.map(c => `${c.mood}|${c.tense}`))
+    return forms.filter(f => comboSet.has(`${f.mood}|${f.tense}`))
+  }
+
+  return forms
+}
 
 export const getFormsCacheKey = (region = 'la_general', settings = {}) =>
   // Only include fields that can actually change the generated forms.
@@ -579,6 +615,21 @@ const runFilteringPipeline = (forms, settings, specificConstraints = {}, formsIn
     (current) => filterForSpecificPractice(current, specificConstraints, formsIndex, settings?.region || null)
   )) {
     return { filtered, stages, emptyReason: FILTER_DISCARD_REASONS.SPECIFIC_PRACTICE }
+  }
+
+  const block = settings?.currentBlock
+  const hasBlockTargeting = Boolean(
+    block && (
+      (Array.isArray(block.combos) && block.combos.length > 0) ||
+      (Array.isArray(block.cells) && block.cells.length > 0)
+    )
+  )
+  if (applyStage(
+    { id: 'progress_block', reason: FILTER_DISCARD_REASONS.PROGRESS_BLOCK },
+    hasBlockTargeting,
+    (current) => filterByProgressBlock(current, block)
+  )) {
+    return { filtered, stages, emptyReason: FILTER_DISCARD_REASONS.PROGRESS_BLOCK }
   }
 
   if (applyStage(
