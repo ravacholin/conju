@@ -278,3 +278,67 @@ describe('DrillFormFilters - filtering diagnostics', () => {
     })
   })
 })
+
+describe('DrillFormFilters - progress block targeting', () => {
+  const forms = [
+    { lemma: 'hablar', mood: 'indicative', tense: 'pretIndef', person: '1s', value: 'hablé' },
+    { lemma: 'comer', mood: 'indicative', tense: 'pres', person: '1s', value: 'como' },
+    { lemma: 'vivir', mood: 'nonfinite', tense: 'part', person: '', value: 'vivido' },
+    { lemma: 'hablar', mood: 'nonfinite', tense: 'ger', person: '', value: 'hablando' }
+  ]
+
+  const mixedSettings = {
+    region: 'la_general',
+    verbType: 'all',
+    selectedFamily: null,
+    practiceMode: 'mixed',
+    practicePronoun: 'all',
+    level: 'ALL'
+  }
+
+  it('restricts a mixed-mode drill to the block combos (no participios leaking in)', () => {
+    const settings = {
+      ...mixedSettings,
+      currentBlock: { combos: [{ mood: 'indicative', tense: 'pretIndef' }], itemsRemaining: 8 }
+    }
+
+    const { filtered, stages } = getFilteringDiagnostics(forms, settings)
+
+    expect(filtered).toHaveLength(1)
+    expect(filtered[0]).toMatchObject({ mood: 'indicative', tense: 'pretIndef' })
+    expect(stages.find(s => s.id === 'progress_block')).toMatchObject({ skipped: false })
+  })
+
+  it('restricts to the block cells when a single cell is targeted', () => {
+    const settings = {
+      ...mixedSettings,
+      currentBlock: { cells: [{ mood: 'indicative', tense: 'pres', person: '1s' }] }
+    }
+
+    const { filtered } = getFilteringDiagnostics(forms, settings)
+
+    expect(filtered).toHaveLength(1)
+    expect(filtered[0]).toMatchObject({ mood: 'indicative', tense: 'pres', person: '1s' })
+  })
+
+  it('reports the standardized empty reason when the block matches nothing', () => {
+    const settings = {
+      ...mixedSettings,
+      currentBlock: { combos: [{ mood: 'subjunctive', tense: 'subjImpf' }] }
+    }
+
+    const { filtered, emptyReason } = getFilteringDiagnostics(forms, settings)
+
+    expect(filtered).toHaveLength(0)
+    expect(emptyReason).toBe(FILTER_DISCARD_REASONS.PROGRESS_BLOCK)
+  })
+
+  it('skips block filtering when the block carries no combos or cells', () => {
+    const settings = { ...mixedSettings, currentBlock: { id: 'lvl-A1', itemsRemaining: 8 } }
+
+    const { filtered, stages } = getFilteringDiagnostics(forms, settings)
+
+    expect(filtered.length).toBeGreaterThan(1)
+    expect(stages.find(s => s.id === 'progress_block')).toMatchObject({ skipped: true })
+  })
+})
