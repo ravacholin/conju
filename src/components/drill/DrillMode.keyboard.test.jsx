@@ -85,7 +85,7 @@ describe('DrillMode keyboard flow', () => {
     const user = userEvent.setup()
     render(<DrillMode {...createProps()} />)
 
-    const quickSwitchButton = screen.getByRole('button', { name: 'Cambiar rápido' })
+    const quickSwitchButton = screen.getByRole('button', { name: 'Configuración rápida' })
     quickSwitchButton.focus()
     await user.click(quickSwitchButton)
 
@@ -104,10 +104,10 @@ describe('DrillMode keyboard flow', () => {
     render(<DrillMode {...createProps()} />)
 
     await user.tab()
-    expect(screen.getByRole('button', { name: 'Cambiar rápido' })).toHaveFocus()
+    expect(screen.getByRole('button', { name: 'Volver' })).toHaveFocus()
     await user.tab()
-    expect(screen.getByRole('button', { name: 'Tildes' })).toHaveFocus()
+    expect(screen.getByRole('button', { name: 'Configuración rápida' })).toHaveFocus()
     await user.tab()
-    expect(screen.getByRole('button', { name: 'Menú' })).toHaveFocus()
+    expect(screen.getByRole('button', { name: 'Tildes especiales' })).toHaveFocus()
   })
 })
