@@ -341,4 +341,40 @@ describe('DrillFormFilters - progress block targeting', () => {
     expect(filtered.length).toBeGreaterThan(1)
     expect(stages.find(s => s.id === 'progress_block')).toMatchObject({ skipped: true })
   })
+
+  it('honors a block combo that sits ABOVE the current level (level gate skipped)', () => {
+    // The real "Practicar esto" bug: recent-error combos can be above the
+    // learner's level. The level gate must NOT strip them after the block stage
+    // already narrowed the pool, or the drill empties out and falls back.
+    const settings = {
+      ...mixedSettings,
+      level: 'A2',
+      currentBlock: { combos: [{ mood: 'indicative', tense: 'pretIndef' }], itemsRemaining: 8 }
+    }
+
+    const { filtered, stages, emptyReason } = getFilteringDiagnostics(forms, settings)
+
+    expect(emptyReason).toBeNull()
+    expect(filtered).toHaveLength(1)
+    expect(filtered[0]).toMatchObject({ mood: 'indicative', tense: 'pretIndef' })
+    expect(stages.find(s => s.id === 'level_gate')).toMatchObject({ skipped: true })
+  })
+
+  it('honors a block cell that sits ABOVE the current level (level gate skipped)', () => {
+    const subjForms = [
+      { lemma: 'hablar', mood: 'subjunctive', tense: 'subjImpf', person: '1s', value: 'hablara' },
+      { lemma: 'comer', mood: 'indicative', tense: 'pres', person: '1s', value: 'como' }
+    ]
+    const settings = {
+      ...mixedSettings,
+      level: 'A2',
+      currentBlock: { cells: [{ mood: 'subjunctive', tense: 'subjImpf', person: '1s' }] }
+    }
+
+    const { filtered, emptyReason } = getFilteringDiagnostics(subjForms, settings)
+
+    expect(emptyReason).toBeNull()
+    expect(filtered).toHaveLength(1)
+    expect(filtered[0]).toMatchObject({ mood: 'subjunctive', tense: 'subjImpf', person: '1s' })
+  })
 })

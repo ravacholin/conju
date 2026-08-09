@@ -64,6 +64,57 @@ describe('Progress micro-drill blocks (combos without id)', () => {
     }
   })
 
+  it('should honor a block combo that sits ABOVE the current level', async () => {
+    // The real-world "Practicar esto" bug: recent-error combos come from the
+    // learner's mistakes and can be above their current level. Before the fix,
+    // gateFormsByCurriculumAndDialect stripped every above-level form up front, so
+    // the pool emptied and the drill fell back to the broad mixed pool (presente
+    // regular, futuro, gerundio, …) instead of the targeted combo.
+    const forms = await buildFormsForRegion('la_general')
+
+    // A2 learner, block targeting subjuntivo imperfecto (a B2 combo).
+    const blockSettings = {
+      ...baseSettings,
+      level: 'A2',
+      currentBlock: {
+        combos: [{ mood: 'subjunctive', tense: 'subjImpf' }],
+        itemsRemaining: 8
+      }
+    }
+
+    for (let i = 0; i < 40; i++) {
+      const r = await chooseNext({ forms, history: {}, currentItem: null, sessionSettings: blockSettings })
+      expect(r, `Iteration ${i + 1}: no form returned`).toBeTruthy()
+      expect(
+        `${r.mood}|${r.tense}`,
+        `Iteration ${i + 1}: expected subjunctive|subjImpf but got ${r.mood}|${r.tense} (${r.lemma})`
+      ).toBe('subjunctive|subjImpf')
+    }
+  })
+
+  it('should honor a block cell that sits ABOVE the current level', async () => {
+    // Heatmap-style cell targeting (mood/tense/person) must survive the gate too.
+    const forms = await buildFormsForRegion('la_general')
+
+    const cellSettings = {
+      ...baseSettings,
+      level: 'A2',
+      currentBlock: {
+        cells: [{ mood: 'subjunctive', tense: 'subjImpf', person: '1s' }],
+        itemsRemaining: 8
+      }
+    }
+
+    for (let i = 0; i < 20; i++) {
+      const r = await chooseNext({ forms, history: {}, currentItem: null, sessionSettings: cellSettings })
+      expect(r, `Iteration ${i + 1}: no form returned`).toBeTruthy()
+      expect(
+        `${r.mood}|${r.tense}|${r.person}`,
+        `Iteration ${i + 1}: expected subjunctive|subjImpf|1s but got ${r.mood}|${r.tense}|${r.person} (${r.lemma})`
+      ).toBe('subjunctive|subjImpf|1s')
+    }
+  })
+
   it('should not cross-contaminate two different combo blocks sharing no id', async () => {
     const forms = await buildFormsForRegion('la_general')
 
