@@ -114,8 +114,26 @@ export function getAllowedPersonsForRegion(region, { useVoseo = false, useVosotr
   return ALL;
 }
 
+// Collect the `mood|tense` combos a runtime block targets, from either its
+// `combos` (mood/tense pairs) or its `cells` (mood/tense/person triples).
+function collectBlockCombos(currentBlock) {
+  const combos = new Set();
+  if (!currentBlock) return combos;
+  if (Array.isArray(currentBlock.combos)) {
+    for (const c of currentBlock.combos) {
+      if (c && c.mood && c.tense) combos.add(`${c.mood}|${c.tense}`);
+    }
+  }
+  if (Array.isArray(currentBlock.cells)) {
+    for (const c of currentBlock.cells) {
+      if (c && c.mood && c.tense) combos.add(`${c.mood}|${c.tense}`);
+    }
+  }
+  return combos;
+}
+
 export function gateFormsByCurriculumAndDialect(forms, settings) {
-  const { level, region, useVoseo, useVosotros, practiceMode, cameFromTema, specificMood, specificTense } = settings || {};
+  const { level, region, useVoseo, useVosotros, practiceMode, cameFromTema, specificMood, specificTense, currentBlock } = settings || {};
   const allowedPersons = getAllowedPersonsForRegion(region, { useVoseo, useVosotros });
 
   // Debug logging for regional filtering issues
@@ -130,7 +148,18 @@ export function gateFormsByCurriculumAndDialect(forms, settings) {
   }
 
   const enforceCurriculumLevel = practiceMode !== 'specific' && practiceMode !== 'theme';
-  const allowedCombos = enforceCurriculumLevel ? getAllowedCombosForLevel(level || 'A1') : null;
+  // Progress-module micro-drills ("Practicar esto", error heatmap, difficult verbs)
+  // run in 'mixed' mode but target a specific mood/tense through `currentBlock`.
+  // Those combos come straight from the learner's mistakes, so they can sit ABOVE
+  // the current level. The curriculum gate must not strip them, or the pool empties
+  // out and the drill falls back to the broad mixed pool (presente regular et al.).
+  // `applyLevelFilter` downstream still narrows the pool to exactly the block combos.
+  const blockCombos = collectBlockCombos(currentBlock);
+  let allowedCombos = enforceCurriculumLevel ? getAllowedCombosForLevel(level || 'A1') : null;
+  if (allowedCombos && blockCombos.size > 0) {
+    allowedCombos = new Set(allowedCombos);
+    for (const combo of blockCombos) allowedCombos.add(combo);
+  }
   const enforceSelection = practiceMode === 'specific' && cameFromTema !== true;
   const MIXED_COMBO_MAP = new Map([
     ['imperative|impMixed', new Set(['impAff', 'impNeg'])],

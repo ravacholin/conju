@@ -669,7 +669,13 @@ const runFilteringPipeline = (forms, settings, specificConstraints = {}, formsIn
 
   if (applyStage(
     { id: 'level_gate', reason: FILTER_DISCARD_REASONS.LEVEL_GATE },
-    settings.practiceMode !== 'specific' && settings.practiceMode !== 'theme',
+    // A runtime block (progress-module micro-drills, SRS review cells) targets
+    // combos straight from the learner's mistakes, which may sit above the
+    // current level. The progress_block stage above already narrowed the pool to
+    // exactly those combos/cells, so re-applying the level gate here would strip
+    // any above-level target and empty the pool. Skip it whenever a block is
+    // targeting, just like specific/theme practice.
+    settings.practiceMode !== 'specific' && settings.practiceMode !== 'theme' && !hasBlockTargeting,
     (current) => current.filter(form => allowsLevel(form, settings))
   )) {
     return { filtered, stages, emptyReason: FILTER_DISCARD_REASONS.LEVEL_GATE }

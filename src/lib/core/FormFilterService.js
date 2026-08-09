@@ -55,6 +55,10 @@ export function filterEligibleForms(forms, settings, context = {}) {
           .filter(Boolean)
       )
     : null
+  // `mood|tense` combos a runtime block targets (from combos OR cells). These
+  // come from the learner's mistakes/SRS queue and can sit above the current
+  // level, so the level filter must honor them instead of the level inventory.
+  const blockComboFilter = buildBlockComboSet(currentBlock)
 
   // Step 1: Gate sistemático por curriculum y dialecto
   const preFiltered = gateFormsByCurriculumAndDialect(forms, settings)
@@ -67,7 +71,7 @@ export function filterEligibleForms(forms, settings, context = {}) {
     }
 
     // Level filtering
-    if (!applyLevelFilter(form, {level, practiceMode, currentBlock})) {
+    if (!applyLevelFilter(form, {level, practiceMode, blockComboFilter})) {
       return false
     }
 
@@ -150,18 +154,41 @@ export function filterEligibleForms(forms, settings, context = {}) {
 }
 
 /**
+ * Collect the `mood|tense` combos a runtime block targets, from either its
+ * `combos` (mood/tense pairs) or its `cells` (mood/tense/person triples).
+ * Returns null when the block targets nothing, so callers fall back to the
+ * level inventory.
+ */
+function buildBlockComboSet(currentBlock) {
+  if (!currentBlock) return null
+  const set = new Set()
+  if (Array.isArray(currentBlock.combos)) {
+    for (const c of currentBlock.combos) {
+      if (c && c.mood && c.tense) set.add(`${c.mood}|${c.tense}`)
+    }
+  }
+  if (Array.isArray(currentBlock.cells)) {
+    for (const c of currentBlock.cells) {
+      if (c && c.mood && c.tense) set.add(`${c.mood}|${c.tense}`)
+    }
+  }
+  return set.size > 0 ? set : null
+}
+
+/**
  * Apply level-based filtering for mood/tense combinations
  */
-function applyLevelFilter(form, {level, practiceMode, currentBlock}) {
+function applyLevelFilter(form, {level, practiceMode, blockComboFilter}) {
   const isSpecificTopicPractice = (practiceMode === 'theme') || (practiceMode === 'specific')
 
   if (isSpecificTopicPractice) {
     return true // Skip level filtering for targeted practice
   }
 
-  const allowed = currentBlock && currentBlock.combos && currentBlock.combos.length
-    ? new Set(currentBlock.combos.map(c => `${c.mood}|${c.tense}`))
-    : getAllowedCombosForLevel(level)
+  // A runtime block (progress-module micro-drills, SRS review cells) targets
+  // combos straight from the learner's mistakes, which may sit above the current
+  // level. Honor the block's own combos instead of the level inventory.
+  const allowed = blockComboFilter || getAllowedCombosForLevel(level)
 
   return allowed.has(`${form.mood}|${form.tense}`)
 }
