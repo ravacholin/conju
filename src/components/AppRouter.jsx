@@ -52,6 +52,7 @@ import { useOnboardingFlow } from '../hooks/useOnboardingFlow.js'
 import router from '../lib/routing/Router.js'
 import { ROUTES } from '../lib/routing/routeContract.js'
 import { useSessionStore } from '../state/session.js'
+import { snapshotDrillTargeting, drillTargetingChanged } from '../features/progress/drillNavigationConfig.js'
 import { createLogger } from '../lib/utils/logger.js'
 
 const logger = createLogger('AppRouter')
@@ -87,14 +88,12 @@ function AppRouter() {
   const drillMode = useDrillMode()
   const onboardingFlow = useOnboardingFlow()
 
-  // Track previous settings to detect changes from progress navigation
-  const prevSettingsRef = useRef({
-    practiceMode: settings.practiceMode,
-    specificMood: settings.specificMood,
-    specificTense: settings.specificTense,
-    verbType: settings.verbType,
-    selectedFamily: settings.selectedFamily
-  })
+  // Track previous drill targeting to detect changes from progress navigation.
+  // Includes the runtime block/review fingerprints from the session store, which
+  // change while practiceMode stays 'mixed'/'review' — see snapshotDrillTargeting.
+  const prevSettingsRef = useRef(
+    snapshotDrillTargeting(settings, useSessionStore.getState())
+  )
 
 
   // Note: Progress system initialization is handled by autoInit.js imported in main.jsx
@@ -201,14 +200,14 @@ function AppRouter() {
 
       // CRITICAL: Always read fresh settings from store to avoid stale closures
       const LATEST_SETTINGS = useSettings.getState();
+      const LATEST_TARGETING = snapshotDrillTargeting(
+        LATEST_SETTINGS,
+        useSessionStore.getState()
+      );
 
-      // Detect if specific practice settings changed
-      const settingsChanged =
-        prevSettingsRef.current.practiceMode !== LATEST_SETTINGS.practiceMode ||
-        prevSettingsRef.current.specificMood !== LATEST_SETTINGS.specificMood ||
-        prevSettingsRef.current.specificTense !== LATEST_SETTINGS.specificTense ||
-        prevSettingsRef.current.verbType !== LATEST_SETTINGS.verbType ||
-        prevSettingsRef.current.selectedFamily !== LATEST_SETTINGS.selectedFamily;
+      // Detect if drill targeting changed (practice mode/mood/tense/family/verbType
+      // OR the runtime block/review filter set by progress-module drills).
+      const settingsChanged = drillTargetingChanged(prevSettingsRef.current, LATEST_TARGETING);
 
       // If settings changed and we have a current item, clear it first
       if (settingsChanged && drillMode.currentItem && drillMode.clearCurrentItem) {
@@ -236,14 +235,8 @@ function AppRouter() {
         clearDrillGenerationTimeout();
       }
 
-      // Update previous settings reference with LATEST settings
-      prevSettingsRef.current = {
-        practiceMode: LATEST_SETTINGS.practiceMode,
-        specificMood: LATEST_SETTINGS.specificMood,
-        specificTense: LATEST_SETTINGS.specificTense,
-        verbType: LATEST_SETTINGS.verbType,
-        selectedFamily: LATEST_SETTINGS.selectedFamily
-      };
+      // Update previous targeting reference with the latest snapshot
+      prevSettingsRef.current = LATEST_TARGETING;
     }
   }, [
     currentMode,
