@@ -1,0 +1,31 @@
+# Render Blueprint for the Progress Sync backend (conju.onrender.com)
+# Docs: https://render.com/docs/blueprint-spec
+#
+# The server refuses to boot in production without JWT_SECRET
+# (see server/src/auth-service.js). Render generates and persists a
+# secure value automatically via `generateValue: true`, so the deploy
+# no longer fails on a missing secret.
+services:
+  - type: web
+    name: conju-sync
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_PREFIX
+        value: /api
+      # Auto-generated once and persisted across deploys.
+      - key: JWT_SECRET
+        generateValue: true
+      # Comma-separated allowlist of frontend origins.
+      - key: CORS_ORIGIN
+        value: https://verb-os.vercel.app
+      # Set in the Render dashboard: your Google OAuth client id(s).
+      - key: GOOGLE_CLIENT_IDS
+        sync: false
