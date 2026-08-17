@@ -1,5 +1,5 @@
 # Dockerfile para deployment alternativo (Railway prefiere detectar automáticamente)
-FROM node:18-alpine
+FROM node:24-alpine
 
 WORKDIR /app
 
