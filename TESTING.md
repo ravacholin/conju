@@ -216,7 +216,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        node-version: ['18', '20', '22']
+        node-version: ['20', '22', '24']
     steps:
       - run: npm test -- --coverage
       - run: npm run test:e2e
