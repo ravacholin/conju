@@ -14,10 +14,16 @@ export function createRoutes() {
       const userId = req.userId
       upsertUser(userId, req.accountId)
       const records = Array.isArray(req.body?.records) ? req.body.records : []
-      if (!records.length) return res.json({ uploaded: 0 })
+      if (!records.length) {
+        return res.json({ success: true, uploaded: 0, updated: 0, skipped: 0, skippedIds: [] })
+      }
 
       const now = Date.now()
       let uploaded = 0, updated = 0
+      // Track records the server could NOT persist (e.g. missing id). The client uses this to
+      // avoid marking such records as synced, so they are retried instead of lost silently.
+      let skipped = 0
+      const skippedIds = []
       const normalizeDate = (value, fieldName, recordId, { useNowWhenMissing = false } = {}) => {
         if (value === null || value === undefined) {
           return useNowWhenMissing ? now : null
@@ -61,9 +67,14 @@ export function createRoutes() {
         if (!stmt) return
 
         for (const rec of records) {
-          if (!rec) continue
+          if (!rec) { skipped++; continue }
           const key = table === 'sessions' ? (rec.id || rec.sessionId) : rec.id
-          if (!key) continue
+          if (!key) {
+            // No stable id: cannot upsert deterministically. Report it so the client keeps it
+            // pending instead of assuming it was stored.
+            skipped++
+            continue
+          }
           const id = String(key)
           // Force server-side user id
           const payload = JSON.stringify({ ...rec, userId })
@@ -159,7 +170,7 @@ export function createRoutes() {
         }
       })()
 
-      res.json({ success: true, uploaded, updated })
+      res.json({ success: true, uploaded, updated, skipped, skippedIds })
     } catch (e) {
       console.error('Bulk error', e)
       res.status(500).json({ error: 'bulk_failed', detail: String(e.message || e) })
