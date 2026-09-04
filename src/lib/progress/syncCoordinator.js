@@ -45,9 +45,13 @@ const {
  * @param {Array<Object>} items - the exact objects that were just uploaded (not just ids),
  *   so we can compare their updatedAt against whatever is in the store right now.
  */
-async function markSynced(storeName, items) {
+async function markSynced(storeName, items, { skippedIds } = {}) {
   try {
     if (!items || items.length === 0) return
+
+    const skipSet = Array.isArray(skippedIds) && skippedIds.length > 0
+      ? new Set(skippedIds.map((value) => String(value)))
+      : null
 
     const db = await initDB()
     const tx = db.transaction(storeName, 'readwrite')
@@ -56,6 +60,8 @@ async function markSynced(storeName, items) {
     for (const item of items) {
       const id = item?.sessionId || item?.id
       if (!id) continue
+      // The server reported it could not persist this record; keep it unsynced so it retries.
+      if (skipSet && skipSet.has(String(id))) continue
       try {
         const existing = await store.get(id)
         if (!existing) continue
@@ -82,6 +88,62 @@ async function markSynced(storeName, items) {
       error: error?.message
     })
   }
+}
+
+/**
+ * Decides whether the server acknowledged persisting every record we uploaded.
+ *
+ * This is the safety net against silent data loss: previously the client marked records as
+ * synced the moment the server returned any 2xx response, even if the server had actually
+ * skipped some of them. Skipped-but-marked records are never retried, so they vanish from
+ * every other device. Here we compare the server's reported counts against what we sent.
+ *
+ * Backward compatible: a server (or test mock) that does not report numeric counts is trusted
+ * on its 2xx success, preserving the previous behaviour.
+ *
+ * @param {Object|null} result - Response returned by SyncService.tryBulk
+ * @param {number} sentCount - Number of records we attempted to upload
+ * @returns {boolean} true when it is safe to mark the uploaded records as synced
+ */
+function serverAcknowledgedAll(result, sentCount) {
+  if (!result || result.success === false) return false
+
+  const uploaded = Number(result.uploaded)
+  const updated = Number(result.updated)
+  const hasCounts = Number.isFinite(uploaded) || Number.isFinite(updated)
+
+  // Legacy server or a test mock that only returns { success: true }: trust the 2xx.
+  if (!hasCounts) return true
+
+  const acknowledged = (Number.isFinite(uploaded) ? uploaded : 0) + (Number.isFinite(updated) ? updated : 0)
+  return acknowledged >= sentCount
+}
+
+/**
+ * Uploads a batch and marks its records synced ONLY when the server acknowledges all of them.
+ *
+ * When the server does not fully acknowledge the batch, the records are left unsynced so the
+ * next sync cycle retries them, instead of being silently dropped. Network errors propagate to
+ * the caller (which already treats them as an upload failure).
+ *
+ * @param {string} type - Collection type for tryBulk (e.g. 'attempts')
+ * @param {string} storeName - IndexedDB store to mark as synced
+ * @param {Array<Object>} records - Records to upload
+ * @returns {Promise<{ ok: boolean, uploaded: number, server: Object|null }>}
+ */
+async function uploadAndMarkSynced(type, storeName, records) {
+  if (!records || records.length === 0) {
+    return { ok: true, uploaded: 0, server: null }
+  }
+
+  const server = await tryBulk(type, records)
+
+  if (!serverAcknowledgedAll(server, records.length)) {
+    return { ok: false, uploaded: 0, server }
+  }
+
+  await markSynced(storeName, records, { skippedIds: server?.skippedIds })
+  return { ok: true, uploaded: records.length, server }
 }
 
 /**
@@ -464,10 +526,14 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
         const unsyncedAttempts = await claimAndGetUnsynced(STORAGE_CONFIG.STORES.ATTEMPTS, resolvedUserId)
         if (unsyncedAttempts.length > 0) {
           safeLogger.info('syncAccountData: uploading attempts', { count: unsyncedAttempts.length })
-          const res = await tryBulk('attempts', unsyncedAttempts)
-          await markSynced(STORAGE_CONFIG.STORES.ATTEMPTS, unsyncedAttempts)
-          uploaded.attempts = unsyncedAttempts.length
-          safeLogger.info('syncAccountData: attempts uploaded successfully', { count: unsyncedAttempts.length, server: res })
+          const outcome = await uploadAndMarkSynced('attempts', STORAGE_CONFIG.STORES.ATTEMPTS, unsyncedAttempts)
+          if (outcome.ok) {
+            uploaded.attempts = outcome.uploaded
+            safeLogger.info('syncAccountData: attempts uploaded successfully', { count: outcome.uploaded, server: outcome.server })
+          } else {
+            anyUploadFailed = true
+            safeLogger.error('syncAccountData: attempts upload not fully acknowledged by server', { sent: unsyncedAttempts.length, server: outcome.server })
+          }
         }
       } catch (e) {
         anyUploadFailed = true
@@ -485,10 +551,14 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
             count: masteryPayload.length,
             mode: backfillMastery ? 'full-backfill' : 'incremental'
           })
-          const res = await tryBulk('mastery', masteryPayload)
-          await markSynced(STORAGE_CONFIG.STORES.MASTERY, masteryPayload)
-          uploaded.mastery = masteryPayload.length
-          safeLogger.info('syncAccountData: mastery uploaded successfully', { count: masteryPayload.length, server: res })
+          const outcome = await uploadAndMarkSynced('mastery', STORAGE_CONFIG.STORES.MASTERY, masteryPayload)
+          if (outcome.ok) {
+            uploaded.mastery = outcome.uploaded
+            safeLogger.info('syncAccountData: mastery uploaded successfully', { count: outcome.uploaded, server: outcome.server })
+          } else {
+            anyUploadFailed = true
+            safeLogger.error('syncAccountData: mastery upload not fully acknowledged by server', { sent: masteryPayload.length, server: outcome.server })
+          }
         }
       } catch (e) {
         anyUploadFailed = true
@@ -506,10 +576,14 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
             count: schedulePayload.length,
             mode: backfillSchedules ? 'full-backfill' : 'incremental'
           })
-          const res = await tryBulk('schedules', schedulePayload)
-          await markSynced(STORAGE_CONFIG.STORES.SCHEDULES, schedulePayload)
-          uploaded.schedules = schedulePayload.length
-          safeLogger.info('syncAccountData: schedules uploaded successfully', { count: schedulePayload.length, server: res })
+          const outcome = await uploadAndMarkSynced('schedules', STORAGE_CONFIG.STORES.SCHEDULES, schedulePayload)
+          if (outcome.ok) {
+            uploaded.schedules = outcome.uploaded
+            safeLogger.info('syncAccountData: schedules uploaded successfully', { count: outcome.uploaded, server: outcome.server })
+          } else {
+            anyUploadFailed = true
+            safeLogger.error('syncAccountData: schedules upload not fully acknowledged by server', { sent: schedulePayload.length, server: outcome.server })
+          }
         }
       } catch (e) {
         anyUploadFailed = true
@@ -522,10 +596,14 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
         const unsyncedSessions = await claimAndGetUnsynced(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, resolvedUserId)
         if (unsyncedSessions.length > 0) {
           safeLogger.info('syncAccountData: uploading sessions', { count: unsyncedSessions.length })
-          const res = await tryBulk('sessions', unsyncedSessions)
-          await markSynced(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, unsyncedSessions)
-          uploaded.sessions = unsyncedSessions.length
-          safeLogger.info('syncAccountData: sessions uploaded successfully', { count: unsyncedSessions.length, server: res })
+          const outcome = await uploadAndMarkSynced('sessions', STORAGE_CONFIG.STORES.LEARNING_SESSIONS, unsyncedSessions)
+          if (outcome.ok) {
+            uploaded.sessions = outcome.uploaded
+            safeLogger.info('syncAccountData: sessions uploaded successfully', { count: outcome.uploaded, server: outcome.server })
+          } else {
+            anyUploadFailed = true
+            safeLogger.error('syncAccountData: sessions upload not fully acknowledged by server', { sent: unsyncedSessions.length, server: outcome.server })
+          }
         }
       } catch (e) {
         anyUploadFailed = true
@@ -553,10 +631,14 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
 
         if (unsyncedSettings.length > 0) {
           safeLogger.info('syncAccountData: uploading settings', { count: unsyncedSettings.length })
-          const res = await tryBulk('settings', unsyncedSettings)
-          await markSynced(STORAGE_CONFIG.STORES.USER_SETTINGS, unsyncedSettings)
-          uploaded.settings = unsyncedSettings.length
-          safeLogger.info('syncAccountData: settings uploaded successfully', { count: unsyncedSettings.length, server: res })
+          const outcome = await uploadAndMarkSynced('settings', STORAGE_CONFIG.STORES.USER_SETTINGS, unsyncedSettings)
+          if (outcome.ok) {
+            uploaded.settings = outcome.uploaded
+            safeLogger.info('syncAccountData: settings uploaded successfully', { count: outcome.uploaded, server: outcome.server })
+          } else {
+            anyUploadFailed = true
+            safeLogger.error('syncAccountData: settings upload not fully acknowledged by server', { sent: unsyncedSettings.length, server: outcome.server })
+          }
         } else {
           safeLogger.info('syncAccountData: no unsynced settings to upload')
         }
@@ -570,10 +652,14 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
         const unsyncedChallenges = await claimAndGetUnsynced(STORAGE_CONFIG.STORES.CHALLENGES, resolvedUserId)
         if (unsyncedChallenges.length > 0) {
           safeLogger.info('syncAccountData: uploading challenges', { count: unsyncedChallenges.length })
-          const res = await tryBulk('challenges', unsyncedChallenges)
-          await markSynced(STORAGE_CONFIG.STORES.CHALLENGES, unsyncedChallenges)
-          uploaded.challenges = unsyncedChallenges.length
-          safeLogger.info('syncAccountData: challenges uploaded successfully', { count: unsyncedChallenges.length, server: res })
+          const outcome = await uploadAndMarkSynced('challenges', STORAGE_CONFIG.STORES.CHALLENGES, unsyncedChallenges)
+          if (outcome.ok) {
+            uploaded.challenges = outcome.uploaded
+            safeLogger.info('syncAccountData: challenges uploaded successfully', { count: outcome.uploaded, server: outcome.server })
+          } else {
+            anyUploadFailed = true
+            safeLogger.error('syncAccountData: challenges upload not fully acknowledged by server', { sent: unsyncedChallenges.length, server: outcome.server })
+          }
         }
       } catch (e) {
         anyUploadFailed = true
@@ -585,10 +671,14 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
         const unsyncedEvents = await claimAndGetUnsynced(STORAGE_CONFIG.STORES.EVENTS, resolvedUserId)
         if (unsyncedEvents.length > 0) {
           safeLogger.info('syncAccountData: uploading events', { count: unsyncedEvents.length })
-          const res = await tryBulk('events', unsyncedEvents)
-          await markSynced(STORAGE_CONFIG.STORES.EVENTS, unsyncedEvents)
-          uploaded.events = unsyncedEvents.length
-          safeLogger.info('syncAccountData: events uploaded successfully', { count: unsyncedEvents.length, server: res })
+          const outcome = await uploadAndMarkSynced('events', STORAGE_CONFIG.STORES.EVENTS, unsyncedEvents)
+          if (outcome.ok) {
+            uploaded.events = outcome.uploaded
+            safeLogger.info('syncAccountData: events uploaded successfully', { count: outcome.uploaded, server: outcome.server })
+          } else {
+            anyUploadFailed = true
+            safeLogger.error('syncAccountData: events upload not fully acknowledged by server', { sent: unsyncedEvents.length, server: outcome.server })
+          }
         }
       } catch (e) {
         anyUploadFailed = true
@@ -612,10 +702,14 @@ export async function syncAccountData({ skipWakeUp = false } = {}) {
         if (userRecord && (localUserSyncedAt === 0 || localUserSyncedAt < latestLocalUpdate || latestLocalUpdate === 0)) {
           const payload = buildGamificationPayload(userRecord, resolvedUserId)
           safeLogger.info('syncAccountData: uploading gamification stats', { userId: resolvedUserId })
-          const res = await tryBulk('gamification', [payload])
-          await markSynced(STORAGE_CONFIG.STORES.USERS, [payload])
-          uploaded.gamification = 1
-          safeLogger.info('syncAccountData: gamification stats uploaded successfully', { server: res })
+          const outcome = await uploadAndMarkSynced('gamification', STORAGE_CONFIG.STORES.USERS, [payload])
+          if (outcome.ok) {
+            uploaded.gamification = 1
+            safeLogger.info('syncAccountData: gamification stats uploaded successfully', { server: outcome.server })
+          } else {
+            anyUploadFailed = true
+            safeLogger.error('syncAccountData: gamification upload not fully acknowledged by server', { server: outcome.server })
+          }
         }
       } catch (e) {
         // If helpers are missing (tests/mocks), don't fail the whole sync
@@ -793,10 +887,10 @@ export async function syncNow({ include = ['attempts', 'mastery', 'schedules', '
       if (unsynced.length > 0) {
         safeLogger.info('syncNow: subiendo attempts al servidor', { count: unsynced.length })
         legacyUploadsPerformed = true
-        const res = await tryBulk('attempts', unsynced)
-        await markSynced(STORAGE_CONFIG.STORES.ATTEMPTS, unsynced)
-        results.attempts = { uploaded: unsynced.length, server: res }
-        safeLogger.info('syncNow: attempts subidos exitosamente', { count: unsynced.length })
+        const outcome = await uploadAndMarkSynced('attempts', STORAGE_CONFIG.STORES.ATTEMPTS, unsynced)
+        if (!outcome.ok) throw new Error('attempts upload not fully acknowledged by server')
+        results.attempts = { uploaded: outcome.uploaded, server: outcome.server }
+        safeLogger.info('syncNow: attempts subidos exitosamente', { count: outcome.uploaded })
       } else {
         safeLogger.debug('syncNow: no hay attempts pendientes de sincronizar')
       }
@@ -814,10 +908,10 @@ export async function syncNow({ include = ['attempts', 'mastery', 'schedules', '
       if (unsynced.length > 0) {
         safeLogger.info('syncNow: subiendo mastery al servidor', { count: unsynced.length })
         legacyUploadsPerformed = true
-        const res = await tryBulk('mastery', unsynced)
-        await markSynced(STORAGE_CONFIG.STORES.MASTERY, unsynced)
-        results.mastery = { uploaded: unsynced.length, server: res }
-        safeLogger.info('syncNow: mastery subidos exitosamente', { count: unsynced.length })
+        const outcome = await uploadAndMarkSynced('mastery', STORAGE_CONFIG.STORES.MASTERY, unsynced)
+        if (!outcome.ok) throw new Error('mastery upload not fully acknowledged by server')
+        results.mastery = { uploaded: outcome.uploaded, server: outcome.server }
+        safeLogger.info('syncNow: mastery subidos exitosamente', { count: outcome.uploaded })
       } else {
         safeLogger.debug('syncNow: no hay mastery pendientes de sincronizar')
       }
@@ -835,10 +929,10 @@ export async function syncNow({ include = ['attempts', 'mastery', 'schedules', '
       if (unsynced.length > 0) {
         safeLogger.info('syncNow: subiendo schedules al servidor', { count: unsynced.length })
         legacyUploadsPerformed = true
-        const res = await tryBulk('schedules', unsynced)
-        await markSynced(STORAGE_CONFIG.STORES.SCHEDULES, unsynced)
-        results.schedules = { uploaded: unsynced.length, server: res }
-        safeLogger.info('syncNow: schedules subidos exitosamente', { count: unsynced.length })
+        const outcome = await uploadAndMarkSynced('schedules', STORAGE_CONFIG.STORES.SCHEDULES, unsynced)
+        if (!outcome.ok) throw new Error('schedules upload not fully acknowledged by server')
+        results.schedules = { uploaded: outcome.uploaded, server: outcome.server }
+        safeLogger.info('syncNow: schedules subidos exitosamente', { count: outcome.uploaded })
       } else {
         safeLogger.debug('syncNow: no hay schedules pendientes de sincronizar')
       }
@@ -856,10 +950,10 @@ export async function syncNow({ include = ['attempts', 'mastery', 'schedules', '
       if (unsynced.length > 0) {
         safeLogger.info('syncNow: subiendo sesiones al servidor', { count: unsynced.length })
         legacyUploadsPerformed = true
-        const res = await tryBulk('sessions', unsynced)
-        await markSynced(STORAGE_CONFIG.STORES.LEARNING_SESSIONS, unsynced)
-        results.sessions = { uploaded: unsynced.length, server: res }
-        safeLogger.info('syncNow: sesiones subidas exitosamente', { count: unsynced.length })
+        const outcome = await uploadAndMarkSynced('sessions', STORAGE_CONFIG.STORES.LEARNING_SESSIONS, unsynced)
+        if (!outcome.ok) throw new Error('sessions upload not fully acknowledged by server')
+        results.sessions = { uploaded: outcome.uploaded, server: outcome.server }
+        safeLogger.info('syncNow: sesiones subidas exitosamente', { count: outcome.uploaded })
       } else {
         safeLogger.debug('syncNow: no hay sesiones pendientes de sincronizar')
       }
@@ -956,5 +1050,7 @@ export default {
 
 export const __testing = {
   wakeUpServer,
-  enqueue
+  enqueue,
+  serverAcknowledgedAll,
+  uploadAndMarkSynced
 }

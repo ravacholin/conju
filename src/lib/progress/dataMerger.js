@@ -311,7 +311,7 @@ export async function mergeAccountDataLocally(accountData) {
           }
           sessionsToSave.push(localSession)
           sessionMap.set(key, localSession)
-        } else if (remoteSession.updatedAt && new Date(remoteSession.updatedAt) > new Date(existing.updatedAt || 0)) {
+        } else if (toComparableTime(remoteSession.updatedAt) > toComparableTime(existing.updatedAt)) {
           const updatedSession = {
             ...existing,
             ...remoteSession,
@@ -382,7 +382,7 @@ export async function mergeAccountDataLocally(accountData) {
           }
           masteryToSave.push(localMastery)
           masteryMap.set(key, localMastery)
-        } else if (new Date(remoteMastery.updatedAt) > new Date(existing.updatedAt)) {
+        } else if (toComparableTime(remoteMastery.updatedAt) > toComparableTime(existing.updatedAt)) {
           const updatedMastery = {
             ...existing,
             ...remoteMastery,
@@ -452,7 +452,7 @@ export async function mergeAccountDataLocally(accountData) {
           }
           schedulesToSave.push(localSchedule)
           scheduleMap.set(key, localSchedule)
-        } else if (new Date(remoteSchedule.updatedAt) > new Date(existing.updatedAt)) {
+        } else if (toComparableTime(remoteSchedule.updatedAt) > toComparableTime(existing.updatedAt)) {
           const updatedSchedule = {
             ...existing,
             ...remoteSchedule,
@@ -533,16 +533,22 @@ export async function mergeAccountDataLocally(accountData) {
         localUpdatedAt = currentSettings?.lastUpdated || currentSettings?.updatedAt || 0
       }
 
+      // Normalize both sides to numeric epoch ms before comparing. Timestamps can arrive as
+      // ISO strings (server records) or as numbers (settings.lastUpdated), and comparing the two
+      // formats directly is unreliable (e.g. a number vs a string coerces inconsistently).
+      const serverUpdatedAtMs = toComparableTime(serverUpdatedAt)
+      const localUpdatedAtMs = toComparableTime(localUpdatedAt)
+
       safeLogger.debug('mergeAccountDataLocally: settings merge comparison', {
-        serverUpdatedAt: new Date(serverUpdatedAt || 0).toISOString(),
-        localUpdatedAt: new Date(localUpdatedAt || 0).toISOString(),
-        serverIsNewer: serverUpdatedAt > localUpdatedAt,
+        serverUpdatedAt: new Date(serverUpdatedAtMs).toISOString(),
+        localUpdatedAt: new Date(localUpdatedAtMs).toISOString(),
+        serverIsNewer: serverUpdatedAtMs > localUpdatedAtMs,
         serverUserLevel: actualServerSettings?.userLevel,
         localUserLevel: currentSettings?.userLevel,
         hasNestedSettings: !!serverSettingsRecord?.settings
       })
 
-      const shouldApplyServer = serverUpdatedAt > localUpdatedAt
+      const shouldApplyServer = serverUpdatedAtMs > localUpdatedAtMs
 
       if (shouldApplyServer) {
         // Server has newer settings, apply them

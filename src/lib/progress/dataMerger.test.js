@@ -103,6 +103,45 @@ describe('dataMerger', () => {
     }
   })
 
+  it('applies newer remote mastery even when the local record has no valid updatedAt', async () => {
+    // Regression guard: comparing dates with `new Date(undefined)` yields NaN, and `date > NaN`
+    // is always false, so newer remote data was silently ignored. The merge must be NaN-safe.
+    const updates = []
+
+    vi.doMock('./authBridge.js', () => createCompleteAuthBridgeMock({
+      getAuthenticatedUser: () => ({ id: 'auth-user' }),
+      isLocalSyncMode: () => false,
+      isAuthenticated: () => true
+    }))
+    vi.doMock('./userSettingsStore.js', () => createCompleteUserSettingsStoreMock({
+      getCurrentUserId: () => 'auth-user'
+    }))
+    vi.doMock('./database.js', () => ({
+      getAllFromDB: vi.fn(async (store) => {
+        if (store === 'mastery') {
+          // Local record for the same cell, but with NO updatedAt.
+          return [{ id: 'm-local', userId: 'auth-user', verbId: 'ser', mood: 'indicative', tense: 'present', person: '1s', score: 10 }]
+        }
+        return []
+      }),
+      batchSaveToDB: vi.fn(async () => ({ saved: 0, errors: [] })),
+      batchUpdateInDB: vi.fn(async (_store, arr) => { updates.push(...arr); return { updated: arr.length, errors: [] } }),
+      getUserById: vi.fn(async () => null)
+    }))
+
+    const { mergeAccountDataLocally } = await import('./dataMerger.js')
+
+    const result = await mergeAccountDataLocally({
+      mastery: [
+        { id: 'm-remote', verbId: 'ser', mood: 'indicative', tense: 'present', person: '1s', score: 90, updatedAt: new Date().toISOString() }
+      ]
+    })
+
+    expect(result.mastery).toBe(1)
+    expect(updates.length).toBe(1)
+    expect(updates[0].updates.score).toBe(90)
+  })
+
   it('applies server settings on fresh device (no local DB record)', async () => {
     const applied = { called: false, state: null }
     const saved = { called: false, record: null, opts: null }
