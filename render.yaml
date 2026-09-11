@@ -1,0 +1,47 @@
+# Render Blueprint for the progress-sync backend (server/).
+#
+# Why this file exists: the server fails fast in production if JWT_SECRET is not set
+# (see server/src/auth-service.js). Declaring JWT_SECRET with generateValue: true lets
+# Render provision a strong secret automatically, so the deploy can no longer crash with
+# "JWT_SECRET must be set in production".
+#
+# Note: this Blueprint does not retroactively reconfigure a service that was created by hand
+# in the dashboard. To apply it, adopt it in Render (New > Blueprint, pointing at this repo),
+# or set JWT_SECRET manually on the existing service. If adopting the Blueprint, set `plan`
+# below to match the service's actual plan.
+services:
+  - type: web
+    name: conju
+    runtime: node
+    rootDir: server            # isolate the backend; installs only server/ deps (incl. better-sqlite3)
+    plan: free                 # <-- adjust to the service's real plan when adopting the Blueprint
+    buildCommand: npm install  # triggers postinstall -> npm rebuild better-sqlite3
+    startCommand: node src/index.js
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 24.4.0
+      - key: API_PREFIX
+        value: /api
+      - key: JWT_SECRET
+        generateValue: true    # Render generates a strong secret once; prevents the boot crash
+      - key: JWT_EXPIRES_IN
+        value: 30d
+      - key: CORS_ORIGIN
+        sync: false            # set manually: frontend origin, e.g. https://verb-os.vercel.app
+      - key: GOOGLE_CLIENT_IDS
+        sync: false            # set manually: OAuth client id(s), comma-separated
+    # PORT is injected by Render and read by server/src/index.js — do not declare it here.
+    #
+    # SQLite persistence (optional, recommended, requires a paid instance):
+    # without a persistent disk, server/.data/progress-sync.db is wiped on every deploy,
+    # losing all synced progress. To persist it, uncomment the disk below and add DB_DIR:
+    #   - key: DB_DIR
+    #     value: /var/data
+    # disk:
+    #   name: conju-data
+    #   mountPath: /var/data
+    #   sizeGB: 1
