@@ -321,74 +321,16 @@ export function createAuthRoutes() {
     }
   })
 
-  // CRITICAL: Claim orphan data by updating user_id in all progress tables
-  router.post('/claim-orphan-data', requireAuth, async (req, res) => {
-    try {
-      const { orphanUserId } = req.body
-      const { accountId } = req.auth
-
-      if (!orphanUserId) {
-        return res.status(400).json({
-          success: false,
-          error: 'Orphan user ID required'
-        })
-      }
-
-      console.log(`🔄 Claiming orphan data from ${orphanUserId} to account ${accountId}`)
-
-      const db = (await import('./db.js')).db
-
-      // Refuse to steal data that's already linked to a different account.
-      const existingOwner = db.prepare(`
-        SELECT account_id FROM users WHERE id = ? AND account_id IS NOT NULL
-      `).get(orphanUserId)
-      if (existingOwner && existingOwner.account_id !== accountId) {
-        return res.status(403).json({
-          success: false,
-          error: 'Orphan user id is already linked to another account'
-        })
-      }
-
-      const results = {}
-
-      // Update all progress tables to use accountId instead of orphanUserId
-      const tables = ['attempts', 'mastery', 'schedules', 'sessions']
-
-      db.transaction(() => {
-        for (const table of tables) {
-          const result = db.prepare(`
-            UPDATE ${table}
-            SET user_id = ?
-            WHERE user_id = ?
-          `).run(accountId, orphanUserId)
-          results[table] = result.changes
-          console.log(`  ✅ ${table}: ${result.changes} records claimed`)
-        }
-
-        // Also try to link the user record if it exists
-        const userResult = db.prepare(`
-          UPDATE users
-          SET account_id = ?
-          WHERE id = ? AND account_id IS NULL
-        `).run(accountId, orphanUserId)
-        results.users = userResult.changes
-      })()
-
-      console.log(`🎉 Orphan data claimed successfully:`, results)
-
-      res.json({
-        success: true,
-        message: 'Orphan data claimed successfully',
-        claimed: results
-      })
-    } catch (error) {
-      console.error('Claim orphan data error:', error)
-      res.status(500).json({
-        success: false,
-        error: 'Failed to claim orphan data'
-      })
-    }
-  })
+  // NOTE: The former POST /claim-orphan-data endpoint was removed. It accepted an arbitrary
+  // orphanUserId from the request body and reassigned progress rows (attempts/mastery/
+  // schedules/sessions) to the caller's account, guarded only by a lookup in the `users`
+  // table. Device-scoped user ids are guessable (timestamp-based), so any authenticated user
+  // could claim orphaned pre-account progress that never had a `users` row — a data-theft
+  // vector (audit C3). No client ever called it: account linking goes through POST /migrate
+  // (guarded by `account_id IS NULL`), and mergeAccountData already resolves an account's data
+  // via `SELECT id FROM users WHERE account_id = ?`, so a migrated device's rows are picked up
+  // without any user_id rewrite. If a claim flow is needed later, reintroduce it with a real
+  // ownership check (e.g. the id must belong to a user_devices row for this accountId).
 
   // Multi-device data synchronization download
   router.post('/sync/download', requireAuth, async (req, res) => {
