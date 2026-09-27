@@ -53,6 +53,7 @@
     "validate-integrity": "node ./scripts/validateIntegrity.mjs",
     "audit:irregular-sources": "node ./scripts/auditIrregularSources.mjs",
     "audit:irregular-golden": "vite-node ./scripts/compareIrregularGolden.mjs",
+    "audit:paradigms": "node ./scripts/auditParadigms.mjs",
     "audit:all": "node ./scripts/auditAll.mjs",
     "audit:strict": "node ./scripts/auditAll.mjs --fail-on-findings"
   },

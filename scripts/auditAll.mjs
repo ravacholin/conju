@@ -4,6 +4,7 @@ import { promises as fs } from 'fs'
 import { fileURLToPath, pathToFileURL } from 'url'
 
 import { validateIntegrity } from './validateIntegrity.mjs'
+import { auditParadigms } from './auditParadigms.mjs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -124,6 +125,10 @@ async function deepAudit({ verbose = false } = {}) {
     if (family?.id && !reachableFamilies.has(family.id)) {
       record(warnings, `Learning family ${family.id} is defined but never referenced by any tense`)
     }
+  })
+
+  auditParadigms(verbs).forEach(({ lemma, rule, person, found, expected }) => {
+    record(errors, `${lemma} ${person ?? ''} [${rule}]: "${found}" (esperado ${expected})`)
   })
 
   return { errors, warnings }

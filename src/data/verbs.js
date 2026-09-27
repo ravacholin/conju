@@ -853,21 +853,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -1707,21 +1706,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -2604,30 +2602,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "pres",
-      "subjPres"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -3289,21 +3283,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -3965,21 +3958,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -4641,21 +4633,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -5515,21 +5506,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -6389,27 +6379,26 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
     "id": "escuchar",
     "lemma": "escuchar",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -7263,27 +7252,26 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
     "id": "mirar",
     "lemma": "mirar",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -8137,21 +8125,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -9015,31 +9002,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -9903,32 +9889,31 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -10813,32 +10798,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -11723,37 +11706,37 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "condPerf",
-      "futPerf",
+      "pres",
+      "subjPres",
       "impAff",
       "impNeg",
-      "plusc",
-      "pres",
       "pretPerf",
-      "subjImpf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": true,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -12615,34 +12598,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -13506,32 +13488,31 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -14407,34 +14388,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -15319,34 +15299,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -16173,31 +16152,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pretIndef",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -16927,29 +16905,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -17679,29 +17654,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -18432,37 +18404,36 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pretIndef",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
     "id": "comprar",
     "lemma": "comprar",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -19215,21 +19186,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -20054,36 +20024,35 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "fut",
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -20997,34 +20966,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
-      "impf",
       "pres",
       "pretIndef",
+      "impf",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": true,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -21858,21 +21826,20 @@ export const verbs = [
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": true,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -22697,35 +22664,34 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "fut",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -23550,40 +23516,41 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "condPerf",
-      "fut",
-      "futPerf",
-      "impAff",
-      "impNeg",
-      "plusc",
       "pres",
       "pretIndef",
-      "pretPerf",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": true,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -24426,35 +24393,34 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
-      "impf",
       "pres",
       "pretIndef",
+      "impf",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": true,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -25319,41 +25285,42 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "condPerf",
-      "fut",
-      "futPerf",
-      "ger",
-      "impAff",
-      "impNeg",
-      "plusc",
       "pres",
       "pretIndef",
-      "pretPerf",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "ger",
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": true,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -26197,37 +26164,38 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "condPerf",
-      "futPerf",
+      "pres",
+      "impf",
+      "subjPres",
       "impAff",
       "impNeg",
-      "impf",
-      "plusc",
-      "pres",
       "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": true,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": true,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -27147,28 +27115,28 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pres",
-      "pretIndef"
+      "pretIndef",
+      "subjImpf"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": true,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -28042,35 +28010,34 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "fut",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -29022,35 +28989,34 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "fut",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -29885,36 +29851,35 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "fut",
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -30800,34 +30765,32 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "fut",
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "fut",
+      "cond",
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -31652,40 +31615,41 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "condPerf",
-      "fut",
-      "futPerf",
-      "impAff",
-      "impNeg",
-      "plusc",
       "pres",
       "pretIndef",
-      "pretPerf",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": true,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -32538,34 +32502,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -33421,34 +33384,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -34216,40 +34178,38 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "fut",
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "fut",
+      "cond",
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
     "id": "amar",
     "lemma": "amar",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -34988,21 +34948,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -35884,35 +35843,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "condPerf",
-      "futPerf",
-      "plusc",
-      "pres",
       "pretPerf",
-      "subjImpf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "part"
     ],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": true,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -36671,27 +36628,26 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
     "id": "vender",
     "lemma": "vender",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -37562,32 +37518,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "impAff",
-      "impNeg",
-      "subjImpf",
-      "subjPres"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -38341,35 +38291,34 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "fut",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -39246,32 +39195,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "impAff",
-      "impNeg",
-      "subjImpf",
-      "subjPres"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -40148,38 +40091,32 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "impAff",
-      "impNeg",
-      "subjImpf",
-      "subjPres"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
     "id": "responder",
     "lemma": "responder",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -40843,14 +40780,6 @@ export const verbs = [
           {
             "tense": "impAff",
             "mood": "imperative",
-            "person": "2p_vosotros",
-            "value": "respondáis",
-            "tags": [],
-            "region": "es"
-          },
-          {
-            "tense": "impAff",
-            "mood": "imperative",
             "person": "3p",
             "value": "respondan",
             "tags": [],
@@ -41041,7 +40970,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "3s",
-            "value": "respondamos"
+            "value": "responda"
           },
           {
             "mood": "subjunctive",
@@ -41058,32 +40987,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "impAff",
-      "impNeg",
-      "subjImpf",
-      "subjPres"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -41969,31 +41892,27 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
-      "subjImpf",
-      "subjPres"
+      "impAff"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -42833,30 +42752,29 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
       "pretIndef",
-      "subjImpf"
+      "subjImpf",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": true,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -43696,36 +43614,35 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
       "pretIndef",
-      "subjImpf"
+      "subjImpf",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": true,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
     "id": "deber_priority",
     "lemma": "deber",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -44555,29 +44472,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -45454,33 +45368,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "impAff",
-      "impNeg",
-      "pres",
-      "subjImpf",
-      "subjPres"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -46327,34 +46234,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "condPerf",
-      "futPerf",
-      "plusc",
-      "pres",
       "pretPerf",
-      "subjImpf",
-      "subjPlusc"
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
+      "subjPlusc",
+      "part"
     ],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": true,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -47201,34 +47107,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "condPerf",
-      "futPerf",
-      "plusc",
-      "pres",
       "pretPerf",
-      "subjImpf",
-      "subjPlusc"
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
+      "subjPlusc",
+      "part"
     ],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": true,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -47898,14 +47803,6 @@ export const verbs = [
           {
             "tense": "impAff",
             "mood": "imperative",
-            "person": "2p_vosotros",
-            "value": "descubráis",
-            "tags": [],
-            "region": "es"
-          },
-          {
-            "tense": "impAff",
-            "mood": "imperative",
             "person": "3p",
             "value": "descubran",
             "tags": [],
@@ -48096,7 +47993,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "3s",
-            "value": "descubramos"
+            "value": "descubra"
           },
           {
             "mood": "subjunctive",
@@ -48114,37 +48011,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "condPerf",
-      "futPerf",
-      "impAff",
-      "impNeg",
-      "plusc",
-      "pres",
       "pretPerf",
-      "subjImpf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "part"
     ],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": true,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -49030,38 +48923,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
-      "pres",
-      "subjImpf",
-      "subjPres"
+      "impAff"
     ],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
     "id": "decidir",
     "lemma": "decidir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -49725,14 +49613,6 @@ export const verbs = [
           {
             "tense": "impAff",
             "mood": "imperative",
-            "person": "2p_vosotros",
-            "value": "decidáis",
-            "tags": [],
-            "region": "es"
-          },
-          {
-            "tense": "impAff",
-            "mood": "imperative",
             "person": "3p",
             "value": "decidan",
             "tags": [],
@@ -49923,7 +49803,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "3s",
-            "value": "decidamos"
+            "value": "decida"
           },
           {
             "mood": "subjunctive",
@@ -49940,39 +49820,32 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "impAff",
-      "impNeg",
-      "pres",
-      "subjImpf",
-      "subjPres"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
     "id": "ocurrir",
     "lemma": "ocurrir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -50636,14 +50509,6 @@ export const verbs = [
           {
             "tense": "impAff",
             "mood": "imperative",
-            "person": "2p_vosotros",
-            "value": "ocurráis",
-            "tags": [],
-            "region": "es"
-          },
-          {
-            "tense": "impAff",
-            "mood": "imperative",
             "person": "3p",
             "value": "ocurran",
             "tags": [],
@@ -50834,7 +50699,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "3s",
-            "value": "ocurramos"
+            "value": "ocurra"
           },
           {
             "mood": "subjunctive",
@@ -50851,39 +50716,32 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "impAff",
-      "impNeg",
-      "pres",
-      "subjImpf",
-      "subjPres"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
     "id": "permitir",
     "lemma": "permitir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -51547,14 +51405,6 @@ export const verbs = [
           {
             "tense": "impAff",
             "mood": "imperative",
-            "person": "2p_vosotros",
-            "value": "permitáis",
-            "tags": [],
-            "region": "es"
-          },
-          {
-            "tense": "impAff",
-            "mood": "imperative",
             "person": "3p",
             "value": "permitan",
             "tags": [],
@@ -51745,7 +51595,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "3s",
-            "value": "permitamos"
+            "value": "permita"
           },
           {
             "mood": "subjunctive",
@@ -51762,39 +51612,32 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "impAff",
-      "impNeg",
-      "pres",
-      "subjImpf",
-      "subjPres"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
     "id": "sufrir",
     "lemma": "sufrir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -52458,14 +52301,6 @@ export const verbs = [
           {
             "tense": "impAff",
             "mood": "imperative",
-            "person": "2p_vosotros",
-            "value": "sufráis",
-            "tags": [],
-            "region": "es"
-          },
-          {
-            "tense": "impAff",
-            "mood": "imperative",
             "person": "3p",
             "value": "sufran",
             "tags": [],
@@ -52656,7 +52491,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "3s",
-            "value": "suframos"
+            "value": "sufra"
           },
           {
             "mood": "subjunctive",
@@ -52673,39 +52508,32 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "impAff",
-      "impNeg",
-      "pres",
-      "subjImpf",
-      "subjPres"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
     "id": "unir",
     "lemma": "unir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -53369,14 +53197,6 @@ export const verbs = [
           {
             "tense": "impAff",
             "mood": "imperative",
-            "person": "2p_vosotros",
-            "value": "unáis",
-            "tags": [],
-            "region": "es"
-          },
-          {
-            "tense": "impAff",
-            "mood": "imperative",
             "person": "3p",
             "value": "unan",
             "tags": [],
@@ -53567,7 +53387,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "3s",
-            "value": "unamos"
+            "value": "una"
           },
           {
             "mood": "subjunctive",
@@ -53584,33 +53404,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "impAff",
-      "impNeg",
-      "pres",
-      "subjImpf",
-      "subjPres"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -53663,45 +53476,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "conocen"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "conozca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "conozcas",
-            "accepts": {
-              "vos": "conozcas"
-            }
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "conozca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "conozcamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "conozcáis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "conozcan"
           },
           {
             "mood": "nonfinite",
@@ -54511,15 +54285,6 @@ export const verbs = [
             "region": "es"
           },
           {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "conozcas",
-            "accepts": {
-              "vos": "conocés"
-            }
-          },
-          {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
@@ -54529,32 +54294,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -54607,45 +54370,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "nacen"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "nazca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "nazcas",
-            "accepts": {
-              "vos": "nazcas"
-            }
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "nazca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "nazcamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "nazcáis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "nazcan"
           },
           {
             "mood": "nonfinite",
@@ -55455,15 +55179,6 @@ export const verbs = [
             "region": "es"
           },
           {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "nazcas",
-            "accepts": {
-              "vos": "nacés"
-            }
-          },
-          {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
@@ -55473,32 +55188,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -55551,45 +55264,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "crecen"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "crezca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "crezcas",
-            "accepts": {
-              "vos": "crezcas"
-            }
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "crezca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "crezcamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "crezcáis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "crezcan"
           },
           {
             "mood": "nonfinite",
@@ -56399,15 +56073,6 @@ export const verbs = [
             "region": "es"
           },
           {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "crezcas",
-            "accepts": {
-              "vos": "crecés"
-            }
-          },
-          {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
@@ -56417,32 +56082,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -56495,45 +56158,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "parecen"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "parezca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "parezcas",
-            "accepts": {
-              "vos": "parezcas"
-            }
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "parezca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "parezcamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "parezcáis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "parezcan"
           },
           {
             "mood": "nonfinite",
@@ -57343,15 +56967,6 @@ export const verbs = [
             "region": "es"
           },
           {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "parezcas",
-            "accepts": {
-              "vos": "parecés"
-            }
-          },
-          {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
@@ -57361,32 +56976,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -58288,32 +57901,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -59215,32 +58826,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -60142,32 +59751,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -61069,32 +60676,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -61996,32 +61601,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -62909,33 +62512,32 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -63823,33 +63425,32 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -64737,33 +64338,32 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -65665,32 +65265,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -66592,33 +66190,32 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -67471,34 +67068,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -68351,34 +67947,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -69231,34 +68826,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -70111,34 +69705,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -70975,33 +70568,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -71854,34 +71447,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -72734,34 +72326,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -73614,34 +73205,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -74478,33 +74068,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -75333,21 +74923,20 @@ export const verbs = [
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": true,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -76229,34 +75818,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -77135,34 +76723,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -78041,39 +77628,40 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "condPerf",
-      "futPerf",
-      "ger",
-      "impAff",
-      "impNeg",
-      "plusc",
       "pres",
       "pretIndef",
-      "pretPerf",
+      "subjPres",
       "subjImpf",
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "ger",
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": true,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -78165,45 +77753,6 @@ export const verbs = [
             "tense": "pretIndef",
             "person": "3p",
             "value": "sacaron"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "saque"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "saques",
-            "accepts": {
-              "vos": "saques"
-            }
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "saque"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "saquemos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "saquéis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "saquen"
           },
           {
             "mood": "nonfinite",
@@ -78944,15 +78493,6 @@ export const verbs = [
             "region": "es"
           },
           {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "saques",
-            "accepts": {
-              "vos": "saques"
-            }
-          },
-          {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
@@ -78962,33 +78502,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
-      "pres",
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -79041,45 +78578,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "protegen"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "proteja"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "protejas",
-            "accepts": {
-              "vos": "protejas"
-            }
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "proteja"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "protejamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "protejáis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "protejan"
           },
           {
             "mood": "nonfinite",
@@ -79889,15 +79387,6 @@ export const verbs = [
             "region": "es"
           },
           {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "protejas",
-            "accepts": {
-              "vos": "protegés"
-            }
-          },
-          {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
@@ -79907,32 +79396,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -79980,42 +79467,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "cogen"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "coja"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "cojas"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "coja"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "cojamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "cojáis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "cojan"
           },
           {
             "mood": "nonfinite",
@@ -80825,12 +80276,6 @@ export const verbs = [
             "region": "es"
           },
           {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "cojas"
-          },
-          {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
@@ -80840,32 +80285,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -81706,31 +81149,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -82571,31 +82013,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -83436,31 +82877,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -84313,34 +83753,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -85172,32 +84611,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -85664,39 +85101,321 @@ export const verbs = [
             "tense": "impAff",
             "person": "2s_vos",
             "value": "oí"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1s",
+            "value": "he oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_tu",
+            "value": "has oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_vos",
+            "value": "has oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3s",
+            "value": "ha oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1p",
+            "value": "hemos oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2p_vosotros",
+            "value": "habéis oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3p",
+            "value": "han oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1s",
+            "value": "había oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_tu",
+            "value": "habías oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_vos",
+            "value": "habías oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3s",
+            "value": "había oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1p",
+            "value": "habíamos oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2p_vosotros",
+            "value": "habíais oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3p",
+            "value": "habían oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1s",
+            "value": "habré oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_tu",
+            "value": "habrás oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_vos",
+            "value": "habrás oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3s",
+            "value": "habrá oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1p",
+            "value": "habremos oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2p_vosotros",
+            "value": "habréis oído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3p",
+            "value": "habrán oído"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1s",
+            "value": "habría oído"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_tu",
+            "value": "habrías oído"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_vos",
+            "value": "habrías oído"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3s",
+            "value": "habría oído"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1p",
+            "value": "habríamos oído"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2p_vosotros",
+            "value": "habríais oído"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3p",
+            "value": "habrían oído"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1s",
+            "value": "haya oído"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_tu",
+            "value": "hayas oído"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_vos",
+            "value": "hayas oído"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3s",
+            "value": "haya oído"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1p",
+            "value": "hayamos oído"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2p_vosotros",
+            "value": "hayáis oído"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3p",
+            "value": "hayan oído"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1s",
+            "value": "hubiera oído",
+            "alt": [
+              "hubiese oído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_tu",
+            "value": "hubieras oído",
+            "alt": [
+              "hubieses oído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_vos",
+            "value": "hubieras oído",
+            "alt": [
+              "hubieses oído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3s",
+            "value": "hubiera oído",
+            "alt": [
+              "hubiese oído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1p",
+            "value": "hubiéramos oído",
+            "alt": [
+              "hubiésemos oído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2p_vosotros",
+            "value": "hubierais oído",
+            "alt": [
+              "hubieseis oído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3p",
+            "value": "hubieran oído",
+            "alt": [
+              "hubiesen oído"
+            ]
           }
         ]
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "impf",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
+      "subjPlusc",
+      "ger",
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
-      "impf": false,
-      "fut": false,
-      "pretPerf": false,
-      "plusc": false,
-      "futPerf": false,
+      "impf": true,
+      "fut": true,
+      "cond": true,
       "subjPres": true,
       "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
-      "condPerf": false,
       "impAff": true,
       "impNeg": true,
+      "pretPerf": true,
+      "plusc": true,
+      "futPerf": true,
+      "condPerf": true,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -86533,33 +86252,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -87396,33 +87115,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -88258,32 +87977,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -89119,32 +88839,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -89980,32 +89701,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -90841,31 +90563,29 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "pres",
       "pretIndef",
-      "subjImpf"
+      "subjImpf",
+      "ger"
     ],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": true,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -91701,31 +91421,29 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "pres",
       "pretIndef",
-      "subjImpf"
+      "subjImpf",
+      "ger"
     ],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": true,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -92561,31 +92279,29 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "pres",
       "pretIndef",
-      "subjImpf"
+      "subjImpf",
+      "ger"
     ],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": true,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -93421,32 +93137,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -94285,32 +94002,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -95126,29 +94844,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -95964,29 +95682,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -96802,29 +96520,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -97654,32 +97372,34 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
       "pres",
       "pretIndef",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
-      "fut": false,
+      "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -98509,32 +98229,34 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
       "pres",
       "pretIndef",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
-      "fut": false,
+      "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -99364,32 +99086,34 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
       "pres",
       "pretIndef",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
-      "fut": false,
+      "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -100222,37 +99946,41 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "condPerf",
-      "futPerf",
-      "plusc",
       "pres",
       "pretIndef",
-      "pretPerf",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
-      "fut": false,
+      "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": true,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -101085,43 +100813,47 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "condPerf",
-      "futPerf",
-      "plusc",
       "pres",
       "pretIndef",
-      "pretPerf",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
-      "fut": false,
+      "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": true,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
     "id": "usar_priority",
     "lemma": "usar",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -101929,29 +101661,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -102788,31 +102517,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -103626,29 +103354,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -104462,29 +104187,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -105298,29 +105020,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -106134,29 +105853,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -106970,29 +106686,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -107806,29 +107519,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -108642,29 +108352,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -109478,29 +109185,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -110335,30 +110039,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "pres",
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -111193,30 +110893,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "pres",
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -112030,29 +111726,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -112866,30 +112559,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "pres",
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -113703,30 +113392,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "pres",
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -114562,32 +114247,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -115403,29 +115089,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -116241,29 +115927,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -117079,29 +116765,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -117551,38 +117237,446 @@ export const verbs = [
             "tense": "impAff",
             "person": "2s_vos",
             "value": "freí"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "",
+            "value": "freído"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1s",
+            "value": "he frito",
+            "alt": [
+              "he freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_tu",
+            "value": "has frito",
+            "alt": [
+              "has freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_vos",
+            "value": "has frito",
+            "alt": [
+              "has freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3s",
+            "value": "ha frito",
+            "alt": [
+              "ha freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1p",
+            "value": "hemos frito",
+            "alt": [
+              "hemos freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2p_vosotros",
+            "value": "habéis frito",
+            "alt": [
+              "habéis freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3p",
+            "value": "han frito",
+            "alt": [
+              "han freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1s",
+            "value": "había frito",
+            "alt": [
+              "había freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_tu",
+            "value": "habías frito",
+            "alt": [
+              "habías freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_vos",
+            "value": "habías frito",
+            "alt": [
+              "habías freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3s",
+            "value": "había frito",
+            "alt": [
+              "había freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1p",
+            "value": "habíamos frito",
+            "alt": [
+              "habíamos freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2p_vosotros",
+            "value": "habíais frito",
+            "alt": [
+              "habíais freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3p",
+            "value": "habían frito",
+            "alt": [
+              "habían freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1s",
+            "value": "habré frito",
+            "alt": [
+              "habré freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_tu",
+            "value": "habrás frito",
+            "alt": [
+              "habrás freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_vos",
+            "value": "habrás frito",
+            "alt": [
+              "habrás freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3s",
+            "value": "habrá frito",
+            "alt": [
+              "habrá freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1p",
+            "value": "habremos frito",
+            "alt": [
+              "habremos freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2p_vosotros",
+            "value": "habréis frito",
+            "alt": [
+              "habréis freído"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3p",
+            "value": "habrán frito",
+            "alt": [
+              "habrán freído"
+            ]
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1s",
+            "value": "habría frito",
+            "alt": [
+              "habría freído"
+            ]
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_tu",
+            "value": "habrías frito",
+            "alt": [
+              "habrías freído"
+            ]
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_vos",
+            "value": "habrías frito",
+            "alt": [
+              "habrías freído"
+            ]
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3s",
+            "value": "habría frito",
+            "alt": [
+              "habría freído"
+            ]
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1p",
+            "value": "habríamos frito",
+            "alt": [
+              "habríamos freído"
+            ]
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2p_vosotros",
+            "value": "habríais frito",
+            "alt": [
+              "habríais freído"
+            ]
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3p",
+            "value": "habrían frito",
+            "alt": [
+              "habrían freído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1s",
+            "value": "haya frito",
+            "alt": [
+              "haya freído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_tu",
+            "value": "hayas frito",
+            "alt": [
+              "hayas freído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_vos",
+            "value": "hayas frito",
+            "alt": [
+              "hayas freído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3s",
+            "value": "haya frito",
+            "alt": [
+              "haya freído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1p",
+            "value": "hayamos frito",
+            "alt": [
+              "hayamos freído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2p_vosotros",
+            "value": "hayáis frito",
+            "alt": [
+              "hayáis freído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3p",
+            "value": "hayan frito",
+            "alt": [
+              "hayan freído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1s",
+            "value": "hubiera frito",
+            "alt": [
+              "hubiese frito",
+              "hubiera freído",
+              "hubiese freído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_tu",
+            "value": "hubieras frito",
+            "alt": [
+              "hubieses frito",
+              "hubieras freído",
+              "hubieses freído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_vos",
+            "value": "hubieras frito",
+            "alt": [
+              "hubieses frito",
+              "hubieras freído",
+              "hubieses freído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3s",
+            "value": "hubiera frito",
+            "alt": [
+              "hubiese frito",
+              "hubiera freído",
+              "hubiese freído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1p",
+            "value": "hubiéramos frito",
+            "alt": [
+              "hubiésemos frito",
+              "hubiéramos freído",
+              "hubiésemos freído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2p_vosotros",
+            "value": "hubierais frito",
+            "alt": [
+              "hubieseis frito",
+              "hubierais freído",
+              "hubieseis freído"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3p",
+            "value": "hubieran frito",
+            "alt": [
+              "hubiesen frito",
+              "hubieran freído",
+              "hubiesen freído"
+            ]
           }
         ]
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
       "pres",
       "pretIndef",
+      "impf",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
+      "subjPlusc",
+      "ger",
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
-      "impf": false,
-      "fut": false,
-      "pretPerf": false,
-      "plusc": false,
-      "futPerf": false,
+      "impf": true,
+      "fut": true,
+      "cond": true,
       "subjPres": true,
       "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
-      "condPerf": false,
       "impAff": true,
-      "impNeg": false,
+      "impNeg": true,
+      "pretPerf": true,
+      "plusc": true,
+      "futPerf": true,
+      "condPerf": true,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -118415,29 +118509,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -119279,28 +119373,27 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "pres"
+      "part"
     ],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -120145,30 +120238,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
       "pretIndef",
-      "subjImpf"
+      "subjImpf",
+      "ger",
+      "part"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": true,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -120984,29 +121077,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -121820,30 +121913,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "pres",
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -122657,30 +122746,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "pres",
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -123494,30 +123579,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "pres",
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -124331,30 +124412,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "pres",
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -125190,31 +125267,29 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "pres",
       "pretIndef",
-      "subjImpf"
+      "subjImpf",
+      "ger"
     ],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": true,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -126051,29 +126126,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -126909,32 +126984,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -127771,29 +127847,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -128630,29 +128706,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -129488,32 +129564,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -130329,29 +130406,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -131167,29 +131244,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -132005,29 +132082,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -132851,33 +132928,34 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "fut",
       "pres",
       "pretIndef",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -133715,29 +133793,32 @@ export const verbs = [
     "irregularTenses": [
       "pres",
       "pretIndef",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
-      "fut": false,
+      "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -134569,33 +134650,31 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -135411,29 +135490,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -136249,34 +136328,34 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "fut",
-      "impAff",
       "pres",
       "pretIndef",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -137104,35 +137183,34 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "fut",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -137953,33 +138031,35 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "fut",
-      "ger",
       "pres",
       "pretIndef",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -138800,33 +138880,35 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "fut",
-      "ger",
       "pres",
       "pretIndef",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -139648,38 +139730,41 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "condPerf",
-      "fut",
-      "futPerf",
-      "impAff",
-      "plusc",
       "pres",
       "pretIndef",
-      "pretPerf",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": true,
-      "impAff": true,
-      "impNeg": false,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -140525,33 +140610,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "condPerf",
-      "futPerf",
-      "plusc",
       "pretPerf",
-      "subjImpf",
-      "subjPlusc"
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
+      "subjPlusc",
+      "part"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": true,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -141396,21 +141481,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -142263,21 +142347,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -142381,6 +142464,12 @@ export const verbs = [
             "tense": "ger",
             "person": "",
             "value": "prendiendo"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "",
+            "value": "prendido"
           },
           {
             "mood": "nonfinite",
@@ -143122,34 +143211,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "subjImpf"
+      "part"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
     "id": "suspender_priority",
     "lemma": "suspender",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -143977,33 +144065,36 @@ export const verbs = [
             "tense": "impAff",
             "person": "2s_tu",
             "value": "suspende"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "",
+            "value": "suspendido"
           }
         ]
       }
     ],
-    "irregularTenses": [
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -144830,32 +144921,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -145671,31 +145760,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -146511,32 +146599,31 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
       "pres",
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -147352,31 +147439,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -148206,27 +148292,26 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
     "id": "copiar_priority",
     "lemma": "copiar",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -149050,21 +149135,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -149894,21 +149978,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -150738,21 +150821,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -151582,21 +151664,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -152426,21 +152507,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -153270,21 +153350,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -154100,29 +154179,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -154947,39 +155026,41 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "condPerf",
-      "fut",
-      "futPerf",
-      "impAff",
-      "plusc",
       "pres",
       "pretIndef",
-      "pretPerf",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": true,
-      "impAff": true,
-      "impNeg": false,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -155797,34 +155878,35 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "fut",
-      "ger",
       "pres",
       "pretIndef",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -156677,40 +156759,39 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
     "id": "absorber_priority",
     "lemma": "absorber",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -157539,29 +157620,26 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "subjImpf"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -158379,32 +158457,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -159221,32 +159300,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -160062,29 +160139,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -160900,29 +160977,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -161738,29 +161815,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -162576,29 +162653,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -163415,29 +163492,29 @@ export const verbs = [
     "irregularTenses": [
       "pres",
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -164254,29 +164331,29 @@ export const verbs = [
     "irregularTenses": [
       "pres",
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -165093,29 +165170,29 @@ export const verbs = [
     "irregularTenses": [
       "pres",
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -165931,29 +166008,29 @@ export const verbs = [
     ],
     "irregularTenses": [
       "pretIndef",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -166780,38 +166857,41 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "condPerf",
-      "fut",
-      "futPerf",
-      "plusc",
       "pres",
       "pretIndef",
-      "pretPerf",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": true,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -167638,38 +167718,41 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "condPerf",
-      "fut",
-      "futPerf",
-      "plusc",
       "pres",
       "pretIndef",
-      "pretPerf",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": true,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -168493,38 +168576,41 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "condPerf",
-      "fut",
-      "futPerf",
-      "plusc",
       "pres",
       "pretIndef",
-      "pretPerf",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": true,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -169351,38 +169437,41 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "condPerf",
-      "fut",
-      "futPerf",
-      "plusc",
       "pres",
       "pretIndef",
-      "pretPerf",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": true,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -170126,21 +170215,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -170884,21 +170972,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -171642,21 +171729,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -172400,21 +172486,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": false,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": false,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": false,
-      "impNeg": false,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -173174,31 +173259,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -173556,7 +173640,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2p_vosotros",
-            "value": "extinguíd"
+            "value": "extinguid"
           },
           {
             "mood": "imperative",
@@ -173958,31 +174042,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -174742,34 +174825,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -175529,34 +175611,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -175612,42 +175693,6 @@ export const verbs = [
           },
           {
             "mood": "indicative",
-            "tense": "pret",
-            "person": "1s",
-            "value": "recordé"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_tu",
-            "value": "recordaste"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3s",
-            "value": "recordó"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1p",
-            "value": "recordamos"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2p_vosotros",
-            "value": "recordasteis"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3p",
-            "value": "recordaron"
-          },
-          {
-            "mood": "indicative",
             "tense": "impf",
             "person": "1s",
             "value": "recordaba"
@@ -175683,82 +175728,10 @@ export const verbs = [
             "value": "recordaban"
           },
           {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "recuerde"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "recuerdes"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "recuerde"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "recordemos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "recordéis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "recuerden"
-          },
-          {
-            "mood": "imperative",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "recuerda",
-            "accepts": {
-              "vos": "recuerda"
-            }
-          },
-          {
-            "mood": "imperative",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "recordad"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_vos",
-            "value": "recordaste"
-          },
-          {
             "mood": "indicative",
             "tense": "impf",
             "person": "2s_vos",
             "value": "recordabas"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "recuerdes"
-          },
-          {
-            "mood": "imperative",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "recuerda",
-            "accepts": {
-              "vos": "recordá"
-            }
           },
           {
             "mood": "imperative",
@@ -176004,53 +175977,391 @@ export const verbs = [
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1s",
-            "value": "recordara"
+            "value": "recordara",
+            "alt": [
+              "recordase"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_tu",
-            "value": "recordaras"
+            "value": "recordaras",
+            "alt": [
+              "recordases"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_vos",
-            "value": "recordaras"
+            "value": "recordaras",
+            "alt": [
+              "recordases"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3s",
-            "value": "recordara"
+            "value": "recordara",
+            "alt": [
+              "recordase"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1p",
-            "value": "recordáramos"
+            "value": "recordáramos",
+            "alt": [
+              "recordásemos"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2p_vosotros",
-            "value": "recordarais"
+            "value": "recordarais",
+            "alt": [
+              "recordaseis"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3p",
-            "value": "recordaran"
+            "value": "recordaran",
+            "alt": [
+              "recordasen"
+            ]
           },
           {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_vos",
             "value": "recordá"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1s",
+            "value": "he recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_tu",
+            "value": "has recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_vos",
+            "value": "has recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3s",
+            "value": "ha recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1p",
+            "value": "hemos recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2p_vosotros",
+            "value": "habéis recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3p",
+            "value": "han recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1s",
+            "value": "había recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_tu",
+            "value": "habías recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_vos",
+            "value": "habías recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3s",
+            "value": "había recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1p",
+            "value": "habíamos recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2p_vosotros",
+            "value": "habíais recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3p",
+            "value": "habían recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1s",
+            "value": "habré recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_tu",
+            "value": "habrás recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_vos",
+            "value": "habrás recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3s",
+            "value": "habrá recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1p",
+            "value": "habremos recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2p_vosotros",
+            "value": "habréis recordado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3p",
+            "value": "habrán recordado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1s",
+            "value": "habría recordado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_tu",
+            "value": "habrías recordado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_vos",
+            "value": "habrías recordado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3s",
+            "value": "habría recordado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1p",
+            "value": "habríamos recordado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2p_vosotros",
+            "value": "habríais recordado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3p",
+            "value": "habrían recordado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1s",
+            "value": "haya recordado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_tu",
+            "value": "hayas recordado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_vos",
+            "value": "hayas recordado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3s",
+            "value": "haya recordado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1p",
+            "value": "hayamos recordado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2p_vosotros",
+            "value": "hayáis recordado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3p",
+            "value": "hayan recordado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1s",
+            "value": "hubiera recordado",
+            "alt": [
+              "hubiese recordado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_tu",
+            "value": "hubieras recordado",
+            "alt": [
+              "hubieses recordado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_vos",
+            "value": "hubieras recordado",
+            "alt": [
+              "hubieses recordado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3s",
+            "value": "hubiera recordado",
+            "alt": [
+              "hubiese recordado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1p",
+            "value": "hubiéramos recordado",
+            "alt": [
+              "hubiésemos recordado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2p_vosotros",
+            "value": "hubierais recordado",
+            "alt": [
+              "hubieseis recordado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3p",
+            "value": "hubieran recordado",
+            "alt": [
+              "hubiesen recordado"
+            ]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "inf",
+            "person": "",
+            "value": "recordar"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "",
+            "value": "recordando"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "",
+            "value": "recordado"
           }
         ]
       }
-    ]
+    ],
+    "irregularTenses": [
+      "pres",
+      "subjPres",
+      "impAff",
+      "impNeg"
+    ],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "condPerf": false,
+      "subjPerf": false,
+      "subjPlusc": false,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
   },
   {
     "id": "costar",
@@ -176102,90 +176413,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "cuestan"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1s",
-            "value": "costé"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_tu",
-            "value": "costaste"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3s",
-            "value": "costó"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1p",
-            "value": "costamos"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2p_vosotros",
-            "value": "costasteis"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3p",
-            "value": "costaron"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "cueste"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "cuestes"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "cueste"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "costemos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "costéis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "cuesten"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_vos",
-            "value": "costaste"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "cuestes"
           },
           {
             "mood": "imperative",
@@ -176473,53 +176700,391 @@ export const verbs = [
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1s",
-            "value": "costara"
+            "value": "costara",
+            "alt": [
+              "costase"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_tu",
-            "value": "costaras"
+            "value": "costaras",
+            "alt": [
+              "costases"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_vos",
-            "value": "costaras"
+            "value": "costaras",
+            "alt": [
+              "costases"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3s",
-            "value": "costara"
+            "value": "costara",
+            "alt": [
+              "costase"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1p",
-            "value": "costáramos"
+            "value": "costáramos",
+            "alt": [
+              "costásemos"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2p_vosotros",
-            "value": "costarais"
+            "value": "costarais",
+            "alt": [
+              "costaseis"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3p",
-            "value": "costaran"
+            "value": "costaran",
+            "alt": [
+              "costasen"
+            ]
           },
           {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_vos",
             "value": "costá"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1s",
+            "value": "he costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_tu",
+            "value": "has costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_vos",
+            "value": "has costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3s",
+            "value": "ha costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1p",
+            "value": "hemos costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2p_vosotros",
+            "value": "habéis costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3p",
+            "value": "han costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1s",
+            "value": "había costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_tu",
+            "value": "habías costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_vos",
+            "value": "habías costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3s",
+            "value": "había costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1p",
+            "value": "habíamos costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2p_vosotros",
+            "value": "habíais costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3p",
+            "value": "habían costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1s",
+            "value": "habré costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_tu",
+            "value": "habrás costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_vos",
+            "value": "habrás costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3s",
+            "value": "habrá costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1p",
+            "value": "habremos costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2p_vosotros",
+            "value": "habréis costado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3p",
+            "value": "habrán costado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1s",
+            "value": "habría costado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_tu",
+            "value": "habrías costado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_vos",
+            "value": "habrías costado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3s",
+            "value": "habría costado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1p",
+            "value": "habríamos costado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2p_vosotros",
+            "value": "habríais costado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3p",
+            "value": "habrían costado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1s",
+            "value": "haya costado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_tu",
+            "value": "hayas costado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_vos",
+            "value": "hayas costado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3s",
+            "value": "haya costado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1p",
+            "value": "hayamos costado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2p_vosotros",
+            "value": "hayáis costado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3p",
+            "value": "hayan costado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1s",
+            "value": "hubiera costado",
+            "alt": [
+              "hubiese costado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_tu",
+            "value": "hubieras costado",
+            "alt": [
+              "hubieses costado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_vos",
+            "value": "hubieras costado",
+            "alt": [
+              "hubieses costado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3s",
+            "value": "hubiera costado",
+            "alt": [
+              "hubiese costado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1p",
+            "value": "hubiéramos costado",
+            "alt": [
+              "hubiésemos costado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2p_vosotros",
+            "value": "hubierais costado",
+            "alt": [
+              "hubieseis costado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3p",
+            "value": "hubieran costado",
+            "alt": [
+              "hubiesen costado"
+            ]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "inf",
+            "person": "",
+            "value": "costar"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "",
+            "value": "costando"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "",
+            "value": "costado"
           }
         ]
       }
-    ]
+    ],
+    "irregularTenses": [
+      "pres",
+      "subjPres",
+      "impAff",
+      "impNeg"
+    ],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "condPerf": false,
+      "subjPerf": false,
+      "subjPlusc": false,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
   },
   {
     "id": "preferir",
@@ -176573,114 +177138,6 @@ export const verbs = [
             "value": "prefieren"
           },
           {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1s",
-            "value": "preferí"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_tu",
-            "value": "preferiste"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3s",
-            "value": "prefirió"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1p",
-            "value": "preferimos"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2p_vosotros",
-            "value": "preferisteis"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3p",
-            "value": "prefirieron"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "prefiera"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "prefieras"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "prefiera"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "prefiramos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "prefiráis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "prefieran"
-          },
-          {
-            "mood": "imperative",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "prefiere",
-            "accepts": {
-              "vos": "prefiere"
-            }
-          },
-          {
-            "mood": "imperative",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "preferid"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_vos",
-            "value": "preferiste"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "prefieras"
-          },
-          {
-            "mood": "imperative",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "prefiere",
-            "accepts": {
-              "vos": "preferí"
-            }
-          },
-          {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
@@ -176726,13 +177183,13 @@ export const verbs = [
             "mood": "subjunctive",
             "tense": "subjPres",
             "person": "1p",
-            "value": "prifiramos"
+            "value": "prefiramos"
           },
           {
             "mood": "subjunctive",
             "tense": "subjPres",
             "person": "2p_vosotros",
-            "value": "prifiráis"
+            "value": "prefiráis"
           },
           {
             "mood": "imperative",
@@ -176966,53 +177423,394 @@ export const verbs = [
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1s",
-            "value": "prefiriera"
+            "value": "prefiriera",
+            "alt": [
+              "prefiriese"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_tu",
-            "value": "prefirieras"
+            "value": "prefirieras",
+            "alt": [
+              "prefirieses"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_vos",
-            "value": "prefirieras"
+            "value": "prefirieras",
+            "alt": [
+              "prefirieses"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3s",
-            "value": "prefiriera"
+            "value": "prefiriera",
+            "alt": [
+              "prefiriese"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1p",
-            "value": "prefiriéramos"
+            "value": "prefiriéramos",
+            "alt": [
+              "prefiriésemos"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2p_vosotros",
-            "value": "prefirierais"
+            "value": "prefirierais",
+            "alt": [
+              "prefirieseis"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3p",
-            "value": "prefirieran"
+            "value": "prefirieran",
+            "alt": [
+              "prefiriesen"
+            ]
           },
           {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_vos",
             "value": "preferí"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1s",
+            "value": "he preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_tu",
+            "value": "has preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_vos",
+            "value": "has preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3s",
+            "value": "ha preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1p",
+            "value": "hemos preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2p_vosotros",
+            "value": "habéis preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3p",
+            "value": "han preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1s",
+            "value": "había preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_tu",
+            "value": "habías preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_vos",
+            "value": "habías preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3s",
+            "value": "había preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1p",
+            "value": "habíamos preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2p_vosotros",
+            "value": "habíais preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3p",
+            "value": "habían preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1s",
+            "value": "habré preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_tu",
+            "value": "habrás preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_vos",
+            "value": "habrás preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3s",
+            "value": "habrá preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1p",
+            "value": "habremos preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2p_vosotros",
+            "value": "habréis preferido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3p",
+            "value": "habrán preferido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1s",
+            "value": "habría preferido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_tu",
+            "value": "habrías preferido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_vos",
+            "value": "habrías preferido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3s",
+            "value": "habría preferido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1p",
+            "value": "habríamos preferido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2p_vosotros",
+            "value": "habríais preferido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3p",
+            "value": "habrían preferido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1s",
+            "value": "haya preferido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_tu",
+            "value": "hayas preferido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_vos",
+            "value": "hayas preferido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3s",
+            "value": "haya preferido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1p",
+            "value": "hayamos preferido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2p_vosotros",
+            "value": "hayáis preferido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3p",
+            "value": "hayan preferido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1s",
+            "value": "hubiera preferido",
+            "alt": [
+              "hubiese preferido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_tu",
+            "value": "hubieras preferido",
+            "alt": [
+              "hubieses preferido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_vos",
+            "value": "hubieras preferido",
+            "alt": [
+              "hubieses preferido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3s",
+            "value": "hubiera preferido",
+            "alt": [
+              "hubiese preferido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1p",
+            "value": "hubiéramos preferido",
+            "alt": [
+              "hubiésemos preferido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2p_vosotros",
+            "value": "hubierais preferido",
+            "alt": [
+              "hubieseis preferido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3p",
+            "value": "hubieran preferido",
+            "alt": [
+              "hubiesen preferido"
+            ]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "inf",
+            "person": "",
+            "value": "preferir"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "",
+            "value": "prefiriendo"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "",
+            "value": "preferido"
           }
         ]
       }
-    ]
+    ],
+    "irregularTenses": [
+      "pres",
+      "pretIndef",
+      "subjPres",
+      "subjImpf",
+      "impAff",
+      "impNeg",
+      "ger"
+    ],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": true,
+      "impf": false,
+      "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "condPerf": false,
+      "subjPerf": false,
+      "subjPlusc": false,
+      "inf": false,
+      "ger": true,
+      "part": false
+    }
   },
   {
     "id": "resolver",
@@ -177064,120 +177862,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "resuelven"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1s",
-            "value": "resolví"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_tu",
-            "value": "resolviste"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3s",
-            "value": "resolvió"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1p",
-            "value": "resolvimos"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2p_vosotros",
-            "value": "resolvisteis"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3p",
-            "value": "resolvieron"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "resuelva"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "resuelvas"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "resuelva"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "resolvamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "resolváis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "resuelvan"
-          },
-          {
-            "mood": "participle",
-            "tense": "past",
-            "person": "invariant",
-            "value": "resuelto"
-          },
-          {
-            "mood": "imperative",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "resuelve",
-            "accepts": {
-              "vos": "resuelve"
-            }
-          },
-          {
-            "mood": "imperative",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "resolved"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_vos",
-            "value": "resolviste"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "resuelvas"
-          },
-          {
-            "mood": "imperative",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "resuelve",
-            "accepts": {
-              "vos": "resolvé"
-            }
           },
           {
             "mood": "imperative",
@@ -177465,53 +178149,398 @@ export const verbs = [
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1s",
-            "value": "resolviera"
+            "value": "resolviera",
+            "alt": [
+              "resolviese"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_tu",
-            "value": "resolvieras"
+            "value": "resolvieras",
+            "alt": [
+              "resolvieses"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_vos",
-            "value": "resolvieras"
+            "value": "resolvieras",
+            "alt": [
+              "resolvieses"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3s",
-            "value": "resolviera"
+            "value": "resolviera",
+            "alt": [
+              "resolviese"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1p",
-            "value": "resolviéramos"
+            "value": "resolviéramos",
+            "alt": [
+              "resolviésemos"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2p_vosotros",
-            "value": "resolvierais"
+            "value": "resolvierais",
+            "alt": [
+              "resolvieseis"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3p",
-            "value": "resolvieran"
+            "value": "resolvieran",
+            "alt": [
+              "resolviesen"
+            ]
           },
           {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_vos",
             "value": "resolvé"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1s",
+            "value": "he resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_tu",
+            "value": "has resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_vos",
+            "value": "has resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3s",
+            "value": "ha resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1p",
+            "value": "hemos resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2p_vosotros",
+            "value": "habéis resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3p",
+            "value": "han resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1s",
+            "value": "había resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_tu",
+            "value": "habías resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_vos",
+            "value": "habías resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3s",
+            "value": "había resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1p",
+            "value": "habíamos resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2p_vosotros",
+            "value": "habíais resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3p",
+            "value": "habían resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1s",
+            "value": "habré resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_tu",
+            "value": "habrás resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_vos",
+            "value": "habrás resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3s",
+            "value": "habrá resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1p",
+            "value": "habremos resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2p_vosotros",
+            "value": "habréis resuelto"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3p",
+            "value": "habrán resuelto"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1s",
+            "value": "habría resuelto"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_tu",
+            "value": "habrías resuelto"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_vos",
+            "value": "habrías resuelto"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3s",
+            "value": "habría resuelto"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1p",
+            "value": "habríamos resuelto"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2p_vosotros",
+            "value": "habríais resuelto"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3p",
+            "value": "habrían resuelto"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1s",
+            "value": "haya resuelto"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_tu",
+            "value": "hayas resuelto"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_vos",
+            "value": "hayas resuelto"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3s",
+            "value": "haya resuelto"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1p",
+            "value": "hayamos resuelto"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2p_vosotros",
+            "value": "hayáis resuelto"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3p",
+            "value": "hayan resuelto"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1s",
+            "value": "hubiera resuelto",
+            "alt": [
+              "hubiese resuelto"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_tu",
+            "value": "hubieras resuelto",
+            "alt": [
+              "hubieses resuelto"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_vos",
+            "value": "hubieras resuelto",
+            "alt": [
+              "hubieses resuelto"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3s",
+            "value": "hubiera resuelto",
+            "alt": [
+              "hubiese resuelto"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1p",
+            "value": "hubiéramos resuelto",
+            "alt": [
+              "hubiésemos resuelto"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2p_vosotros",
+            "value": "hubierais resuelto",
+            "alt": [
+              "hubieseis resuelto"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3p",
+            "value": "hubieran resuelto",
+            "alt": [
+              "hubiesen resuelto"
+            ]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "inf",
+            "person": "",
+            "value": "resolver"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "",
+            "value": "resolviendo"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "",
+            "value": "resuelto"
           }
         ]
       }
-    ]
+    ],
+    "irregularTenses": [
+      "pres",
+      "subjPres",
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
+      "subjPlusc",
+      "part"
+    ],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
+      "pretPerf": true,
+      "plusc": true,
+      "futPerf": true,
+      "condPerf": true,
+      "subjPerf": true,
+      "subjPlusc": true,
+      "inf": false,
+      "ger": false,
+      "part": true
+    }
   },
   {
     "id": "sonar",
@@ -177563,90 +178592,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "suenan"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1s",
-            "value": "soné"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_tu",
-            "value": "sonaste"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3s",
-            "value": "sonó"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1p",
-            "value": "sonamos"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2p_vosotros",
-            "value": "sonasteis"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3p",
-            "value": "sonaron"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "suene"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "suenes"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "suene"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "sonemos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "sonéis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "suenen"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_vos",
-            "value": "sonaste"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "suenes"
           },
           {
             "mood": "imperative",
@@ -177934,53 +178879,391 @@ export const verbs = [
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1s",
-            "value": "sonara"
+            "value": "sonara",
+            "alt": [
+              "sonase"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_tu",
-            "value": "sonaras"
+            "value": "sonaras",
+            "alt": [
+              "sonases"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_vos",
-            "value": "sonaras"
+            "value": "sonaras",
+            "alt": [
+              "sonases"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3s",
-            "value": "sonara"
+            "value": "sonara",
+            "alt": [
+              "sonase"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1p",
-            "value": "sonáramos"
+            "value": "sonáramos",
+            "alt": [
+              "sonásemos"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2p_vosotros",
-            "value": "sonarais"
+            "value": "sonarais",
+            "alt": [
+              "sonaseis"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3p",
-            "value": "sonaran"
+            "value": "sonaran",
+            "alt": [
+              "sonasen"
+            ]
           },
           {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_vos",
             "value": "soná"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1s",
+            "value": "he sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_tu",
+            "value": "has sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_vos",
+            "value": "has sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3s",
+            "value": "ha sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1p",
+            "value": "hemos sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2p_vosotros",
+            "value": "habéis sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3p",
+            "value": "han sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1s",
+            "value": "había sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_tu",
+            "value": "habías sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_vos",
+            "value": "habías sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3s",
+            "value": "había sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1p",
+            "value": "habíamos sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2p_vosotros",
+            "value": "habíais sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3p",
+            "value": "habían sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1s",
+            "value": "habré sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_tu",
+            "value": "habrás sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_vos",
+            "value": "habrás sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3s",
+            "value": "habrá sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1p",
+            "value": "habremos sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2p_vosotros",
+            "value": "habréis sonado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3p",
+            "value": "habrán sonado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1s",
+            "value": "habría sonado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_tu",
+            "value": "habrías sonado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_vos",
+            "value": "habrías sonado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3s",
+            "value": "habría sonado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1p",
+            "value": "habríamos sonado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2p_vosotros",
+            "value": "habríais sonado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3p",
+            "value": "habrían sonado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1s",
+            "value": "haya sonado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_tu",
+            "value": "hayas sonado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_vos",
+            "value": "hayas sonado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3s",
+            "value": "haya sonado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1p",
+            "value": "hayamos sonado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2p_vosotros",
+            "value": "hayáis sonado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3p",
+            "value": "hayan sonado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1s",
+            "value": "hubiera sonado",
+            "alt": [
+              "hubiese sonado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_tu",
+            "value": "hubieras sonado",
+            "alt": [
+              "hubieses sonado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_vos",
+            "value": "hubieras sonado",
+            "alt": [
+              "hubieses sonado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3s",
+            "value": "hubiera sonado",
+            "alt": [
+              "hubiese sonado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1p",
+            "value": "hubiéramos sonado",
+            "alt": [
+              "hubiésemos sonado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2p_vosotros",
+            "value": "hubierais sonado",
+            "alt": [
+              "hubieseis sonado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3p",
+            "value": "hubieran sonado",
+            "alt": [
+              "hubiesen sonado"
+            ]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "inf",
+            "person": "",
+            "value": "sonar"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "",
+            "value": "sonando"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "",
+            "value": "sonado"
           }
         ]
       }
-    ]
+    ],
+    "irregularTenses": [
+      "pres",
+      "subjPres",
+      "impAff",
+      "impNeg"
+    ],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "condPerf": false,
+      "subjPerf": false,
+      "subjPlusc": false,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
   },
   {
     "id": "volar",
@@ -178032,90 +179315,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "vuelan"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1s",
-            "value": "volé"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_tu",
-            "value": "volaste"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3s",
-            "value": "voló"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1p",
-            "value": "volamos"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2p_vosotros",
-            "value": "volasteis"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3p",
-            "value": "volaron"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "vuele"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "vueles"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "vuele"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "volemos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "voléis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "vuelen"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_vos",
-            "value": "volaste"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "vueles"
           },
           {
             "mood": "imperative",
@@ -178403,53 +179602,391 @@ export const verbs = [
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1s",
-            "value": "volara"
+            "value": "volara",
+            "alt": [
+              "volase"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_tu",
-            "value": "volaras"
+            "value": "volaras",
+            "alt": [
+              "volases"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_vos",
-            "value": "volaras"
+            "value": "volaras",
+            "alt": [
+              "volases"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3s",
-            "value": "volara"
+            "value": "volara",
+            "alt": [
+              "volase"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1p",
-            "value": "voláramos"
+            "value": "voláramos",
+            "alt": [
+              "volásemos"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2p_vosotros",
-            "value": "volarais"
+            "value": "volarais",
+            "alt": [
+              "volaseis"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3p",
-            "value": "volaran"
+            "value": "volaran",
+            "alt": [
+              "volasen"
+            ]
           },
           {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_vos",
             "value": "volá"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1s",
+            "value": "he volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_tu",
+            "value": "has volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_vos",
+            "value": "has volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3s",
+            "value": "ha volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1p",
+            "value": "hemos volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2p_vosotros",
+            "value": "habéis volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3p",
+            "value": "han volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1s",
+            "value": "había volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_tu",
+            "value": "habías volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_vos",
+            "value": "habías volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3s",
+            "value": "había volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1p",
+            "value": "habíamos volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2p_vosotros",
+            "value": "habíais volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3p",
+            "value": "habían volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1s",
+            "value": "habré volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_tu",
+            "value": "habrás volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_vos",
+            "value": "habrás volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3s",
+            "value": "habrá volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1p",
+            "value": "habremos volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2p_vosotros",
+            "value": "habréis volado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3p",
+            "value": "habrán volado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1s",
+            "value": "habría volado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_tu",
+            "value": "habrías volado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_vos",
+            "value": "habrías volado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3s",
+            "value": "habría volado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1p",
+            "value": "habríamos volado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2p_vosotros",
+            "value": "habríais volado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3p",
+            "value": "habrían volado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1s",
+            "value": "haya volado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_tu",
+            "value": "hayas volado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_vos",
+            "value": "hayas volado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3s",
+            "value": "haya volado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1p",
+            "value": "hayamos volado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2p_vosotros",
+            "value": "hayáis volado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3p",
+            "value": "hayan volado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1s",
+            "value": "hubiera volado",
+            "alt": [
+              "hubiese volado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_tu",
+            "value": "hubieras volado",
+            "alt": [
+              "hubieses volado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_vos",
+            "value": "hubieras volado",
+            "alt": [
+              "hubieses volado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3s",
+            "value": "hubiera volado",
+            "alt": [
+              "hubiese volado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1p",
+            "value": "hubiéramos volado",
+            "alt": [
+              "hubiésemos volado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2p_vosotros",
+            "value": "hubierais volado",
+            "alt": [
+              "hubieseis volado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3p",
+            "value": "hubieran volado",
+            "alt": [
+              "hubiesen volado"
+            ]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "inf",
+            "person": "",
+            "value": "volar"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "",
+            "value": "volando"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "",
+            "value": "volado"
           }
         ]
       }
-    ]
+    ],
+    "irregularTenses": [
+      "pres",
+      "subjPres",
+      "impAff",
+      "impNeg"
+    ],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "condPerf": false,
+      "subjPerf": false,
+      "subjPlusc": false,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
   },
   {
     "id": "despertar",
@@ -178501,90 +180038,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "despiertan"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1s",
-            "value": "desperté"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_tu",
-            "value": "despertaste"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3s",
-            "value": "despertó"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1p",
-            "value": "despertamos"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2p_vosotros",
-            "value": "despertasteis"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3p",
-            "value": "despertaron"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "despierte"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "despiertes"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "despierte"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "despertemos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "despertéis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "despierten"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_vos",
-            "value": "despertaste"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "despiertes"
           },
           {
             "mood": "imperative",
@@ -178872,53 +180325,391 @@ export const verbs = [
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1s",
-            "value": "despertara"
+            "value": "despertara",
+            "alt": [
+              "despertase"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_tu",
-            "value": "despertaras"
+            "value": "despertaras",
+            "alt": [
+              "despertases"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_vos",
-            "value": "despertaras"
+            "value": "despertaras",
+            "alt": [
+              "despertases"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3s",
-            "value": "despertara"
+            "value": "despertara",
+            "alt": [
+              "despertase"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1p",
-            "value": "despertáramos"
+            "value": "despertáramos",
+            "alt": [
+              "despertásemos"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2p_vosotros",
-            "value": "despertarais"
+            "value": "despertarais",
+            "alt": [
+              "despertaseis"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3p",
-            "value": "despertaran"
+            "value": "despertaran",
+            "alt": [
+              "despertasen"
+            ]
           },
           {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_vos",
             "value": "despertá"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1s",
+            "value": "he despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_tu",
+            "value": "has despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_vos",
+            "value": "has despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3s",
+            "value": "ha despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1p",
+            "value": "hemos despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2p_vosotros",
+            "value": "habéis despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3p",
+            "value": "han despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1s",
+            "value": "había despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_tu",
+            "value": "habías despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_vos",
+            "value": "habías despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3s",
+            "value": "había despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1p",
+            "value": "habíamos despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2p_vosotros",
+            "value": "habíais despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3p",
+            "value": "habían despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1s",
+            "value": "habré despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_tu",
+            "value": "habrás despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_vos",
+            "value": "habrás despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3s",
+            "value": "habrá despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1p",
+            "value": "habremos despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2p_vosotros",
+            "value": "habréis despertado"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3p",
+            "value": "habrán despertado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1s",
+            "value": "habría despertado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_tu",
+            "value": "habrías despertado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_vos",
+            "value": "habrías despertado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3s",
+            "value": "habría despertado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1p",
+            "value": "habríamos despertado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2p_vosotros",
+            "value": "habríais despertado"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3p",
+            "value": "habrían despertado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1s",
+            "value": "haya despertado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_tu",
+            "value": "hayas despertado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_vos",
+            "value": "hayas despertado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3s",
+            "value": "haya despertado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1p",
+            "value": "hayamos despertado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2p_vosotros",
+            "value": "hayáis despertado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3p",
+            "value": "hayan despertado"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1s",
+            "value": "hubiera despertado",
+            "alt": [
+              "hubiese despertado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_tu",
+            "value": "hubieras despertado",
+            "alt": [
+              "hubieses despertado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_vos",
+            "value": "hubieras despertado",
+            "alt": [
+              "hubieses despertado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3s",
+            "value": "hubiera despertado",
+            "alt": [
+              "hubiese despertado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1p",
+            "value": "hubiéramos despertado",
+            "alt": [
+              "hubiésemos despertado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2p_vosotros",
+            "value": "hubierais despertado",
+            "alt": [
+              "hubieseis despertado"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3p",
+            "value": "hubieran despertado",
+            "alt": [
+              "hubiesen despertado"
+            ]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "inf",
+            "person": "",
+            "value": "despertar"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "",
+            "value": "despertando"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "",
+            "value": "despertado"
           }
         ]
       }
-    ]
+    ],
+    "irregularTenses": [
+      "pres",
+      "subjPres",
+      "impAff",
+      "impNeg"
+    ],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "condPerf": false,
+      "subjPerf": false,
+      "subjPlusc": false,
+      "inf": false,
+      "ger": false,
+      "part": false
+    }
   },
   {
     "id": "competir",
@@ -178970,90 +180761,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "compiten"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1s",
-            "value": "competí"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_tu",
-            "value": "competiste"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3s",
-            "value": "compitió"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1p",
-            "value": "competimos"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2p_vosotros",
-            "value": "competisteis"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3p",
-            "value": "compitieron"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "compita"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "compitas"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "compita"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "compitamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "compitáis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "compitan"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_vos",
-            "value": "competiste"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "compitas"
           },
           {
             "mood": "imperative",
@@ -179341,53 +181048,394 @@ export const verbs = [
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1s",
-            "value": "compitiera"
+            "value": "compitiera",
+            "alt": [
+              "compitiese"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_tu",
-            "value": "compitieras"
+            "value": "compitieras",
+            "alt": [
+              "compitieses"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_vos",
-            "value": "compitieras"
+            "value": "compitieras",
+            "alt": [
+              "compitieses"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3s",
-            "value": "compitiera"
+            "value": "compitiera",
+            "alt": [
+              "compitiese"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1p",
-            "value": "compitiéramos"
+            "value": "compitiéramos",
+            "alt": [
+              "compitiésemos"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2p_vosotros",
-            "value": "compitierais"
+            "value": "compitierais",
+            "alt": [
+              "compitieseis"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3p",
-            "value": "compitieran"
+            "value": "compitieran",
+            "alt": [
+              "compitiesen"
+            ]
           },
           {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_vos",
             "value": "competí"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1s",
+            "value": "he competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_tu",
+            "value": "has competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_vos",
+            "value": "has competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3s",
+            "value": "ha competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1p",
+            "value": "hemos competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2p_vosotros",
+            "value": "habéis competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3p",
+            "value": "han competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1s",
+            "value": "había competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_tu",
+            "value": "habías competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_vos",
+            "value": "habías competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3s",
+            "value": "había competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1p",
+            "value": "habíamos competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2p_vosotros",
+            "value": "habíais competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3p",
+            "value": "habían competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1s",
+            "value": "habré competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_tu",
+            "value": "habrás competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_vos",
+            "value": "habrás competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3s",
+            "value": "habrá competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1p",
+            "value": "habremos competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2p_vosotros",
+            "value": "habréis competido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3p",
+            "value": "habrán competido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1s",
+            "value": "habría competido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_tu",
+            "value": "habrías competido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_vos",
+            "value": "habrías competido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3s",
+            "value": "habría competido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1p",
+            "value": "habríamos competido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2p_vosotros",
+            "value": "habríais competido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3p",
+            "value": "habrían competido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1s",
+            "value": "haya competido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_tu",
+            "value": "hayas competido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_vos",
+            "value": "hayas competido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3s",
+            "value": "haya competido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1p",
+            "value": "hayamos competido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2p_vosotros",
+            "value": "hayáis competido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3p",
+            "value": "hayan competido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1s",
+            "value": "hubiera competido",
+            "alt": [
+              "hubiese competido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_tu",
+            "value": "hubieras competido",
+            "alt": [
+              "hubieses competido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_vos",
+            "value": "hubieras competido",
+            "alt": [
+              "hubieses competido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3s",
+            "value": "hubiera competido",
+            "alt": [
+              "hubiese competido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1p",
+            "value": "hubiéramos competido",
+            "alt": [
+              "hubiésemos competido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2p_vosotros",
+            "value": "hubierais competido",
+            "alt": [
+              "hubieseis competido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3p",
+            "value": "hubieran competido",
+            "alt": [
+              "hubiesen competido"
+            ]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "inf",
+            "person": "",
+            "value": "competir"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "",
+            "value": "compitiendo"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "",
+            "value": "competido"
           }
         ]
       }
-    ]
+    ],
+    "irregularTenses": [
+      "pres",
+      "pretIndef",
+      "subjPres",
+      "subjImpf",
+      "impAff",
+      "impNeg",
+      "ger"
+    ],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": true,
+      "impf": false,
+      "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "condPerf": false,
+      "subjPerf": false,
+      "subjPlusc": false,
+      "inf": false,
+      "ger": true,
+      "part": false
+    }
   },
   {
     "id": "vestir",
@@ -179439,90 +181487,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "visten"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1s",
-            "value": "vestí"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_tu",
-            "value": "vestiste"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3s",
-            "value": "vistió"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "1p",
-            "value": "vestimos"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2p_vosotros",
-            "value": "vestisteis"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "3p",
-            "value": "vistieron"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "vista"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "vistas"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "vista"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "vistamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "vistáis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "vistan"
-          },
-          {
-            "mood": "indicative",
-            "tense": "pret",
-            "person": "2s_vos",
-            "value": "vestiste"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "vistas"
           },
           {
             "mood": "imperative",
@@ -179810,53 +181774,394 @@ export const verbs = [
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1s",
-            "value": "vistiera"
+            "value": "vistiera",
+            "alt": [
+              "vistiese"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_tu",
-            "value": "vistieras"
+            "value": "vistieras",
+            "alt": [
+              "vistieses"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2s_vos",
-            "value": "vistieras"
+            "value": "vistieras",
+            "alt": [
+              "vistieses"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3s",
-            "value": "vistiera"
+            "value": "vistiera",
+            "alt": [
+              "vistiese"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "1p",
-            "value": "vistiéramos"
+            "value": "vistiéramos",
+            "alt": [
+              "vistiésemos"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "2p_vosotros",
-            "value": "vistierais"
+            "value": "vistierais",
+            "alt": [
+              "vistieseis"
+            ]
           },
           {
             "mood": "subjunctive",
             "tense": "subjImpf",
             "person": "3p",
-            "value": "vistieran"
+            "value": "vistieran",
+            "alt": [
+              "vistiesen"
+            ]
           },
           {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_vos",
             "value": "vestí"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1s",
+            "value": "he vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_tu",
+            "value": "has vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2s_vos",
+            "value": "has vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3s",
+            "value": "ha vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "1p",
+            "value": "hemos vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "2p_vosotros",
+            "value": "habéis vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "pretPerf",
+            "person": "3p",
+            "value": "han vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1s",
+            "value": "había vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_tu",
+            "value": "habías vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2s_vos",
+            "value": "habías vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3s",
+            "value": "había vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "1p",
+            "value": "habíamos vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "2p_vosotros",
+            "value": "habíais vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "plusc",
+            "person": "3p",
+            "value": "habían vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1s",
+            "value": "habré vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_tu",
+            "value": "habrás vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2s_vos",
+            "value": "habrás vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3s",
+            "value": "habrá vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "1p",
+            "value": "habremos vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "2p_vosotros",
+            "value": "habréis vestido"
+          },
+          {
+            "mood": "indicative",
+            "tense": "futPerf",
+            "person": "3p",
+            "value": "habrán vestido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1s",
+            "value": "habría vestido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_tu",
+            "value": "habrías vestido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2s_vos",
+            "value": "habrías vestido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3s",
+            "value": "habría vestido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "1p",
+            "value": "habríamos vestido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "2p_vosotros",
+            "value": "habríais vestido"
+          },
+          {
+            "mood": "conditional",
+            "tense": "condPerf",
+            "person": "3p",
+            "value": "habrían vestido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1s",
+            "value": "haya vestido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_tu",
+            "value": "hayas vestido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2s_vos",
+            "value": "hayas vestido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3s",
+            "value": "haya vestido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "1p",
+            "value": "hayamos vestido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "2p_vosotros",
+            "value": "hayáis vestido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPerf",
+            "person": "3p",
+            "value": "hayan vestido"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1s",
+            "value": "hubiera vestido",
+            "alt": [
+              "hubiese vestido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_tu",
+            "value": "hubieras vestido",
+            "alt": [
+              "hubieses vestido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2s_vos",
+            "value": "hubieras vestido",
+            "alt": [
+              "hubieses vestido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3s",
+            "value": "hubiera vestido",
+            "alt": [
+              "hubiese vestido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "1p",
+            "value": "hubiéramos vestido",
+            "alt": [
+              "hubiésemos vestido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "2p_vosotros",
+            "value": "hubierais vestido",
+            "alt": [
+              "hubieseis vestido"
+            ]
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPlusc",
+            "person": "3p",
+            "value": "hubieran vestido",
+            "alt": [
+              "hubiesen vestido"
+            ]
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "inf",
+            "person": "",
+            "value": "vestir"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "",
+            "value": "vistiendo"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "",
+            "value": "vestido"
           }
         ]
       }
-    ]
+    ],
+    "irregularTenses": [
+      "pres",
+      "pretIndef",
+      "subjPres",
+      "subjImpf",
+      "impAff",
+      "impNeg",
+      "ger"
+    ],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": true,
+      "impf": false,
+      "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "condPerf": false,
+      "subjPerf": false,
+      "subjPlusc": false,
+      "inf": false,
+      "ger": true,
+      "part": false
+    }
   },
   {
     "id": "reconocer",
@@ -179908,45 +182213,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "reconocen"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "reconozca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "reconozcas",
-            "accepts": {
-              "vos": "reconozcas"
-            }
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "reconozca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "reconozcamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "reconozcáis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "reconozcan"
           },
           {
             "mood": "nonfinite",
@@ -180756,15 +183022,6 @@ export const verbs = [
             "region": "es"
           },
           {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "reconozcas",
-            "accepts": {
-              "vos": "reconozcas"
-            }
-          },
-          {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
@@ -180774,32 +183031,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -180852,45 +183107,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "desaparecen"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "desaparezca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "desaparezcas",
-            "accepts": {
-              "vos": "desaparezcas"
-            }
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "desaparezca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "desaparezcamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "desaparezcáis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "desaparezcan"
           },
           {
             "mood": "nonfinite",
@@ -181700,15 +183916,6 @@ export const verbs = [
             "region": "es"
           },
           {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "desaparezcas",
-            "accepts": {
-              "vos": "desaparezcas"
-            }
-          },
-          {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
@@ -181718,32 +183925,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -181796,45 +184001,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "pertenecen"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "pertenezca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "pertenezcas",
-            "accepts": {
-              "vos": "pertenezcas"
-            }
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "pertenezca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "pertenezcamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "pertenezcáis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "pertenezcan"
           },
           {
             "mood": "nonfinite",
@@ -182644,15 +184810,6 @@ export const verbs = [
             "region": "es"
           },
           {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "pertenezcas",
-            "accepts": {
-              "vos": "pertenezcas"
-            }
-          },
-          {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
@@ -182662,32 +184819,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -182740,45 +184895,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "aparecen"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "aparezca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "aparezcas",
-            "accepts": {
-              "vos": "aparezcas"
-            }
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "aparezca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "aparezcamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "aparezcáis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "aparezcan"
           },
           {
             "mood": "nonfinite",
@@ -183588,15 +185704,6 @@ export const verbs = [
             "region": "es"
           },
           {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "aparezcas",
-            "accepts": {
-              "vos": "aparezcas"
-            }
-          },
-          {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
@@ -183606,32 +185713,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -183684,45 +185789,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "permanecen"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "permanezca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "permanezcas",
-            "accepts": {
-              "vos": "permanezcas"
-            }
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "permanezca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "permanezcamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "permanezcáis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "permanezcan"
           },
           {
             "mood": "nonfinite",
@@ -184532,15 +186598,6 @@ export const verbs = [
             "region": "es"
           },
           {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "permanezcas",
-            "accepts": {
-              "vos": "permanezcas"
-            }
-          },
-          {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
@@ -184550,32 +186607,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjImpf",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -185400,40 +187455,41 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "cond",
-      "condPerf",
-      "fut",
-      "futPerf",
-      "impAff",
-      "impNeg",
-      "plusc",
       "pres",
       "pretIndef",
-      "pretPerf",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
       "subjPlusc",
-      "subjPres"
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": true,
+      "cond": true,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": true,
       "plusc": true,
       "futPerf": true,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": true,
-      "subjFutPerf": false,
-      "cond": true,
       "condPerf": true,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -186297,31 +188353,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -187185,31 +189240,30 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
-      "subjPres"
+      "subjPres",
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -188073,31 +190127,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
+      "pres",
+      "pretIndef",
+      "subjPres",
+      "subjImpf",
       "impAff",
       "impNeg",
-      "pres",
-      "subjPres"
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
-      "pretIndef": false,
+      "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
-      "ger": false,
-      "pp": false
+      "ger": true,
+      "part": false
     }
   },
   {
@@ -188973,34 +191029,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -189876,34 +191931,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -190779,34 +192833,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -191682,34 +193735,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -191762,45 +193814,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "deducen"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "deduzca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "deduzcas",
-            "accepts": {
-              "vos": "deduzcas"
-            }
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "deduzca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "deduzcamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "deduzcáis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "deduzcan"
           },
           {
             "mood": "nonfinite",
@@ -192336,7 +194349,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "2p_vosotros",
-            "value": "deduzcáis",
+            "value": "deducid",
             "tags": [],
             "region": "es"
           },
@@ -192610,15 +194623,6 @@ export const verbs = [
             "region": "es"
           },
           {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "deduzcas",
-            "accepts": {
-              "vos": "deduzcas"
-            }
-          },
-          {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
@@ -192628,32 +194632,32 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
+      "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
-      "pretIndef": false,
+      "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -192706,45 +194710,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "seducen"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "seduzca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "seduzcas",
-            "accepts": {
-              "vos": "seduzcas"
-            }
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "seduzca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "seduzcamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "seduzcáis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "seduzcan"
           },
           {
             "mood": "nonfinite",
@@ -193280,7 +195245,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "2p_vosotros",
-            "value": "seduzcáis",
+            "value": "seducid",
             "tags": [],
             "region": "es"
           },
@@ -193554,15 +195519,6 @@ export const verbs = [
             "region": "es"
           },
           {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "seduzcas",
-            "accepts": {
-              "vos": "seduzcas"
-            }
-          },
-          {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
@@ -193572,32 +195528,32 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
+      "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
-      "pretIndef": false,
+      "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -193650,45 +195606,6 @@ export const verbs = [
             "tense": "pres",
             "person": "3p",
             "value": "reproducen"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1s",
-            "value": "reproduzca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_tu",
-            "value": "reproduzcas",
-            "accepts": {
-              "vos": "reproduzcas"
-            }
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3s",
-            "value": "reproduzca"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "1p",
-            "value": "reproduzcamos"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2p_vosotros",
-            "value": "reproduzcáis"
-          },
-          {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "3p",
-            "value": "reproduzcan"
           },
           {
             "mood": "nonfinite",
@@ -194224,7 +196141,7 @@ export const verbs = [
             "tense": "impAff",
             "mood": "imperative",
             "person": "2p_vosotros",
-            "value": "reproduzcáis",
+            "value": "reproducid",
             "tags": [],
             "region": "es"
           },
@@ -194498,15 +196415,6 @@ export const verbs = [
             "region": "es"
           },
           {
-            "mood": "subjunctive",
-            "tense": "pres",
-            "person": "2s_vos",
-            "value": "reproduzcas",
-            "accepts": {
-              "vos": "reproduzcas"
-            }
-          },
-          {
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
@@ -194516,32 +196424,32 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "impAff",
-      "impNeg",
       "pres",
+      "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg"
     ],
     "irregularityMatrix": {
       "pres": true,
-      "pretIndef": false,
+      "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -195405,31 +197313,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
+      "pres",
+      "pretIndef",
+      "subjPres",
+      "subjImpf",
       "impAff",
       "impNeg",
-      "pres",
-      "subjPres"
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
-      "pretIndef": false,
+      "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
-      "ger": false,
-      "pp": false
+      "ger": true,
+      "part": false
     }
   },
   {
@@ -196293,31 +198203,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
+      "pres",
+      "pretIndef",
+      "subjPres",
+      "subjImpf",
       "impAff",
       "impNeg",
-      "pres",
-      "subjPres"
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
-      "pretIndef": false,
+      "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
-      "ger": false,
-      "pp": false
+      "ger": true,
+      "part": false
     }
   },
   {
@@ -197181,31 +199093,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
+      "pres",
+      "pretIndef",
+      "subjPres",
+      "subjImpf",
       "impAff",
       "impNeg",
-      "pres",
-      "subjPres"
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
-      "pretIndef": false,
+      "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
-      "ger": false,
-      "pp": false
+      "ger": true,
+      "part": false
     }
   },
   {
@@ -198081,34 +199995,43 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "impf",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
+      "subjPlusc",
+      "ger",
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
-      "impf": false,
-      "fut": false,
-      "pretPerf": false,
-      "plusc": false,
-      "futPerf": false,
+      "impf": true,
+      "fut": true,
+      "cond": true,
       "subjPres": true,
       "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
-      "condPerf": false,
       "impAff": true,
       "impNeg": true,
+      "pretPerf": true,
+      "plusc": true,
+      "futPerf": true,
+      "condPerf": true,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -198984,34 +200907,43 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "impf",
+      "fut",
+      "cond",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "pretPerf",
+      "plusc",
+      "futPerf",
+      "condPerf",
+      "subjPerf",
+      "subjPlusc",
+      "ger",
+      "part"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
-      "impf": false,
-      "fut": false,
-      "pretPerf": false,
-      "plusc": false,
-      "futPerf": false,
+      "impf": true,
+      "fut": true,
+      "cond": true,
       "subjPres": true,
       "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
-      "condPerf": false,
       "impAff": true,
       "impNeg": true,
+      "pretPerf": true,
+      "plusc": true,
+      "futPerf": true,
+      "condPerf": true,
+      "subjPerf": true,
+      "subjPlusc": true,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": true
     }
   },
   {
@@ -199887,34 +201819,33 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
       "pres",
       "pretIndef",
+      "subjPres",
       "subjImpf",
-      "subjPres"
+      "impAff",
+      "impNeg",
+      "ger"
     ],
     "irregularityMatrix": {
       "pres": true,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": true,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -200790,34 +202721,29 @@ export const verbs = [
       }
     ],
     "irregularTenses": [
-      "ger",
-      "impAff",
-      "impNeg",
-      "pres",
       "pretIndef",
       "subjImpf",
-      "subjPres"
+      "ger"
     ],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": true,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": false,
+      "subjImpf": true,
+      "impAff": false,
+      "impNeg": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": true,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -201705,21 +203631,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -202607,21 +204532,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -203509,21 +205433,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   },
   {
@@ -204418,21 +206341,20 @@ export const verbs = [
       "pretIndef": false,
       "impf": false,
       "fut": false,
+      "cond": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "impAff": true,
+      "impNeg": true,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": false,
-      "subjPretPerf": false,
-      "subjPlusc": false,
-      "subjFutPerf": false,
-      "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "subjPerf": false,
+      "subjPlusc": false,
       "inf": false,
       "ger": false,
-      "pp": false
+      "part": false
     }
   }
 ];
