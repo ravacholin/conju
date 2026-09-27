@@ -286,11 +286,11 @@ export const IRREGULAR_FAMILIES = {
   'DEFECTIVE_VERBS': {
     id: 'DEFECTIVE_VERBS',
     name: 'Verbos defectivos',
-    description: 'soler, abolir, blandir, agredir, empedernir, desvaír',
-    examples: ['soler', 'abolir', 'blandir', 'agredir', 'empedernir', 'desvaír'],
-    pattern: 'verbos que carecen de algunas formas (solo 3ª persona, infinitivo, etc.)',
-    affectedTenses: ['pres', 'subjPres', 'impAff'],
-    paradigmaticVerbs: ['soler', 'abolir', 'blandir']
+    description: 'soler, empedernir, desvaír, balbucir, colorir',
+    examples: ['soler', 'empedernir', 'desvaír', 'balbucir', 'colorir', 'aterir'],
+    pattern: 'verbos que carecen de algunas formas (solo 3ª persona, infinitivo, etc.). abolir, agredir, blandir y transgredir ya se conjugan completos (RAE, 2009)',
+    affectedTenses: ['pres', 'subjPres'],
+    paradigmaticVerbs: ['soler', 'balbucir']
   },
 
   'DOUBLE_PARTICIPLES': {
@@ -620,8 +620,6 @@ export function categorizeVerb(lemma, _verbData) {
     'soler': ['DIPHT_O_UE', 'DEFECTIVE_VERBS'],
     
     // Nuevos verbos agregados en optimización nocturna
-    'abolir': ['DEFECTIVE_VERBS'],
-    'blandir': ['DEFECTIVE_VERBS'],
     'imprimir': ['DOUBLE_PARTICIPLES'],
     'entregar': ['ORTH_GAR'],
     'obligar': ['ORTH_GAR'],
@@ -672,7 +670,6 @@ export function categorizeVerb(lemma, _verbData) {
     'escribir': ['IRREG_PARTICIPLES'],
     
     // Expansión DEFECTIVE_VERBS
-    'agredir': ['DEFECTIVE_VERBS'],
     'empedernir': ['DEFECTIVE_VERBS'],
     'desvaír': ['DEFECTIVE_VERBS'],
     'balbucir': ['DEFECTIVE_VERBS'],

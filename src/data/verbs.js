@@ -67465,7 +67465,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "construvé"
+            "value": "construye"
           }
         ]
       }
@@ -68345,7 +68345,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "destruvé"
+            "value": "destruye"
           }
         ]
       }
@@ -69225,7 +69225,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "incluvé"
+            "value": "incluye"
           }
         ]
       }
@@ -70105,7 +70105,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "concluvé"
+            "value": "concluye"
           }
         ]
       }
@@ -70969,7 +70969,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "excluvé"
+            "value": "excluye"
           }
         ]
       }
@@ -71848,7 +71848,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "huvé"
+            "value": "huye"
           }
         ]
       }
@@ -72728,7 +72728,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "contribuvé"
+            "value": "contribuye"
           }
         ]
       }
@@ -73608,7 +73608,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "distribuvé"
+            "value": "distribuye"
           }
         ]
       }
@@ -74472,7 +74472,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "atribuvé"
+            "value": "atribuye"
           }
         ]
       }
@@ -76223,7 +76223,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "servvé"
+            "value": "sirve"
           }
         ]
       }
@@ -77129,7 +77129,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "repetvé"
+            "value": "repite"
           }
         ]
       }
@@ -78035,7 +78035,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "morvé"
+            "value": "muere"
           }
         ]
       }
@@ -84307,7 +84307,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "sentvé"
+            "value": "siente"
           }
         ]
       }
@@ -86527,7 +86527,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "instruvé"
+            "value": "instruye"
           }
         ]
       }
@@ -87390,7 +87390,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "sustituvé"
+            "value": "sustituye"
           }
         ]
       }
@@ -88252,7 +88252,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "reñvé"
+            "value": "riñe"
           }
         ]
       }
@@ -89113,7 +89113,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "teñvé"
+            "value": "tiñe"
           }
         ]
       }
@@ -89974,7 +89974,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "ceñvé"
+            "value": "ciñe"
           }
         ]
       }
@@ -90835,7 +90835,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "bullvé"
+            "value": "bulle"
           }
         ]
       }
@@ -91695,7 +91695,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "engullvé"
+            "value": "engulle"
           }
         ]
       }
@@ -92555,7 +92555,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "zambullvé"
+            "value": "zambulle"
           }
         ]
       }
@@ -93415,7 +93415,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "argüvé"
+            "value": "arguye"
           }
         ]
       }
@@ -94276,7 +94276,10 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "erguvé"
+            "value": "yergue",
+            "alt": [
+              "irgue"
+            ]
           }
         ]
       }
@@ -110327,7 +110330,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "prohibvé"
+            "value": "prohíbe"
           }
         ]
       }
@@ -111185,7 +111188,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "reunvé"
+            "value": "reúne"
           }
         ]
       }
@@ -114553,7 +114556,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "podrvé"
+            "value": "pudre"
           }
         ]
       }
@@ -119270,7 +119273,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "imprimvé"
+            "value": "imprime"
           }
         ]
       }
@@ -125181,7 +125184,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "gruñvé"
+            "value": "gruñe"
           }
         ]
       }
@@ -126041,7 +126044,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "dirigvé"
+            "value": "dirige"
           }
         ]
       }
@@ -126900,7 +126903,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "corregvé"
+            "value": "corrige"
           }
         ]
       }
@@ -129479,7 +129482,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "proseguvé"
+            "value": "prosigue"
           }
         ]
       }
@@ -137944,7 +137947,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "convenvé"
+            "value": "convén"
           }
         ]
       }
@@ -138791,7 +138794,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "prevenvé"
+            "value": "prevén"
           }
         ]
       }
@@ -140554,7 +140557,7 @@ export const verbs = [
   {
     "id": "agredir_priority",
     "lemma": "agredir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -141352,7 +141355,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "agredvé"
+            "value": "agrede"
           },
           {
             "mood": "imperative",
@@ -141387,30 +141390,24 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "impAff",
-      "impNeg",
-      "pres",
-      "subjImpf",
-      "subjPres"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
+      "subjPres": false,
+      "subjImpf": false,
       "subjPretPerf": false,
       "subjPlusc": false,
       "subjFutPerf": false,
       "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "impAff": false,
+      "impNeg": false,
       "inf": false,
       "ger": false,
       "pp": false
@@ -141419,7 +141416,7 @@ export const verbs = [
   {
     "id": "blandir_priority",
     "lemma": "blandir",
-    "type": "irregular",
+    "type": "regular",
     "paradigms": [
       {
         "regionTags": [
@@ -142243,7 +142240,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "blandvé"
+            "value": "blande"
           },
           {
             "mood": "imperative",
@@ -142260,30 +142257,24 @@ export const verbs = [
         ]
       }
     ],
-    "irregularTenses": [
-      "impAff",
-      "impNeg",
-      "pres",
-      "subjImpf",
-      "subjPres"
-    ],
+    "irregularTenses": [],
     "irregularityMatrix": {
-      "pres": true,
+      "pres": false,
       "pretIndef": false,
       "impf": false,
       "fut": false,
       "pretPerf": false,
       "plusc": false,
       "futPerf": false,
-      "subjPres": true,
-      "subjImpf": true,
+      "subjPres": false,
+      "subjImpf": false,
       "subjPretPerf": false,
       "subjPlusc": false,
       "subjFutPerf": false,
       "cond": false,
       "condPerf": false,
-      "impAff": true,
-      "impNeg": true,
+      "impAff": false,
+      "impNeg": false,
       "inf": false,
       "ger": false,
       "pp": false
@@ -155800,7 +155791,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "intervenvé"
+            "value": "intervén"
           }
         ]
       }
@@ -156680,7 +156671,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "elegvé"
+            "value": "elige"
           }
         ]
       }
@@ -176693,7 +176684,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "prefervé"
+            "value": "prefiere"
           },
           {
             "mood": "imperative",
@@ -179068,7 +179059,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "competvé"
+            "value": "compite"
           },
           {
             "mood": "imperative",
@@ -179537,7 +179528,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "vestvé"
+            "value": "viste"
           },
           {
             "mood": "imperative",
@@ -187270,7 +187261,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "mentvé"
+            "value": "miente"
           },
           {
             "mood": "imperative",
@@ -190084,7 +190075,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "convertvé"
+            "value": "convierte"
           },
           {
             "mood": "imperative",
@@ -190987,7 +190978,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "divertvé"
+            "value": "divierte"
           },
           {
             "mood": "imperative",
@@ -194602,7 +194593,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "refervé"
+            "value": "refiere"
           },
           {
             "mood": "imperative",
@@ -195490,7 +195481,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "sugervé"
+            "value": "sugiere"
           },
           {
             "mood": "imperative",
@@ -196378,7 +196369,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "advertvé"
+            "value": "advierte"
           },
           {
             "mood": "imperative",
@@ -199192,7 +199183,7 @@ export const verbs = [
             "mood": "imperative",
             "tense": "impAff",
             "person": "2s_tu",
-            "value": "influvé"
+            "value": "influye"
           },
           {
             "mood": "imperative",
@@ -200826,6 +200817,3621 @@ export const verbs = [
       "impNeg": true,
       "inf": false,
       "ger": true,
+      "pp": false
+    }
+  },
+  {
+    "id": "vencer",
+    "lemma": "vencer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": [
+          "rioplatense",
+          "la_general",
+          "peninsular"
+        ],
+        "forms": [
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "",
+            "value": "vencido"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "",
+            "value": "venciendo"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "he vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "has vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "has vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "ha vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "hemos vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "habéis vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "han vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "había vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "habías vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "habías vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "había vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "habíamos vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "habíais vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "habían vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "habré vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "habrás vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "habrás vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "habrá vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "habremos vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "habréis vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "habrán vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "1s",
+            "value": "habría vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "2s_tu",
+            "value": "habrías vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "2s_vos",
+            "value": "habrías vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "3s",
+            "value": "habría vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "1p",
+            "value": "habríamos vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "2p_vosotros",
+            "value": "habríais vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "3p",
+            "value": "habrían vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "1s",
+            "value": "haya vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "value": "hayas vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "value": "hayas vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "3s",
+            "value": "haya vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "1p",
+            "value": "hayamos vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "value": "hayáis vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "3p",
+            "value": "hayan vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "1s",
+            "value": "hubiera vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "value": "hubieras vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "value": "hubieras vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "3s",
+            "value": "hubiera vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "1p",
+            "value": "hubiéramos vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "value": "hubierais vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "3p",
+            "value": "hubieran vencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "vencía",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "vencías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "vencías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "vencía",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "vencíamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "vencíais",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "vencían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "venceré",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "vencerás",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "vencerás",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "vencerá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "venceremos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "venceréis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "vencerán",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "1s",
+            "value": "vencería",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "2s_tu",
+            "value": "vencerías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "2s_vos",
+            "value": "vencerías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "3s",
+            "value": "vencería",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "1p",
+            "value": "venceríamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "2p_vosotros",
+            "value": "venceríais",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "3p",
+            "value": "vencerían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "value": "vencé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "value": "venced",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "venzo",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "vences",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "vencés",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "vence",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "vencemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "vencéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "vencen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "value": "venza",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "value": "venzas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "value": "venzas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "value": "venzamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "value": "venzáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "value": "venzan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "value": "vence",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "value": "venzamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "value": "venzan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "value": "no venzas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "value": "no venzas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "value": "no venzamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "value": "no venzáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "value": "no venzan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "vencer",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "vencí",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "venciste",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "venciste",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "venció",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "vencimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "vencisteis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "vencieron",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "1s",
+            "value": "venciera",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "venciese"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "value": "vencieras",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "vencieses"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "value": "vencieras",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "vencieses"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "3s",
+            "value": "venciera",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "venciese"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "1p",
+            "value": "venciéramos",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "venciésemos"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "value": "vencierais",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "vencieseis"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "3p",
+            "value": "vencieran",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "venciesen"
+            ]
+          },
+          {
+            "mood": "imperative",
+            "tense": "impAff",
+            "person": "3s",
+            "value": "venza"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPres",
+            "person": "3s",
+            "value": "venza"
+          },
+          {
+            "mood": "imperative",
+            "tense": "impNeg",
+            "person": "3s",
+            "value": "no venza"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [
+      "pres",
+      "subjPres",
+      "impAff",
+      "impNeg"
+    ],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": false,
+      "pp": false
+    }
+  },
+  {
+    "id": "convencer",
+    "lemma": "convencer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": [
+          "rioplatense",
+          "la_general",
+          "peninsular"
+        ],
+        "forms": [
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "",
+            "value": "convencido"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "",
+            "value": "convenciendo"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "he convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "has convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "has convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "ha convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "hemos convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "habéis convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "han convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "había convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "habías convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "habías convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "había convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "habíamos convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "habíais convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "habían convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "habré convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "habrás convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "habrás convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "habrá convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "habremos convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "habréis convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "habrán convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "1s",
+            "value": "habría convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "2s_tu",
+            "value": "habrías convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "2s_vos",
+            "value": "habrías convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "3s",
+            "value": "habría convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "1p",
+            "value": "habríamos convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "2p_vosotros",
+            "value": "habríais convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "3p",
+            "value": "habrían convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "1s",
+            "value": "haya convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "value": "hayas convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "value": "hayas convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "3s",
+            "value": "haya convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "1p",
+            "value": "hayamos convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "value": "hayáis convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "3p",
+            "value": "hayan convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "1s",
+            "value": "hubiera convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "value": "hubieras convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "value": "hubieras convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "3s",
+            "value": "hubiera convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "1p",
+            "value": "hubiéramos convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "value": "hubierais convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "3p",
+            "value": "hubieran convencido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "convencía",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "convencías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "convencías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "convencía",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "convencíamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "convencíais",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "convencían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "convenceré",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "convencerás",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "convencerás",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "convencerá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "convenceremos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "convenceréis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "convencerán",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "1s",
+            "value": "convencería",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "2s_tu",
+            "value": "convencerías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "2s_vos",
+            "value": "convencerías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "3s",
+            "value": "convencería",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "1p",
+            "value": "convenceríamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "2p_vosotros",
+            "value": "convenceríais",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "3p",
+            "value": "convencerían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "value": "convencé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "value": "convenced",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "convenzo",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "convences",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "convencés",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "convence",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "convencemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "convencéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "convencen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "value": "convenza",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "value": "convenzas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "value": "convenzas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "value": "convenzamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "value": "convenzáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "value": "convenzan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "value": "convence",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "value": "convenzamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "value": "convenzan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "value": "no convenzas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "value": "no convenzas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "value": "no convenzamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "value": "no convenzáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "value": "no convenzan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "convencer",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "convencí",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "convenciste",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "convenciste",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "convenció",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "convencimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "convencisteis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "convencieron",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "1s",
+            "value": "convenciera",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "convenciese"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "value": "convencieras",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "convencieses"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "value": "convencieras",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "convencieses"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "3s",
+            "value": "convenciera",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "convenciese"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "1p",
+            "value": "convenciéramos",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "convenciésemos"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "value": "convencierais",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "convencieseis"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "3p",
+            "value": "convencieran",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "convenciesen"
+            ]
+          },
+          {
+            "mood": "imperative",
+            "tense": "impAff",
+            "person": "3s",
+            "value": "convenza"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPres",
+            "person": "3s",
+            "value": "convenza"
+          },
+          {
+            "mood": "imperative",
+            "tense": "impNeg",
+            "person": "3s",
+            "value": "no convenza"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [
+      "pres",
+      "subjPres",
+      "impAff",
+      "impNeg"
+    ],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": false,
+      "pp": false
+    }
+  },
+  {
+    "id": "ejercer",
+    "lemma": "ejercer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": [
+          "rioplatense",
+          "la_general",
+          "peninsular"
+        ],
+        "forms": [
+          {
+            "mood": "nonfinite",
+            "tense": "part",
+            "person": "",
+            "value": "ejercido"
+          },
+          {
+            "mood": "nonfinite",
+            "tense": "ger",
+            "person": "",
+            "value": "ejerciendo"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "he ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "has ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "has ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "ha ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "hemos ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "habéis ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "han ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "había ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "habías ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "habías ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "había ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "habíamos ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "habíais ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "habían ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "habré ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "habrás ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "habrás ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "habrá ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "habremos ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "habréis ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "habrán ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "1s",
+            "value": "habría ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "2s_tu",
+            "value": "habrías ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "2s_vos",
+            "value": "habrías ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "3s",
+            "value": "habría ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "1p",
+            "value": "habríamos ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "2p_vosotros",
+            "value": "habríais ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "3p",
+            "value": "habrían ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "1s",
+            "value": "haya ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "value": "hayas ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "value": "hayas ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "3s",
+            "value": "haya ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "1p",
+            "value": "hayamos ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "value": "hayáis ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "3p",
+            "value": "hayan ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "1s",
+            "value": "hubiera ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "value": "hubieras ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "value": "hubieras ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "3s",
+            "value": "hubiera ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "1p",
+            "value": "hubiéramos ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "value": "hubierais ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "3p",
+            "value": "hubieran ejercido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "ejercía",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "ejercías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "ejercías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "ejercía",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "ejercíamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "ejercíais",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "ejercían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "ejerceré",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "ejercerás",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "ejercerás",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "ejercerá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "ejerceremos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "ejerceréis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "ejercerán",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "1s",
+            "value": "ejercería",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "2s_tu",
+            "value": "ejercerías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "2s_vos",
+            "value": "ejercerías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "3s",
+            "value": "ejercería",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "1p",
+            "value": "ejerceríamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "2p_vosotros",
+            "value": "ejerceríais",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "3p",
+            "value": "ejercerían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "value": "ejercé",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "value": "ejerced",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "ejerzo",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "ejerces",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "ejercés",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "ejerce",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "ejercemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "ejercéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "ejercen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "value": "ejerza",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "value": "ejerzas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "value": "ejerzas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "value": "ejerzamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "value": "ejerzáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "value": "ejerzan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "value": "ejerce",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "value": "ejerzamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "value": "ejerzan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_tu",
+            "value": "no ejerzas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2s_vos",
+            "value": "no ejerzas",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "value": "no ejerzamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "value": "no ejerzáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "value": "no ejerzan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "ejercer",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "ejercí",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "ejerciste",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "ejerciste",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "ejerció",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "ejercimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "ejercisteis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "ejercieron",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "1s",
+            "value": "ejerciera",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "ejerciese"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "value": "ejercieras",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "ejercieses"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "value": "ejercieras",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "ejercieses"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "3s",
+            "value": "ejerciera",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "ejerciese"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "1p",
+            "value": "ejerciéramos",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "ejerciésemos"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "value": "ejercierais",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "ejercieseis"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "3p",
+            "value": "ejercieran",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "ejerciesen"
+            ]
+          },
+          {
+            "mood": "imperative",
+            "tense": "impAff",
+            "person": "3s",
+            "value": "ejerza"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPres",
+            "person": "3s",
+            "value": "ejerza"
+          },
+          {
+            "mood": "imperative",
+            "tense": "impNeg",
+            "person": "3s",
+            "value": "no ejerza"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [
+      "pres",
+      "subjPres",
+      "impAff",
+      "impNeg"
+    ],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": false,
+      "pp": false
+    }
+  },
+  {
+    "id": "torcer",
+    "lemma": "torcer",
+    "type": "irregular",
+    "paradigms": [
+      {
+        "regionTags": [
+          "rioplatense",
+          "la_general",
+          "peninsular"
+        ],
+        "forms": [
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "1s",
+            "value": "tuerzo",
+            "rules": [
+              "STEM_O_UE"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_tu",
+            "value": "tuerces",
+            "accepts": {
+              "vos": "volvés"
+            },
+            "rules": [
+              "STEM_O_UE"
+            ]
+          },
+          {
+            "mood": "indicative",
+            "tense": "pres",
+            "person": "2s_vos",
+            "value": "torcés",
+            "accepts": {
+              "tu": "vuelves"
+            },
+            "rules": [
+              "VOSEO_PRESENT_STRESS"
+            ]
+          },
+          {
+            "mood": "imperative",
+            "tense": "impAff",
+            "person": "2s_tu",
+            "value": "tuerce"
+          },
+          {
+            "mood": "imperative",
+            "tense": "impAff",
+            "person": "2s_vos",
+            "value": "torcé"
+          },
+          {
+            "mood": "imperative",
+            "tense": "impNeg",
+            "person": "2s_tu",
+            "value": "no tuerzas"
+          },
+          {
+            "mood": "imperative",
+            "tense": "impNeg",
+            "person": "2s_vos",
+            "value": "no tuerzas"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPres",
+            "person": "2s_tu",
+            "value": "tuerzas"
+          },
+          {
+            "mood": "subjunctive",
+            "tense": "subjPres",
+            "person": "2s_vos",
+            "value": "tuerzas"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "he torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "has torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "has torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "ha torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "hemos torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "habéis torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretPerf",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "han torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "había torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "habías torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "habías torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "había torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "habíamos torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "habíais torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "plusc",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "habían torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "habré torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "habrás torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "habrás torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "habrá torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "habremos torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "habréis torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "futPerf",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "habrán torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "1s",
+            "value": "habría torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "2s_tu",
+            "value": "habrías torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "2s_vos",
+            "value": "habrías torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "3s",
+            "value": "habría torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "1p",
+            "value": "habríamos torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "2p_vosotros",
+            "value": "habríais torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "condPerf",
+            "mood": "conditional",
+            "person": "3p",
+            "value": "habrían torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "1s",
+            "value": "haya torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "value": "hayas torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "value": "hayas torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "3s",
+            "value": "haya torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "1p",
+            "value": "hayamos torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "value": "hayáis torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPerf",
+            "mood": "subjunctive",
+            "person": "3p",
+            "value": "hayan torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "1s",
+            "value": "hubiera torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "value": "hubieras torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "value": "hubieras torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "3s",
+            "value": "hubiera torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "1p",
+            "value": "hubiéramos torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "value": "hubierais torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPlusc",
+            "mood": "subjunctive",
+            "person": "3p",
+            "value": "hubieran torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "torcía",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "torcías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "torcías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "torcía",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "torcíamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "torcíais",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impf",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "torcían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "torceré",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "torcerás",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "torcerás",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "torcerá",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "torceremos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "torceréis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "fut",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "torcerán",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "1s",
+            "value": "torcería",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "2s_tu",
+            "value": "torcerías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "2s_vos",
+            "value": "torcerías",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "3s",
+            "value": "torcería",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "1p",
+            "value": "torceríamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "2p_vosotros",
+            "value": "torceríais",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "cond",
+            "mood": "conditional",
+            "person": "3p",
+            "value": "torcerían",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "value": "torced",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "tuerce",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "torcemos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "torcéis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pres",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "tuercen",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "inf",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "torcer",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "part",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "torcido",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "ger",
+            "mood": "nonfinite",
+            "person": "",
+            "value": "torciendo",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "1s",
+            "value": "torcí",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "2s_tu",
+            "value": "torciste",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "2s_vos",
+            "value": "torciste",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "3s",
+            "value": "torció",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "1p",
+            "value": "torcimos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "2p_vosotros",
+            "value": "torcisteis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "pretIndef",
+            "mood": "indicative",
+            "person": "3p",
+            "value": "torcieron",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "1s",
+            "value": "torciera",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "torciese"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "2s_tu",
+            "value": "torcieras",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "torcieses"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "2s_vos",
+            "value": "torcieras",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "torcieses"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "3s",
+            "value": "torciera",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "torciese"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "1p",
+            "value": "torciéramos",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "torciésemos"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "value": "torcierais",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "torcieseis"
+            ]
+          },
+          {
+            "tense": "subjImpf",
+            "mood": "subjunctive",
+            "person": "3p",
+            "value": "torcieran",
+            "tags": [],
+            "region": "es",
+            "alt": [
+              "torciesen"
+            ]
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1s",
+            "value": "tuerza",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3s",
+            "value": "tuerza",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "1p",
+            "value": "torzamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "2p_vosotros",
+            "value": "torzáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "subjPres",
+            "mood": "subjunctive",
+            "person": "3p",
+            "value": "tuerzan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3s",
+            "value": "tuerza",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "1p",
+            "value": "torzamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impAff",
+            "mood": "imperative",
+            "person": "3p",
+            "value": "tuerzan",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3s",
+            "value": "no tuerza",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "1p",
+            "value": "no torzamos",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "2p_vosotros",
+            "value": "no torzáis",
+            "tags": [],
+            "region": "es"
+          },
+          {
+            "tense": "impNeg",
+            "mood": "imperative",
+            "person": "3p",
+            "value": "no tuerzan",
+            "tags": [],
+            "region": "es"
+          }
+        ]
+      }
+    ],
+    "irregularTenses": [
+      "pres",
+      "subjPres",
+      "impAff",
+      "impNeg"
+    ],
+    "irregularityMatrix": {
+      "pres": true,
+      "pretIndef": false,
+      "impf": false,
+      "fut": false,
+      "pretPerf": false,
+      "plusc": false,
+      "futPerf": false,
+      "subjPres": true,
+      "subjImpf": false,
+      "subjPretPerf": false,
+      "subjPlusc": false,
+      "subjFutPerf": false,
+      "cond": false,
+      "condPerf": false,
+      "impAff": true,
+      "impNeg": true,
+      "inf": false,
+      "ger": false,
       "pp": false
     }
   }

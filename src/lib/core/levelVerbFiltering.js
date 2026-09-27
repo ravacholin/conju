@@ -68,8 +68,8 @@ export const B2_PLUS_ONLY_VERBS = [
   // Verbos ZO (consonante + cer → -zo)
   'vencer', 'ejercer', 'torcer', 'cocer', 'mecer', 'retorcer', 'convencer',
   
-  // Diptongación u→ue raros (excepto jugar)
-  'amuar', 'desaguar', 'menguar', 'fraguar', 'atestiguar', 'apaciguar',
+  // -guar raros (diéresis: desagüe, atestigüe)
+  'desaguar', 'menguar', 'fraguar', 'atestiguar', 'apaciguar',
   
   // Verbos -ir con cambios complicados
   'adormir', 'redormir', 'competir', 'concebir', 'impedir',
@@ -96,8 +96,10 @@ export const C1_PLUS_ONLY_VERBS = [
   'uncir', 'zurcir', 'hembrear', 'desleír', 'reír', 'sonreír', 'freír', 'sofreír',
   
   // Defectivos muy específicos
-  'blandir', 'embair', 'empedernir', 'garantir', 'preterir', 'transgredir',
-  'aborrir', 'colorir', 'descolorir', 
+  'embair', 'empedernir', 'garantir', 'preterir', 'aborrir', 'colorir', 'descolorir',
+
+  // Raros, de conjugación completa (RAE, 2009)
+  'blandir', 'transgredir',
   
   // Variantes muy específicas
   // ('yacer' ya está clasificado en B2_PLUS_ONLY_VERBS; 'yacir' no es un infinitivo válido.)

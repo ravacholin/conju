@@ -240,13 +240,12 @@ export const LEVELS = {
 // ——— Helpers mínimos ————————————————————————————————————————————————
 
 const UNIPERSONALES = new Set(["llover","nevar","granizar","amanecer"]);
-const DEFECTIVOS_PARCIALES = new Set(["abolir"]); // ajustá si querés
 
 /** @param {string} lemma @param {Person} person @param {CEFR} level */
 export function isPersonAllowed(lemma, person, level){
   const behavior = LEVELS[level].defectives.behavior;
   if (behavior === "warn") return true;
-  const only3 = UNIPERSONALES.has(lemma) || DEFECTIVOS_PARCIALES.has(lemma);
+  const only3 = UNIPERSONALES.has(lemma);
   if (!only3) return true;
   const ok = (person==="3sg"||person==="3pl");
   if (behavior === "block_invalid_persons") return ok;
