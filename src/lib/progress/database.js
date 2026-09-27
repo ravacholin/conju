@@ -4,6 +4,7 @@ import { STORAGE_CONFIG, INIT_CONFIG } from "./config.js";
 import { createLogger } from "../utils/logger.js";
 import { generateId } from "../utils/id.js";
 import { toDate } from "../utils/date.js";
+import { withoutRetiredAttempts, withoutRetiredLemmas } from "./retiredContent.js";
 
 const logger = createLogger("progress:database");
 const isDev = import.meta?.env?.DEV;
@@ -1188,7 +1189,9 @@ export async function getAttempt(attemptId) {
  * @returns {Promise<Object[]>}
  */
 export async function getAttemptsByItem(itemId) {
-  return await getByIndex(STORAGE_CONFIG.STORES.ATTEMPTS, "itemId", itemId);
+  return withoutRetiredAttempts(
+    await getByIndex(STORAGE_CONFIG.STORES.ATTEMPTS, "itemId", itemId),
+  );
 }
 
 /**
@@ -1277,12 +1280,14 @@ export async function getAttemptsByUser(userId, options = {}) {
     // Nota: getByIndexRange verificará internamente si el índice existe
     // y hará fallback si es necesario, pero aquí podemos ser más explícitos
     // para aprovechar la optimización.
-    return await getByIndexRange(
-      STORAGE_CONFIG.STORES.ATTEMPTS,
-      "userId-createdAt",
-      userId,
-      start,
-      end
+    return withoutRetiredAttempts(
+      await getByIndexRange(
+        STORAGE_CONFIG.STORES.ATTEMPTS,
+        "userId-createdAt",
+        userId,
+        start,
+        end
+      )
     );
   }
 
@@ -1293,7 +1298,7 @@ export async function getAttemptsByUser(userId, options = {}) {
     userId,
   );
   // setCacheEntry(attemptsCache, userId, attempts || [])
-  return attempts || [];
+  return withoutRetiredAttempts(attempts || []);
 }
 
 /**
@@ -1332,7 +1337,7 @@ export async function getRecentAttempts(userId, limit = 100) {
       }
 
       await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, "getRecentAttempts");
-      return attempts;
+      return withoutRetiredAttempts(attempts);
     }
 
     // Fallback for older DB versions or missing index
@@ -1348,7 +1353,7 @@ export async function getRecentAttempts(userId, limit = 100) {
       .slice(0, limit);
 
     await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, "getRecentAttempts");
-    return userAttempts;
+    return withoutRetiredAttempts(userAttempts);
   } catch (error) {
     logger.error(
       "getRecentAttempts",
@@ -1602,7 +1607,7 @@ export async function getDueSchedules(userId, beforeDate) {
     });
 
     await withTimeout(tx.done, DB_TRANSACTION_TIMEOUT, "getDueSchedules");
-    return result;
+    return withoutRetiredLemmas(result);
   } catch (error) {
     logger.error(
       "getDueSchedules",

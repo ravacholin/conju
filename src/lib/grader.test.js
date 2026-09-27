@@ -271,7 +271,7 @@ describe('Error Analysis', () => {
     expect(result.note).toContain('pretérito irregular');
   });
 }); 
-describe('Imperatives at B2+ (cliticStrictness set by the level preset)', () => {
+describe('Imperatives at B2+ (no clitic heuristics, even with a stale cliticStrictness setting)', () => {
   const c1Settings = {
     region: 'la_general',
     useTuteo: true,

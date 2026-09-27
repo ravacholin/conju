@@ -35,7 +35,6 @@ const createDefaultSettings = () => ({
   accentTolerance: null,
   requireDieresis: false,
   blockNonNormativeSpelling: false,
-  cliticStrictness: 'off',
   impSubjVariantMode: 'accept_both',
   neutralizePronoun: false,
   timeMode: null,
@@ -79,9 +78,6 @@ const createDefaultSettings = () => ({
 
   // Rotación de segunda persona (el puntero `nextSecondPerson` vive en `useSessionStore`)
   rotateSecondPerson: false,
-
-  // Porcentaje de clíticos en imperativo afirmativo
-  cliticsPercent: 0,
 
   // Verbos raros para C2
   c2RareBoostLemmas: [],
@@ -153,7 +149,6 @@ const PERSISTED_SETTINGS_KEYS = [
   'accentTolerance',
   'requireDieresis',
   'blockNonNormativeSpelling',
-  'cliticStrictness',
   'impSubjVariantMode',
   'neutralizePronoun',
   'timeMode',
@@ -179,7 +174,6 @@ const PERSISTED_SETTINGS_KEYS = [
   'enableC2Conmutacion',
   'conmutacionSeq',
   'rotateSecondPerson',
-  'cliticsPercent',
   'c2RareBoostLemmas',
   'resistanceBestMsByLevel',
   'dailyGoalType',
@@ -211,7 +205,6 @@ const persistedSettingsSchema = z.object({
   accentTolerance: z.string().nullable().optional(),
   requireDieresis: z.boolean().optional(),
   blockNonNormativeSpelling: z.boolean().optional(),
-  cliticStrictness: z.string().nullable().optional(),
   impSubjVariantMode: z.string().nullable().optional(),
   neutralizePronoun: z.boolean().optional(),
   timeMode: z.string().nullable().optional(),
@@ -237,7 +230,6 @@ const persistedSettingsSchema = z.object({
   enableC2Conmutacion: z.boolean().optional(),
   conmutacionSeq: z.array(z.string()).optional(),
   rotateSecondPerson: z.boolean().optional(),
-  cliticsPercent: z.number().optional(),
   c2RareBoostLemmas: z.array(z.string()).optional(),
   // zod v4 reads a single-argument z.record(...) as the KEY type, so the
   // one-arg form silently rejected every snapshot and wiped the record.
@@ -392,7 +384,6 @@ const useSettings = create(
         setAllowedLemmas: (lemmas) => set({ allowedLemmas: lemmas }),
         toggleFuturoSubjProd: () => set((state) => ({ enableFuturoSubjProd: !state.enableFuturoSubjProd })),
         toggleFuturoSubjRead: () => set((state) => ({ enableFuturoSubjRead: !state.enableFuturoSubjRead })),
-        setCliticsPercent: (percent) => set({ cliticsPercent: percent }),
         setC2RareBoost: (lemmas) => set({ c2RareBoostLemmas: lemmas }),
         toggleChunks: () => set((state) => ({ enableChunks: !state.enableChunks })),
         toggleSound: () => set((state) => ({ soundEnabled: !state.soundEnabled })),

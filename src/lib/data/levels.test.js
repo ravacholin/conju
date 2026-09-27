@@ -10,21 +10,13 @@ describe('levels helpers', () => {
     expect(isPersonAllowed('llover', '3sg', 'B2')).toBe(true)
   })
 
-  it('buildItemSpec composes policies and clitics handling', () => {
+  it('buildItemSpec composes the target and level policies', () => {
     const specB2 = buildItemSpec({
-      lemma: 'hablar', mood: 'imperativo', tense: 'impAff', person: '2sg', level: 'B2', treatment: 'vos', clitics: 'me',
+      lemma: 'hablar', mood: 'imperativo', tense: 'impAff', person: '2sg', level: 'B2', treatment: 'vos',
     })
     expect(specB2.target.tense).toBe('impAff')
     expect(specB2.policies.level).toBe('B2')
-    // B2 clitics position is any, exact string is preserved when provided
-    expect(specB2.policies.clitics.exact).toBe('me')
-
-    const specC1 = buildItemSpec({
-      lemma: 'hablar', mood: 'imperativo', tense: 'impAff', person: '2sg', level: 'C1', treatment: 'vos', clitics: 'me lo',
-    })
-    // For enclitic position, exact string must be null
-    expect(specC1.policies.clitics.position).toBe('enclitic')
-    expect(specC1.policies.clitics.exact).toBeNull()
+    expect(specB2.policies).not.toHaveProperty('clitics')
   })
 
   it('buildItemSpec variant notes reflect enforceVariantSe flag and level variants', () => {

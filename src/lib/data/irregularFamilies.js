@@ -26,9 +26,9 @@ export const IRREGULAR_FAMILIES = {
   'DIPHT_U_UE': {
     id: 'DIPHT_U_UE',
     name: 'Diptongación u→ue',
-    description: 'jugar, amuar, desaguar, menguar, fraguar, atestiguar',
-    examples: ['jugar', 'amuar', 'desaguar', 'menguar', 'fraguar', 'atestiguar'],
-    pattern: 'u→ue en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo',
+    description: 'jugar (único verbo con u→ue)',
+    examples: ['jugar'],
+    pattern: 'u→ue en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo. Los -uar/-guar (averiguar, graduar) no diptongan',
     affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['jugar']
   },
@@ -38,7 +38,7 @@ export const IRREGULAR_FAMILIES = {
     name: 'e→i (verbos -ir)',
     description: 'pedir, servir, repetir, seguir, sentir, preferir',
     examples: ['pedir', 'servir', 'repetir', 'seguir', 'sentir', 'preferir', 'mentir', 'competir', 'medir', 'vestir', 'reír', 'freír', 'sonreír', 'elegir', 'corregir'],
-    pattern: 'e→i en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo, gerundio, pretérito 3ª personas',
+    pattern: 'e→i en presente (todas menos nosotros/vosotros), presente subjuntivo, imperativo, gerundio, pretérito 3ª personas. Los -ir con e→ie en presente (sentir, preferir, mentir) cierran e→i solo en gerundio, pretérito 3ª personas y subjuntivo nosotros/vosotros',
     affectedTenses: ['pres', 'subjPres', 'pretIndef', 'ger'],
     paradigmaticVerbs: ['pedir', 'servir', 'repetir']
   },
@@ -46,9 +46,9 @@ export const IRREGULAR_FAMILIES = {
   'O_U_GER_IR': {
     id: 'O_U_GER_IR',
     name: 'o→u en gerundio y pretérito (-ir)',
-    description: 'dormir, morir, adormecerse, gruñir, podrir, promorir',
-    examples: ['dormir', 'morir', 'adormir', 'adormecerse', 'redormir', 'gruñir'],
-    pattern: 'o→u en gerundio y pretérito 3ª personas de verbos -ir que diptongan',
+    description: 'dormir, morir, podrir',
+    examples: ['dormir', 'morir', 'podrir', 'adormir', 'redormir'],
+    pattern: 'o→u en gerundio, pretérito 3ª personas y subjuntivo nosotros/vosotros: durmió, durmiendo, durmamos',
     affectedTenses: ['pretIndef', 'ger'],
     paradigmaticVerbs: ['dormir', 'morir']
   },
@@ -99,8 +99,8 @@ export const IRREGULAR_FAMILIES = {
     id: 'ZO_VERBS',
     name: 'Verbos -cer → -zo',
     description: 'vencer, ejercer, torcer, cocer',
-    examples: ['vencer', 'ejercer', 'torcer', 'cocer', 'convencer', 'retorcer', 'agradecer'],
-    pattern: 'consonante + cer → -zo en 1ª persona: venzo, ejerzo, tuerzo, cuezo',
+    examples: ['vencer', 'ejercer', 'torcer', 'cocer', 'convencer', 'retorcer', 'mecer'],
+    pattern: 'consonante + cer/cir → -zo en 1ª persona: venzo, ejerzo, tuerzo. También cocer (cuezo) y mecer (mezo)',
     affectedTenses: ['pres', 'subjPres'],
     paradigmaticVerbs: ['vencer', 'ejercer', 'torcer']
   },
@@ -181,9 +181,9 @@ export const IRREGULAR_FAMILIES = {
   'PRET_U': {
     id: 'PRET_U',
     name: 'Pretérito fuerte -u-',
-    description: 'poder, poner, saber, caber, haber, deber',
-    examples: ['poder', 'poner', 'saber', 'caber', 'haber', 'deber'],
-    pattern: 'raíz -u- en pretérito: pude, puse, supe, cupe, hube, debí (aunque deber es regular, sigue el patrón en algunos dialectos)',
+    description: 'poder, poner, saber, caber, haber',
+    examples: ['poder', 'poner', 'saber', 'caber', 'haber', 'suponer'],
+    pattern: 'raíz -u- en pretérito: pude, puse, supe, cupe, hube. Propagación a subjuntivo imperfecto',
     affectedTenses: ['pretIndef'],
     paradigmaticVerbs: ['poder', 'poner', 'saber', 'caber']
   },
@@ -211,9 +211,9 @@ export const IRREGULAR_FAMILIES = {
   'PRET_SUPPL': {
     id: 'PRET_SUPPL',
     name: 'Pretéritos supletivos',
-    description: 'ir/ser, dar, ver, haber, estar',
-    examples: ['ir', 'ser', 'dar', 'ver', 'haber', 'estar'],
-    pattern: 'formas completamente irregulares: fui, di, vi, hubo, estuve',
+    description: 'ir/ser, dar, ver',
+    examples: ['ir', 'ser', 'dar', 'ver'],
+    pattern: 'formas completamente irregulares: fui (ir y ser), di, vi',
     affectedTenses: ['pretIndef'],
     paradigmaticVerbs: ['ir', 'ser', 'dar', 'ver']
   },
@@ -276,7 +276,7 @@ export const IRREGULAR_FAMILIES = {
     id: 'IMPERATIVE_IRREG',
     name: 'Imperativo irregular',
     description: 'tener, venir, poner, salir, hacer, decir, ir, ser',
-    examples: ['tener', 'venir', 'poner', 'salir', 'hacer', 'decir', 'ir', 'ser', 'haber', 'saber'],
+    examples: ['tener', 'venir', 'poner', 'salir', 'hacer', 'decir', 'ir', 'ser'],
     pattern: 'formas especiales de imperativo: ten, ven, pon, sal, haz, di, ve, sé',
     affectedTenses: ['impAff', 'impNeg'],
     paradigmaticVerbs: ['tener', 'venir', 'poner', 'salir', 'hacer', 'decir']
@@ -286,11 +286,11 @@ export const IRREGULAR_FAMILIES = {
   'DEFECTIVE_VERBS': {
     id: 'DEFECTIVE_VERBS',
     name: 'Verbos defectivos',
-    description: 'soler, abolir, blandir, agredir, empedernir, desvaír',
-    examples: ['soler', 'abolir', 'blandir', 'agredir', 'empedernir', 'desvaír'],
-    pattern: 'verbos que carecen de algunas formas (solo 3ª persona, infinitivo, etc.)',
-    affectedTenses: ['pres', 'subjPres', 'impAff'],
-    paradigmaticVerbs: ['soler', 'abolir', 'blandir']
+    description: 'soler, empedernir, desvaír, balbucir, colorir',
+    examples: ['soler', 'empedernir', 'desvaír', 'balbucir', 'colorir', 'aterir'],
+    pattern: 'verbos que carecen de algunas formas (solo 3ª persona, infinitivo, etc.). abolir, agredir, blandir y transgredir ya se conjugan completos (RAE, 2009)',
+    affectedTenses: ['pres', 'subjPres'],
+    paradigmaticVerbs: ['soler', 'balbucir']
   },
 
   'DOUBLE_PARTICIPLES': {
@@ -326,8 +326,8 @@ export const IRREGULAR_FAMILIES = {
   'MONOSYLLABIC_IRREG': {
     id: 'MONOSYLLABIC_IRREG',
     name: 'Monosílabos irregulares',
-    description: 'ir, ser, dar, ver, haber, estar',
-    examples: ['ir', 'ser', 'dar', 'ver', 'haber', 'estar'],
+    description: 'ir, ser, dar, ver',
+    examples: ['ir', 'ser', 'dar', 'ver'],
     pattern: 'verbos monosílabos altamente irregulares en múltiples tiempos',
     affectedTenses: ['pres', 'pretIndef', 'subjPres', 'impAff'],
     paradigmaticVerbs: ['ir', 'ser', 'dar', 'ver']
@@ -462,10 +462,15 @@ export function categorizeVerb(lemma, _verbData) {
   if (lemma.endsWith('guir')) families.push('GU_DROP')
   
   // Verbos -cer/-cir
-  if (lemma.endsWith('cer') || lemma.endsWith('cir')) {
-    // Vocal + cer/cir → -zco
-    const beforeCer = lemma.slice(-3, -2)
-    if (/[aeiou]/.test(beforeCer)) {
+  if (/(hacer|facer|decir)$/.test(lemma)) {
+    // hacer/decir y compuestos: 1ª persona en -go (hago, digo), no -zco
+  } else if (/(cocer|mecer)$/.test(lemma)) {
+    // Vocal + cer pero -zo: cuezo, mezo
+    families.push('ZO_VERBS')
+  } else if (lemma.endsWith('cer') || lemma.endsWith('cir')) {
+    // Vocal + cer/cir → -zco (letra anterior a la "c": conoCer → "o")
+    const beforeCer = lemma.slice(-4, -3)
+    if (/[aeiouáéíóú]/.test(beforeCer)) {
       families.push('ZCO_VERBS')
     } else {
       // Consonante + cer → -zo
@@ -473,6 +478,9 @@ export function categorizeVerb(lemma, _verbData) {
     }
   }
   
+  // -ducir: pretérito fuerte en -j- (conduje, redujo, introdujeron)
+  if (lemma.endsWith('ducir')) families.push('PRET_J')
+
   // Verbos -ger/-gir
   if (lemma.endsWith('ger') || lemma.endsWith('gir')) families.push('JO_VERBS')
   
@@ -491,7 +499,7 @@ export function categorizeVerb(lemma, _verbData) {
     'decir': ['G_VERBS', 'E_I_IR', 'PRET_J', 'IRREG_GERUNDS', 'IRREG_CONDITIONAL', 'IMPERATIVE_IRREG', 'IRREG_PARTICIPLES'],
     'oír': ['G_VERBS', 'IRREG_GERUNDS', 'HIATUS_Y'],
     'traer': ['G_VERBS', 'PRET_J', 'IRREG_GERUNDS'],
-    'caer': ['G_VERBS', 'PRET_J', 'IRREG_GERUNDS', 'HIATUS_Y'],
+    'caer': ['G_VERBS', 'IRREG_GERUNDS', 'HIATUS_Y'],
     'valer': ['G_VERBS'],
     
     // Diptongación e→ie
@@ -530,8 +538,8 @@ export function categorizeVerb(lemma, _verbData) {
     
     // Pretéritos fuertes
     'andar': ['PRET_UV'],
-    'estar': ['YO_OY', 'PRET_UV', 'PRET_SUPPL', 'MONOSYLLABIC_IRREG'],
-    'saber': ['PRET_U', 'IRREG_CONDITIONAL', 'IMPERATIVE_IRREG'],
+    'estar': ['YO_OY', 'PRET_UV'],
+    'saber': ['PRET_U', 'IRREG_CONDITIONAL'],
     'caber': ['PRET_U'],
     'querer': ['DIPHT_E_IE', 'PRET_I'],
     'conducir': ['ZCO_VERBS', 'PRET_J'],
@@ -543,7 +551,7 @@ export function categorizeVerb(lemma, _verbData) {
     'ser': ['YO_OY', 'PRET_SUPPL', 'IMPERATIVE_IRREG', 'MONOSYLLABIC_IRREG', 'IMPERFECT_IRREG'],
     'dar': ['YO_OY', 'PRET_SUPPL', 'MONOSYLLABIC_IRREG'],
     'ver': ['PRET_SUPPL', 'IRREG_PARTICIPLES', 'MONOSYLLABIC_IRREG', 'IMPERFECT_IRREG'],
-    'haber': ['PRET_SUPPL', 'PRET_U', 'MONOSYLLABIC_IRREG', 'IRREG_CONDITIONAL', 'IMPERATIVE_IRREG'],
+    'haber': ['PRET_U', 'IRREG_CONDITIONAL'],
     
     // Hiatos (solo irregulares en 3ª persona)
     'leer': ['HIATUS_Y', 'IRREG_GERUNDS'],
@@ -566,8 +574,7 @@ export function categorizeVerb(lemma, _verbData) {
     'excluir': ['UIR_Y', 'HIATUS_Y'],
     
     // Verbos menos comunes para B2+ (o→u en pretérito)
-    'podrir': ['DIPHT_O_UE', 'O_U_GER_IR'],
-    'gruñir': ['O_U_GER_IR'],
+    'podrir': ['O_U_GER_IR'],
     
     // -zco verbos específicos
     'conocer': ['ZCO_VERBS'],
@@ -584,7 +591,6 @@ export function categorizeVerb(lemma, _verbData) {
     'ejercer': ['ZO_VERBS'],
     'torcer': ['ZO_VERBS'],
     'cocer': ['ZO_VERBS'],
-    'agradecer': ['ZO_VERBS'],
     
     // Cambios de acentuación
     'prohibir': ['ACCENT_CHANGES'],
@@ -593,10 +599,6 @@ export function categorizeVerb(lemma, _verbData) {
     'aullar': ['ACCENT_CHANGES'],
     'maullar': ['ACCENT_CHANGES'],
     'rehusar': ['ACCENT_CHANGES'],
-    
-    // DIPHT_U_UE y ORTH_GUAR combinados
-    'fraguar': ['DIPHT_U_UE', 'ORTH_GUAR'],
-    'menguar': ['DIPHT_U_UE', 'ORTH_GUAR'],
     
     // GU_DROP y E_I_IR combinados
     'conseguir': ['GU_DROP', 'E_I_IR'],
@@ -618,31 +620,18 @@ export function categorizeVerb(lemma, _verbData) {
     'soler': ['DIPHT_O_UE', 'DEFECTIVE_VERBS'],
     
     // Nuevos verbos agregados en optimización nocturna
-    'abolir': ['DEFECTIVE_VERBS'],
-    'blandir': ['DEFECTIVE_VERBS'],
     'imprimir': ['DOUBLE_PARTICIPLES'],
     'entregar': ['ORTH_GAR'],
     'obligar': ['ORTH_GAR'],
     'almorzar': ['DIPHT_O_UE', 'ORTH_ZAR'],
     'utilizar': ['ORTH_ZAR'],
     
-    // Expansión DIPHT_U_UE
-    'amuar': ['DIPHT_U_UE'],
-    'desaguar': ['DIPHT_U_UE', 'ORTH_GUAR'],
-    'atestiguar': ['DIPHT_U_UE', 'ORTH_GUAR'],
-    'aguar': ['DIPHT_U_UE', 'ORTH_GUAR'],
-    'santiguar': ['DIPHT_U_UE', 'ORTH_GUAR'],
-    
     // Expansión O_U_GER_IR
     'adormir': ['DIPHT_O_UE', 'O_U_GER_IR'],
     'redormir': ['DIPHT_O_UE', 'O_U_GER_IR'],
-    'reñir': ['E_I_IR', 'O_U_GER_IR'],
-    'teñir': ['E_I_IR', 'O_U_GER_IR'],
-    'ceñir': ['E_I_IR', 'O_U_GER_IR'],
-    'tañir': ['O_U_GER_IR'],
-    'bullir': ['O_U_GER_IR'],
-    'engullir': ['O_U_GER_IR'],
-    'zambullir': ['O_U_GER_IR'],
+    'reñir': ['E_I_IR'],
+    'teñir': ['E_I_IR'],
+    'ceñir': ['E_I_IR'],
     
     // Expansión JO_VERBS
     'corregir': ['JO_VERBS', 'E_I_IR'],
@@ -651,7 +640,7 @@ export function categorizeVerb(lemma, _verbData) {
     // Expansión GU_DROP
     'extinguir': ['GU_DROP'],
     'proseguir': ['GU_DROP', 'E_I_IR'],
-    'argüir': ['GU_DROP', 'UIR_Y', 'HIATUS_Y'],
+    'argüir': ['UIR_Y', 'HIATUS_Y'],
     'erguir': ['GU_DROP', 'E_I_IR'],
     
     // Expansión PRET_UV
@@ -662,7 +651,6 @@ export function categorizeVerb(lemma, _verbData) {
     'detener': ['G_VERBS', 'DIPHT_E_IE', 'PRET_UV', 'IRREG_CONDITIONAL'],
     
     // Expansión PRET_U
-    'deber': ['PRET_U'],
     'componer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
     'proponer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
     
@@ -682,7 +670,6 @@ export function categorizeVerb(lemma, _verbData) {
     'escribir': ['IRREG_PARTICIPLES'],
     
     // Expansión DEFECTIVE_VERBS
-    'agredir': ['DEFECTIVE_VERBS'],
     'empedernir': ['DEFECTIVE_VERBS'],
     'desvaír': ['DEFECTIVE_VERBS'],
     'balbucir': ['DEFECTIVE_VERBS'],
@@ -711,7 +698,7 @@ export function categorizeVerb(lemma, _verbData) {
     'variar': ['IAR_VERBS'],
     
     // Expansión ACCENT_CHANGES
-    'descafainar': ['ACCENT_CHANGES'],
+    'descafeinar': ['ACCENT_CHANGES'],
     'enraizar': ['ACCENT_CHANGES', 'ORTH_ZAR'],
     
     // Expansión DIPHT_O_UE (FASE 8)
@@ -734,12 +721,6 @@ export function categorizeVerb(lemma, _verbData) {
     'exponer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
     'suponer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
     'imponer': ['G_VERBS', 'PRET_U', 'IRREG_CONDITIONAL', 'IRREG_PARTICIPLES'],
-
-    // Expansión DIPHT_U_UE (FASE 10)
-    'adecuar': ['DIPHT_U_UE'],
-    'evacuar': ['DIPHT_U_UE'],
-    'graduar': ['DIPHT_U_UE'],
-    'situar': ['DIPHT_U_UE'],
 
     // Expansión GU_DROP (FASE 10)
     'distinguir': ['GU_DROP'],

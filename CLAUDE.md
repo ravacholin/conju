@@ -73,7 +73,7 @@ Spanish Conjugator is a full-stack application with a React frontend and Node.js
 ### Core Directories
 
 - **`src/data/`** - Verb database and curriculum data
-  - `verbs.js` - Main verb database (239 verbs with complete paradigms)
+  - `verbs.js` - Main verb database (241 verbs with complete paradigms; no pronominal verbs)
   - `curriculum.json` - CEFR level definitions (A1-C2)
 
 - **`src/lib/core/`** - Core business logic
@@ -392,7 +392,7 @@ When extracting modules:
 
 ## Known Issues & Limitations
 
-- Verb database currently passes `npm run validate-integrity` with 0 errors (239 verbs)
+- Verb database currently passes `npm run validate-integrity` with 0 errors (241 verbs)
 - Only 32% coverage of high-frequency Spanish verbs
 - Some regional restrictions (e.g., "coger" only in Spain)
 - Mobile performance optimization pending

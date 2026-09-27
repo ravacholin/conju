@@ -66,11 +66,6 @@ export function classifyError(userAnswer, correctAnswer, item) {
     errors.push(ERROR_TAGS.WRONG_PERSON)
   }
   
-  // 3.b Pronombres clíticos (imperativos o enclíticos anexados)
-  if (hasCliticPronounIssue(userAnswer, correctAnswer)) {
-    errors.push(ERROR_TAGS.CLITIC_PRONOUNS)
-  }
-
   // 4. Terminación verbal
   if (hasDifferentEnding(normalizedUser, normalizedCorrect)) {
     errors.push(ERROR_TAGS.VERBAL_ENDING)
@@ -150,19 +145,6 @@ function normalizeAnswer(answer) {
     .replace(/[\u0300-\u036f]/g, '') // Remover acentos
     .replace(/\s+/g, ' ') // Normalizar espacios
     .trim()
-}
-
-/**
- * Detecta problemas con pronombres clíticos (presencia/ausencia o posición)
- * Heurística simple: si una respuesta contiene clíticos y la otra no.
- */
-function hasCliticPronounIssue(userRaw, correctRaw) {
-  if (typeof userRaw !== 'string' || typeof correctRaw !== 'string') return false
-  const CLITICS = ['me','te','se','lo','la','los','las','le','les','nos','os']
-  const containsClitic = (s) => CLITICS.some(p => new RegExp(`(^|\b|-)${p}($|\b|-)`, 'i').test(s))
-  const uHas = containsClitic(userRaw)
-  const cHas = containsClitic(correctRaw)
-  return uHas !== cHas
 }
 
 /**

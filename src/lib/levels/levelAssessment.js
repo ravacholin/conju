@@ -137,10 +137,10 @@ export const QUESTION_POOL = {
   B2: [
     {
       id: 'b2_1',
-      prompt: 'Yo no sabía nada. Si tú ____ hubieras dicho antes, te habría ayudado.',
-      options: ['me lo', 'te lo', 'se lo', 'nos lo'],
-      correct: 'me lo',
-      explanation: 'Colocación de pronombres dobles (tú a mí -> me lo).',
+      prompt: 'Si ____ más tiempo el año pasado, habría terminado la carrera.',
+      options: ['hubiera tenido', 'habría tenido', 'había tenido', 'haya tenido'],
+      correct: 'hubiera tenido',
+      explanation: 'Condicional irreal en el pasado: si + pluscuamperfecto de subjuntivo.',
       competencyInfo: { mood: 'subjunctive', tense: 'subjPlus', rule: 'conditional_past' }
     },
     {
@@ -253,11 +253,11 @@ export const QUESTION_POOL = {
     },
     {
       id: 'c2_5',
-      prompt: '____ su voluntad, así en la tierra como en el cielo.',
-      options: ['Hágase', 'Hárrase', 'Hace', 'Haga'],
-      correct: 'Hágase',
-      explanation: 'Imperativo de tercera persona + pronombre enclítico (Voz Pasiva Refleja).',
-      competencyInfo: { mood: 'imperative', tense: 'imper', rule: 'enclitic_formal' }
+      prompt: 'Adonde ____, haz lo que vieres.',
+      options: ['fueres', 'fueras', 'vayas', 'irás'],
+      correct: 'fueres',
+      explanation: 'Futuro de subjuntivo conservado en refranes y fórmulas fijas.',
+      competencyInfo: { mood: 'subjunctive', tense: 'subjFut', rule: 'fixed_expression' }
     }
   ]
 }

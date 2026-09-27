@@ -10,8 +10,8 @@ const index = getTopicSearchIndex()
 const SETTINGS_KEYS = new Set([
   'practiceMode', 'cameFromTema', 'level', 'specificMood', 'specificTense',
   'verbType', 'selectedFamily', 'allowedLemmas', 'strict', 'accentTolerance',
-  'requireDieresis', 'blockNonNormativeSpelling', 'cliticStrictness',
-  'impSubjVariantMode', 'cliticsPercent', 'neutralizePronoun',
+  'requireDieresis', 'blockNonNormativeSpelling',
+  'impSubjVariantMode', 'neutralizePronoun',
   'rotateSecondPerson', 'timeMode', 'perItemMs', 'medianTargetMs',
   'showPronouns', 'practicePronoun', 'enableFuturoSubjRead',
   'enableFuturoSubjProd', 'enableC2Conmutacion', 'burstSize',

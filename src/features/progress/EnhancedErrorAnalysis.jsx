@@ -32,7 +32,6 @@ const ERROR_TAG_LABELS = {
   [ERROR_TAGS.WRONG_PERSON]: 'Persona Incorrecta',
   [ERROR_TAGS.WRONG_TENSE]: 'Tiempo Incorrecto',
   [ERROR_TAGS.WRONG_MOOD]: 'Modo Incorrecto',
-  [ERROR_TAGS.CLITIC_PRONOUNS]: 'Pronombres Clíticos',
   [ERROR_TAGS.ORTHOGRAPHY_C_QU]: 'Ortografía C/QU',
   [ERROR_TAGS.ORTHOGRAPHY_G_GU]: 'Ortografía G/GU',
   [ERROR_TAGS.ORTHOGRAPHY_Z_C]: 'Ortografía Z/C',

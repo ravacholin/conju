@@ -33,11 +33,6 @@ export default function ErrorInsights({ onNavigateToDrill }) {
       label: 'Acentuación',
       description: 'Acentuación incorrecta'
     },
-    'pronombres_clíticos': {
-      icon: '/books.png',
-      label: 'Pronombres Clíticos',
-      description: 'Clíticos usados incorrectamente'
-    },
     'ortografía_g/gu': {
       icon: '/books.png',
       label: 'Ortografía G/GU',

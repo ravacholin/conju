@@ -31,7 +31,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     name: 'Irregulares -go en YO (presente)',
     description: 'Verbos muy frecuentes que añaden -g en la primera persona: salgo, pongo, hago',
     paradigmatic: 'salir',
-    examples: ['salir', 'poner', 'hacer', 'tener', 'venir', 'valer', 'caer', 'traer', 'oír', 'decir', 'seguir', 'conseguir', 'perseguir', 'distinguir', 'obtener', 'mantener', 'contener', 'sostener', 'componer', 'proponer', 'disponer', 'exponer', 'suponer', 'reponer', 'prevenir', 'convenir', 'intervenir'], // Más variedad para drills libres
+    examples: ['salir', 'poner', 'hacer', 'tener', 'venir', 'valer', 'caer', 'traer', 'oír', 'decir', 'obtener', 'mantener', 'contener', 'sostener', 'componer', 'proponer', 'disponer', 'exponer', 'suponer', 'reponer', 'prevenir', 'convenir', 'intervenir'], // Más variedad para drills libres
     priorityExamples: ['salir', 'poner', 'hacer'], // Verbos más representativos y pedagógicos (NO incluir ser, tener, estar aquí en priorityExamples)
     pattern: 'salir: salgo, sales, sale, salimos, salís, salen (solo YO cambia)',
     affectedTenses: ['pres', 'subjPres'],
@@ -47,7 +47,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     description: 'Cambios vocálicos sistemáticos: e→ie (pensar), e→i (pedir), o→ue (dormir)',
     paradigmatic: 'pensar',
     // Priorizar un ejemplo por cada grupo: e→ie (pensar), e→i (pedir), o→ue (dormir)
-    examples: ['pensar', 'pedir', 'dormir', 'querer', 'poder', 'volver', 'servir', 'contar', 'encontrar', 'recordar', 'mostrar', 'costar', 'sonar', 'volar', 'cerrar', 'empezar', 'despertar', 'comenzar', 'sentarse', 'acostarse', 'entender', 'perder', 'defender', 'encender', 'mentir', 'sentir', 'convertir', 'divertir', 'preferir', 'referir', 'sugerir', 'advertir', 'repetir', 'competir', 'impedir', 'medir', 'reír', 'freír', 'sonreír', 'vestir', 'elegir', 'corregir', 'morir', 'jugar'], // Jugar al final para no aparecer en presentación
+    examples: ['pensar', 'pedir', 'dormir', 'querer', 'poder', 'volver', 'servir', 'contar', 'encontrar', 'recordar', 'mostrar', 'costar', 'sonar', 'volar', 'cerrar', 'empezar', 'despertar', 'comenzar', 'entender', 'perder', 'defender', 'encender', 'mentir', 'sentir', 'convertir', 'divertir', 'preferir', 'referir', 'sugerir', 'advertir', 'repetir', 'competir', 'impedir', 'medir', 'reír', 'freír', 'sonreír', 'vestir', 'elegir', 'corregir', 'seguir', 'conseguir', 'perseguir', 'morir', 'jugar'], // Jugar al final para no aparecer en presentación
     priorityExamples: ['pensar', 'pedir', 'dormir'], // Casos más representativos: e→ie, e→i, o→ue
     pattern: 'pensar: pienso, piensas, piensa, pensamos, pensáis, piensan (nosotros/vosotros no diptongan)',
     affectedTenses: ['pres', 'subjPres'],
@@ -286,14 +286,15 @@ export const LEARNING_VERB_TO_FAMILIES = {
   'salir': ['LEARNING_YO_G_PRESENT', 'LEARNING_FUT_COND_IRREGULAR'],
   'venir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR'],
   'valer': ['LEARNING_YO_G_PRESENT', 'LEARNING_FUT_COND_IRREGULAR'],
-  'caer': ['LEARNING_YO_G_PRESENT'],
+  'caer': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS'],
   'traer': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_IRREG_GERUNDS'],
   'oír': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
   'decir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_MUY_IRREGULARES', 'LEARNING_FUT_COND_IRREGULAR', 'LEARNING_IRREG_GERUNDS', 'LEARNING_IRREG_PARTICIPLES'],
-  'seguir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_DIPHTHONGS', 'LEARNING_IRREG_GERUNDS'],
-  'conseguir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
-  'perseguir': ['LEARNING_YO_G_PRESENT', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
-  'distinguir': ['LEARNING_YO_G_PRESENT'],
+  // seguir/conseguir/perseguir (sigo) y distinguir (distingo) no agregan -g:
+  // pierden la u por ortografía. seguir y compuestos van con los e→i.
+  'seguir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
+  'conseguir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
+  'perseguir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
   // Verbos compuestos también tienen -g
   'obtener': ['LEARNING_YO_G_PRESENT', 'LEARNING_FUT_COND_IRREGULAR'],
   'mantener': ['LEARNING_YO_G_PRESENT', 'LEARNING_FUT_COND_IRREGULAR'],
@@ -315,7 +316,7 @@ export const LEARNING_VERB_TO_FAMILIES = {
   'empezar': ['LEARNING_DIPHTHONGS'],
   'entender': ['LEARNING_DIPHTHONGS'],
   'perder': ['LEARNING_DIPHTHONGS'],
-  'sentir': ['LEARNING_DIPHTHONGS', 'LEARNING_IRREG_GERUNDS'],
+  'sentir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
   'preferir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS', 'LEARNING_IRREG_GERUNDS'],
 
   // o→ue  
@@ -352,8 +353,6 @@ export const LEARNING_VERB_TO_FAMILIES = {
   // Más verbos e→ie
   'despertar': ['LEARNING_DIPHTHONGS'],
   'comenzar': ['LEARNING_DIPHTHONGS'],
-  'sentarse': ['LEARNING_DIPHTHONGS'],
-  'acostarse': ['LEARNING_DIPHTHONGS'],
   'defender': ['LEARNING_DIPHTHONGS'],
   'encender': ['LEARNING_DIPHTHONGS'],
   'mentir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],
@@ -434,7 +433,7 @@ const OLD_TO_LEARNING_FAMILY_MAP = {
   'YO_OY': 'LEARNING_VERY_IRREGULAR',
 
   // Muy irregulares → nueva familia para ser/estar/ir/dar
-  'PRET_SUPPL': 'LEARNING_VERY_IRREGULAR', // ser, ir, estar, dar
+  'PRET_SUPPL': 'LEARNING_VERY_IRREGULAR', // ser, ir, dar, ver
 
   // Casos especiales mantenidos
   'DIPHT_U_UE': 'LEARNING_DIPHTHONGS', // jugar incluido en diptongos
@@ -462,7 +461,8 @@ const LEARNING_TO_OLD_FAMILY_MAP = {
   'LEARNING_YO_ZCO_PRESENT': 'ZCO_VERBS',
   'LEARNING_YO_G_PRESENT': 'G_VERBS',
   'LEARNING_DIPHTHONGS': 'STEM_CHANGES', // Usar grupo simplificado que incluye TODAS las familias de diptongos
-  'LEARNING_VERY_IRREGULAR': 'PRET_SUPPL',
+  // YO_OY = ser, estar, ir, dar: los cuatro que presenta la familia, en presente y subjuntivo
+  'LEARNING_VERY_IRREGULAR': 'YO_OY',
 
 
   // Familias para otros tiempos (mantenidas)

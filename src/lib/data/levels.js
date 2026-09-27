@@ -160,7 +160,6 @@ export const LEVELS = {
     orth:{ accents:"off", dieresisRequired:false, hardBlockBadForms:false },
     variants:{ impSubj:"accept_both", futureSubjunctive:"off" },
     defectives:{ behavior:"warn" },
-    clitics:null,
     mixing:{ switchesPerDrill:0, crossMode:false, fastTreatmentSwitch:false },
     timing:{ perItemMs:null },
     scoring:{ minAccuracy:90, orthPenalty:0, allowDoubleParticiples:false },
@@ -175,7 +174,6 @@ export const LEVELS = {
     orth:{ accents:"lenient", dieresisRequired:false, hardBlockBadForms:false },
     variants:{ impSubj:"accept_both", futureSubjunctive:"off" },
     defectives:{ behavior:"warn" },
-    clitics:{ requiredPercent:0, position:"any", exactString:null },
     mixing:{ switchesPerDrill:0, crossMode:false, fastTreatmentSwitch:false },
     timing:{ perItemMs:8000 },
     scoring:{ minAccuracy:92, orthPenalty:0.25, allowDoubleParticiples:false },
@@ -190,7 +188,6 @@ export const LEVELS = {
     orth:{ accents:"strict", dieresisRequired:false, hardBlockBadForms:false },
     variants:{ impSubj:"accept_both", futureSubjunctive:"off" },
     defectives:{ behavior:"warn" },
-    clitics:{ requiredPercent:0, position:"any", exactString:null },
     mixing:{ switchesPerDrill:2, crossMode:true, fastTreatmentSwitch:false },
     timing:{ perItemMs:6000, targetMedianMs:3000 },
     scoring:{ minAccuracy:94, orthPenalty:0.5, allowDoubleParticiples:true },
@@ -205,7 +202,6 @@ export const LEVELS = {
     orth:{ accents:"strict", dieresisRequired:true, hardBlockBadForms:false },
     variants:{ impSubj:"accept_both", futureSubjunctive:"off" },
     defectives:{ behavior:"block_invalid_persons" },
-    clitics:{ requiredPercent:10, position:"any", exactString:null },
     mixing:{ switchesPerDrill:4, crossMode:true, fastTreatmentSwitch:true },
     timing:{ perItemMs:5000, targetMedianMs:2500 },
     scoring:{ minAccuracy:95, orthPenalty:0.75, allowDoubleParticiples:true },
@@ -220,7 +216,6 @@ export const LEVELS = {
     orth:{ accents:"strict", dieresisRequired:true, hardBlockBadForms:true },
     variants:{ impSubj:"enforce", futureSubjunctive:"labelled_optional" },
     defectives:{ behavior:"block_invalid_persons" },
-    clitics:{ requiredPercent:30, position:"enclitic", exactString:null },
     mixing:{ switchesPerDrill:8, crossMode:true, fastTreatmentSwitch:true },
     timing:{ perItemMs:3500, targetMedianMs:1800 },
     scoring:{ minAccuracy:97, orthPenalty:1.0, allowDoubleParticiples:true },
@@ -235,7 +230,6 @@ export const LEVELS = {
     orth:{ accents:"hard", dieresisRequired:true, hardBlockBadForms:true },
     variants:{ impSubj:"must_match_prompt", futureSubjunctive:"labelled_optional" },
     defectives:{ behavior:"hard_block" },
-    clitics:{ requiredPercent:60, position:"enclitic", exactString:null },
     mixing:{ switchesPerDrill:12, crossMode:true, fastTreatmentSwitch:true },
     timing:{ perItemMs:2500, targetMedianMs:1200 },
     scoring:{ minAccuracy:98, orthPenalty:1.0, allowDoubleParticiples:true },
@@ -246,13 +240,12 @@ export const LEVELS = {
 // ——— Helpers mínimos ————————————————————————————————————————————————
 
 const UNIPERSONALES = new Set(["llover","nevar","granizar","amanecer"]);
-const DEFECTIVOS_PARCIALES = new Set(["abolir"]); // ajustá si querés
 
 /** @param {string} lemma @param {Person} person @param {CEFR} level */
 export function isPersonAllowed(lemma, person, level){
   const behavior = LEVELS[level].defectives.behavior;
   if (behavior === "warn") return true;
-  const only3 = UNIPERSONALES.has(lemma) || DEFECTIVOS_PARCIALES.has(lemma);
+  const only3 = UNIPERSONALES.has(lemma);
   if (!only3) return true;
   const ok = (person==="3sg"||person==="3pl");
   if (behavior === "block_invalid_persons") return ok;
@@ -274,31 +267,6 @@ function _normalize(s, strictAccents){
   return s.toLowerCase().replace(/\s+/g," ").trim();
 }
 
-/** Chequea clíticos y acentuación básica de imperativo afirmativo + enclíticos */
-function _checkClitics(user, spec){
-  const c = spec.policies.clitics;
-  if (!c || !c.required) return { ok:true, reason:null };
-  // posición mínima: si imperativo afirmativo ⇒ enclítico
-  if (spec.target.mood==="imperativo" && spec.target.tense==="imperativo_afirmativo" && c.position==="enclitic"){
-    // heurística: debe terminar en "me|te|se|lo|la|le|nos|los|las|les" (o combinaciones) y llevar tilde si corresponde
-    const encliticRegex = /(me|te|se|lo|la|le|nos|los|las|les)+$/;
-    const okAttach = encliticRegex.test(user.replace(/\s+/g,""));
-    if (!okAttach) return { ok:false, reason:"clitics_position" };
-    // acentuación mínima: si termina en -melo/-selo/-noslo etc. y la sílaba cae en la antepenúltima, debería llevar tilde (dámelo, oigámoselo)
-    // No implementamos prosodia completa; validación liviana:
-    const needsTilde = /(melo|selo|noslo|mela|sela|nosla|selos|selas|melos|melas)$/i.test(user.replace(/\s+/g,""));
-    const hasTilde = /á|é|í|ó|ú/i.test(user);
-    if (needsTilde && !hasTilde) return { ok:false, reason:"accent_missing_on_enclitic" };
-  }
-  // Solo exigir cadena exacta si NO es enclítico
-  if (c.exact && c.position !== "enclitic") {
-    const want = c.exact.replace(/\s+/g," ").toLowerCase()
-    const has = user.toLowerCase().includes(want)
-    if (!has) return { ok:false, reason:"clitics_string_mismatch" };
-  }
-  return { ok:true, reason:null };
-}
-
 // VALIDADOR ELIMINADO: isCorrect() era un validador alternativo
 // no utilizado que duplicaba funcionalidad del grader principal.
 // Su lógica ha sido consolidada en src/lib/core/grader.js para
@@ -310,22 +278,13 @@ function _checkClitics(user, spec){
  * buildItemSpec: arma la consigna con reglas del nivel.
  * @returns {{lemma:string,target:{mood:Mood,tense:Tense,person:Person,treatment:Treatment},policies:any}}
  */
-export function buildItemSpec({ lemma, mood, tense, person, level, treatment="vos", enforceVariantSe=false, clitics=null }){
+export function buildItemSpec({ lemma, mood, tense, person, level, treatment="vos", enforceVariantSe=false }){
   const cfg = LEVELS[level];
   const variantNote = enforceVariantSe
     ? "forma en -se"
     : (cfg.variants.impSubj==="enforce"||cfg.variants.impSubj==="must_match_prompt")
       ? "variante especificada en consigna"
       : "acepta -ra/-se";
-
-  const cliticPolicy = (cfg.clitics && cfg.clitics.requiredPercent>0)
-    ? {
-        required: Boolean(clitics),
-        position: cfg.clitics.position,
-        // Para enclítico (imperativo afirmativo), no exigir cadena exacta separada
-        exact: cfg.clitics.position === 'enclitic' ? null : clitics,
-      }
-    : { required:false, position:"any", exact:null };
 
   return {
     lemma,
@@ -335,7 +294,6 @@ export function buildItemSpec({ lemma, mood, tense, person, level, treatment="vo
       orth: cfg.orth,
       variants:{ ...cfg.variants, note: variantNote },
       defectives: cfg.defectives,
-      clitics: cliticPolicy,
       mixing: cfg.mixing,
       timing: cfg.timing,
       scoring: cfg.scoring,

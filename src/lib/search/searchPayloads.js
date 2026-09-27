@@ -16,8 +16,6 @@ const THEME_POLICY = {
   accentTolerance: 'warn',
   requireDieresis: false,
   blockNonNormativeSpelling: false,
-  cliticStrictness: 'low',
-  cliticsPercent: 0,
   neutralizePronoun: false,
   rotateSecondPerson: false,
   timeMode: 'soft',

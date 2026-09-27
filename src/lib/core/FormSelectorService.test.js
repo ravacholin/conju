@@ -246,44 +246,6 @@ describe('FormSelectorService', () => {
       expect(uniquePersons.size).toBeGreaterThan(3)
     })
 
-    it('should apply clitic transformations for imperative with voseo', async () => {
-      mockEligible = [
-        {
-          lemma: 'dar',
-          mood: 'imperative',
-          tense: 'impAff',
-          person: '2s_vos',
-          value: 'da',
-          type: 'irregular',
-          ending: '-ar'
-        }
-      ]
-
-      const settings = {
-        level: 'B1',
-        region: 'rioplatense',
-        practiceMode: 'mixed',
-        verbType: 'all',
-        enableClitics: true
-      }
-
-      mockVerbLookupMap.set('dar', {
-        lemma: 'dar',
-        type: 'irregular',
-        families: ['dar_family']
-      })
-
-      const context = {
-        verbLookupMap: mockVerbLookupMap,
-        shouldTransformClitics: true
-      }
-
-      const result = await selectForm(mockEligible, settings, context)
-
-      expect(result).toBeDefined()
-      // May have clitic transformation applied (e.g., "damelo" → "damelo" with accent)
-    })
-
     it('should handle emergency fallback when selection fails', async () => {
       // This tests the emergency fallback mechanism
       mockEligible = [
@@ -582,7 +544,7 @@ describe('FormSelectorService', () => {
   })
 
   describe('Imperative targets', () => {
-    it('never attaches a clitic the drill prompt cannot show', async () => {
+    it('serves the plain imperative, even if a stale cliticsPercent setting survives', async () => {
       const forms = [
         ['2s_vos', 'hablá'], ['2s_tu', 'habla'], ['3s', 'hable'],
         ['1p', 'hablemos'], ['2p_vosotros', 'hablad'], ['3p', 'hablen']

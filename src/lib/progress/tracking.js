@@ -26,6 +26,7 @@ import { checkUserProgression } from "../levels/levelProgression.js";
 import { createLogger } from "../utils/logger.js";
 import { generateId } from "../utils/id.js";
 import { emitProgressEvent, PROGRESS_EVENTS } from "../events/progressEventBus.js";
+import { withoutRetiredAttempts } from "./retiredContent.js";
 
 const logger = createLogger("progress:tracking");
 
@@ -387,8 +388,9 @@ export async function trackAttemptSubmitted(attemptId, result) {
     // Recalcular y guardar mastery de la celda basada en intentos reales del usuario
     try {
       // Obtener intentos del usuario y filtrar por celda actual
-      const allUserAttempts =
-        (await getByIndex("attempts", "userId", currentSession.userId)) || [];
+      const allUserAttempts = withoutRetiredAttempts(
+        (await getByIndex("attempts", "userId", currentSession.userId)) || [],
+      );
       const _windowMs = 90 * 24 * 60 * 60 * 1000; // 90 días de ventana para recencia
       const now = Date.now();
       let weightedCorrect = 0;
