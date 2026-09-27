@@ -252,6 +252,8 @@ function buildTenseEntries() {
  * against the regular paradigm accent-insensitively, so it classifies those
  * forms as regular and an "irregulares" drill for them has an empty pool.
  * Offering them would drop the user into an emergency fallback.
+ * ZO_VERBS is here for a different reason: the dataset has no -zo verb
+ * (vencer, ejercer, torcer…), so its pool is empty too.
  * Keyed `${tense}:${familyId}`, and asserted in both directions by
  * topicSearchIndex.integrity.test.js.
  */
@@ -259,10 +261,12 @@ export const FAMILIES_WITHOUT_IRREGULAR_FORMS = Object.freeze([
   'pres:IAR_VERBS',
   'pres:UAR_VERBS',
   'pres:ACCENT_CHANGES',
+  'pres:ZO_VERBS',
   'pretIndef:ORTH_GUAR',
   'subjPres:IAR_VERBS',
   'subjPres:UAR_VERBS',
-  'subjPres:ORTH_GUAR'
+  'subjPres:ORTH_GUAR',
+  'subjPres:ZO_VERBS'
 ])
 
 function buildVerbTypeEntries() {

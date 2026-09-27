@@ -64,4 +64,15 @@ describe('learningIrregularFamilies helpers', () => {
     expect(ger).toContain('LEARNING_IRREG_GERUNDS')
     expect(part).toContain('LEARNING_IRREG_PARTICIPLES')
   })
+
+  it('maps "muy irregulares" to the -oy verbs it presents (ser, estar, ir, dar)', () => {
+    expect(convertLearningFamilyToOld('LEARNING_VERY_IRREGULAR')).toBe('YO_OY')
+  })
+
+  it('does not present seguir/distinguir as -go verbs (sigo and distingo drop a u)', () => {
+    const goFamily = LEARNING_IRREGULAR_FAMILIES.LEARNING_YO_G_PRESENT.examples
+    for (const lemma of ['seguir', 'conseguir', 'perseguir', 'distinguir']) {
+      expect(goFamily, lemma).not.toContain(lemma)
+    }
+  })
 })
