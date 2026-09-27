@@ -580,4 +580,21 @@ describe('FormSelectorService', () => {
       expect(['hablar', 'comer']).toContain(result.lemma)
     })
   })
+
+  describe('Imperative targets', () => {
+    it('never attaches a clitic the drill prompt cannot show', async () => {
+      const forms = [
+        ['2s_vos', 'hablá'], ['2s_tu', 'habla'], ['3s', 'hable'],
+        ['1p', 'hablemos'], ['2p_vosotros', 'hablad'], ['3p', 'hablen']
+      ]
+      for (const [person, value] of forms) {
+        const form = { lemma: 'hablar', mood: 'imperative', tense: 'impAff', person, value, type: 'regular' }
+        const settings = { level: 'C2', region: 'global', practiceMode: 'mixed', verbType: 'regular', cliticsPercent: 100 }
+
+        const result = await selectForm([form], settings, { verbLookupMap: mockVerbLookupMap })
+
+        expect(result.value).toBe(value)
+      }
+    })
+  })
 })

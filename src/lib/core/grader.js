@@ -247,64 +247,6 @@ export function grade(input, expected, settings){
     }
   }
 
-  // Clitic strictness (position and accent) basic checks when enabled
-  if (!correct && settings.cliticStrictness !== 'off') {
-    const val = normalizedInput
-    const enclitic = /(me|te|se|lo|la|le|nos|los|las|les)+$/i.test(val.replace(/\s+/g,''))
-    const isImpAff = expected.mood === 'imperative' && expected.tense === 'impAff'
-    const isImpNeg = expected.mood === 'imperative' && expected.tense === 'impNeg'
-    if (isImpAff && !enclitic && settings.cliticStrictness === 'high') {
-      return {
-        correct: false,
-        accepted: null,
-        targets: [...candidates],
-        note: 'Imperativo afirmativo: clíticos enclíticos requeridos',
-        warnings: wasCorrected ? warnings : null,
-        isAccentError: false,
-        ts: startTs
-      }
-    }
-    if (isImpNeg && enclitic && settings.cliticStrictness !== 'off') {
-      return {
-        correct: false,
-        accepted: null,
-        targets: [...candidates],
-        note: 'Imperativo negativo: clíticos proclíticos (antes del verbo) requeridos',
-        warnings: wasCorrected ? warnings : null,
-        isAccentError: false,
-        ts: startTs
-      }
-    }
-    // Heurística voseo 2s: 1 clítico → sin tilde; 2 clíticos → con tilde; C2 exigir regla
-    if (isImpAff && expected.person === '2s_vos' && settings.level === 'C2') {
-      const cl = (input.replace(/\s+/g,'').match(/(me|te|se|lo|la|le|nos|los|las|les)+$/i)||[''])[0]
-      const clCount = (cl.match(/(me|te|se|lo|la|le|nos|los|las|les)/gi)||[]).length
-      const hasTilde = /[áéíóúÁÉÍÓÚ]/.test(input)
-      if (clCount === 1 && hasTilde) {
-        return {
-          correct: false,
-          accepted: null,
-          targets: [...candidates],
-          note: 'C2: con un clítico en voseo 2ª sg. no lleva tilde (hablame, comeme, vivime).',
-          warnings: wasCorrected ? warnings : null,
-          isAccentError: true,
-          ts: startTs
-        }
-      }
-      if (clCount >= 2 && !hasTilde) {
-        return {
-          correct: false,
-          accepted: null,
-          targets: [...candidates],
-          note: 'C2: con dos clíticos en voseo 2ª sg. debe llevar tilde (hablámelo, comémelo, vivímelo).',
-          warnings: wasCorrected ? warnings : null,
-          isAccentError: true,
-          ts: startTs
-        }
-      }
-    }
-  }
-  
   // Generate positive feedback for correct answers
   if (correct && !feedback) {
     feedback = '¡Correcto!'

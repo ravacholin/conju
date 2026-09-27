@@ -271,3 +271,37 @@ describe('Error Analysis', () => {
     expect(result.note).toContain('pretérito irregular');
   });
 }); 
+describe('Imperatives at B2+ (cliticStrictness set by the level preset)', () => {
+  const c1Settings = {
+    region: 'la_general',
+    useTuteo: true,
+    useVosotros: true,
+    accentTolerance: 'warn',
+    requireDieresis: true,
+    blockNonNormativeSpelling: true,
+    cliticStrictness: 'high',
+    level: 'C1'
+  }
+
+  test('a wrong negative imperative is not blamed on clitic position', () => {
+    const expected = { value: 'no salgas', mood: 'imperative', tense: 'impNeg', person: '2s_tu' }
+    const result = grade('no sales', expected, c1Settings)
+    expect(result.correct).toBe(false)
+    expect(result.note).not.toMatch(/clíticos/)
+    expect(result.note).toContain('no salgas')
+  })
+
+  test('a wrong affirmative imperative is not blamed on missing clitics', () => {
+    const expected = { value: 'hablá', mood: 'imperative', tense: 'impAff', person: '2s_vos' }
+    const result = grade('hablad', expected, c1Settings)
+    expect(result.correct).toBe(false)
+    expect(result.note).not.toMatch(/clíticos/)
+  })
+
+  test('a missing accent on a negative imperative is still reported as an accent error', () => {
+    const expected = { value: 'no habléis', mood: 'imperative', tense: 'impNeg', person: '2p_vosotros' }
+    const result = grade('no hableis', expected, c1Settings)
+    expect(result.correct).toBe(false)
+    expect(result.isAccentError).toBe(true)
+  })
+});

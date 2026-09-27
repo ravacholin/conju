@@ -11,7 +11,6 @@
  * - C2 conmutación (person variety)
  * - Variety engine integration
  * - Specific practice ending distribution
- * - Clitic transformations
  * - Strict validation
  *
  * @module FormSelectorService
@@ -57,7 +56,6 @@ export async function selectForm(eligible, settings, _context = {}) {
     conmutacionIdx,
     rotateSecondPerson,
     nextSecondPerson,
-    cliticsPercent,
     enableProgressIntegration
   } = settings
 
@@ -271,19 +269,10 @@ export async function selectForm(eligible, settings, _context = {}) {
 
   if (selectedForm) {
 
-    // Apply any final transformations (clitics, etc.)
-    let finalForm = selectedForm
-
-    // Enforce clitics percentage in imperativo afirmativo at high levels
-    if (finalForm.mood === 'imperative' && finalForm.tense === 'impAff' && cliticsPercent > 0) {
-      const needClitic = Math.random() * 100 < cliticsPercent
-      if (needClitic) {
-        const part = finalForm.value
-        const attach = (finalForm.person === '1s' || finalForm.person === '2s_tu' || finalForm.person === '2s_vos') ? 'me' : 'se lo'
-        const adjusted = adjustAccentForImperativeWithClitics(finalForm.lemma, finalForm.person, part, attach)
-        finalForm = { ...finalForm, value: adjusted }
-      }
-    }
+    // No clitics are attached to the target here: the drill prompt shows only
+    // lemma + mood/tense + person, so a clitic added to the expected value is
+    // invisible to the learner and turns every correct answer into an error.
+    const finalForm = selectedForm
 
 
     // STRICT VALIDATION: Prevent incorrect exercises from being returned
@@ -364,17 +353,6 @@ export async function selectForm(eligible, settings, _context = {}) {
     fallbackSelectedForm = formsForPerson[0]
   } else {
     fallbackSelectedForm = formsForPerson[Math.floor(Math.random() * formsForPerson.length)]
-  }
-  // Enforce clitics percentage in imperativo afirmativo at high levels
-  if (fallbackSelectedForm.mood === 'imperative' && fallbackSelectedForm.tense === 'impAff' && cliticsPercent > 0) {
-    const needClitic = Math.random() * 100 < cliticsPercent
-    if (needClitic) {
-      // Simple heuristic: attach 'me' to 1s/2s targets, else 'se lo'
-      const part = fallbackSelectedForm.value
-      const attach = (fallbackSelectedForm.person === '1s' || fallbackSelectedForm.person === '2s_tu' || fallbackSelectedForm.person === '2s_vos') ? 'me' : 'se lo'
-      const adjusted = adjustAccentForImperativeWithClitics(fallbackSelectedForm.lemma, fallbackSelectedForm.person, part, attach)
-      fallbackSelectedForm = { ...fallbackSelectedForm, value: adjusted }
-    }
   }
   // Update rotation pointer
   if (rot && (randomPerson === '2s_tu' || randomPerson === '2s_vos')) {
@@ -522,61 +500,6 @@ function applyWeightedSelection(forms) {
 function sampleArray(array, count) {
   const shuffled = [...array].sort(() => 0.5 - Math.random())
   return shuffled.slice(0, count)
-}
-
-/**
- * Accent rules for imperativo + clíticos (voseo):
- * - 2s_vos afirmativo sin clíticos: terminación tónica (hablá, comé, viví)
- * - Con un clítico (una sílaba enclítica): se pierde la tilde (hablame, comeme, vivime)
- * - Con dos clíticos (dos sílabas enclíticas): vuelve la tilde (hablámelo, comémelo, vivímelo)
- * Para 1p/3s/3p se aplica la prosodia general: si la sílaba tónica se desplaza antepenúltima por enclíticos, exigir tilde.
- */
-function adjustAccentForImperativeWithClitics(lemma, person, base, clitics) {
-  const raw = `${base}${clitics}`.replace(/\s+/g, '')
-  if (person === '2s_vos') {
-    const encliticSyllables = estimateCliticSyllables(clitics)
-    // quitar tildes previas del verbo
-    const strip = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    const addTildeVos = (s) => {
-      // Añadir tilde en la vocal final según -ar/-er/-ir
-      if (/ar$/.test(lemma)) return s.replace(/a(?=[^a]*$)/, 'á')
-      if (/er$/.test(lemma)) return s.replace(/e(?=[^e]*$)/, 'é')
-      if (/ir$/.test(lemma)) return s.replace(/i(?=[^i]*$)/, 'í')
-      return s
-    }
-    const REMOVE_TILDE_FINAL = (s) => s.replace(/[á]([^á]*)$/, 'a$1').replace(/[é]([^é]*)$/, 'e$1').replace(/[í]([^í]*)$/, 'i$1')
-    let core = raw
-    // normalizar núcleo verbal (antes de clíticos)
-    const verb = base
-    if (encliticSyllables === 1) {
-      // pierde tilde
-      const strippedVerb = strip(verb)
-      core = strippedVerb + clitics.replace(/\s+/g, '')
-    } else if (encliticSyllables >= 2) {
-      // vuelve a llevar tilde
-      const strippedVerb = strip(verb)
-      const withTilde = addTildeVos(strippedVerb)
-      core = withTilde + clitics.replace(/\s+/g, '')
-    }
-    return core
-  }
-  // Para otras personas, mantener unión sin cambiar acentos (grader validará tildes obligatorias en C2)
-  return raw
-}
-
-function estimateCliticSyllables(cl) {
-  // Aproximación: me/te/se/lo/la/le = 1 sílaba, nos/los/las/les = 1–2 (tomamos 1), "se lo" ~2
-  const s = cl.replace(/\s+/g, '').toLowerCase()
-  let count = 0
-  const tokens = ['nos', 'les', 'las', 'los', 'me', 'te', 'se', 'lo', 'la', 'le']
-  let i = 0
-  while (i < s.length) {
-    const tok = tokens.find(t => s.slice(i).startsWith(t))
-    if (!tok) break
-    count += 1
-    i += tok.length
-  }
-  return Math.max(1, count)
 }
 
 /**
