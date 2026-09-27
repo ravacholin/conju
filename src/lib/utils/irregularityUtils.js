@@ -11,7 +11,7 @@ const TENSE_NAME_MAPPING = {
   'futuro_compuesto': 'futPerf',
   'presente_subjuntivo': 'subjPres',
   'imperfecto_subjuntivo': 'subjImpf',
-  'preterito_perfecto_subjuntivo': 'subjPretPerf',
+  'preterito_perfecto_subjuntivo': 'subjPerf',
   'pluscuamperfecto_subjuntivo': 'subjPlusc',
   'futuro_perfecto_subjuntivo': 'subjFutPerf',
   'condicional_simple': 'cond',
@@ -20,7 +20,10 @@ const TENSE_NAME_MAPPING = {
   'imperativo_negativo': 'impNeg',
   'infinitivo': 'inf',
   'gerundio': 'ger',
-  'participio': 'pp'
+  'participio': 'part',
+  // Claves viejas de la matriz, antes de alinearla con los códigos del dataset
+  'pp': 'part',
+  'subjPretPerf': 'subjPerf'
 }
 
 /**
@@ -140,9 +143,9 @@ export const TENSE_GROUPS = {
   PAST: ['pretIndef', 'impf', 'pretPerf', 'plusc'],
   FUTURE: ['fut', 'futPerf'],
   CONDITIONAL: ['cond', 'condPerf'],
-  SUBJUNCTIVE: ['subjPres', 'subjImpf', 'subjPretPerf', 'subjPlusc', 'subjFutPerf'],
+  SUBJUNCTIVE: ['subjPres', 'subjImpf', 'subjPerf', 'subjPlusc'],
   IMPERATIVE: ['impAff', 'impNeg'],
-  NONFINITE: ['inf', 'ger', 'pp']
+  NONFINITE: ['inf', 'ger', 'part']
 }
 
 /**
