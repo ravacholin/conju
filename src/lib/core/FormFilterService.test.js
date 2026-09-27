@@ -482,4 +482,42 @@ describe('FormFilterService', () => {
       expect(result.map(f => f.lemma)).toEqual(['pensar'])
     })
   })
+
+  describe('Nonexistent forms', () => {
+    const solerForms = [
+      { lemma: 'soler', mood: 'indicative', tense: 'pres', person: '1s', value: 'suelo', type: 'irregular' },
+      { lemma: 'soler', mood: 'imperative', tense: 'impAff', person: '2s_tu', value: 'suele', type: 'irregular' },
+      { lemma: 'soler', mood: 'imperative', tense: 'impNeg', person: '2s_tu', value: 'no suelas', type: 'irregular' }
+    ]
+    const verbLookupMap = new Map([['soler', { lemma: 'soler', type: 'irregular' }]])
+
+    it('never serves an imperative of "soler", which the grader can never accept', () => {
+      const settings = {
+        level: 'C2',
+        region: 'la_general',
+        practiceMode: 'mixed',
+        verbType: 'all',
+        shouldApplyLevelFiltering: false,
+        levelForFiltering: 'ALL'
+      }
+
+      const result = filterEligibleForms(solerForms, settings, { verbLookupMap })
+
+      expect(result.some(f => f.mood === 'imperative')).toBe(false)
+    })
+
+    it('keeps them out of the fallback pool, even when relaxing a specific imperative request', () => {
+      const settings = {
+        level: 'C2',
+        region: 'la_general',
+        practiceMode: 'specific',
+        specificMood: 'imperative',
+        specificTense: 'impAff'
+      }
+
+      const result = createFallbackPool(solerForms, settings, { verbLookupMap })
+
+      expect(result.some(f => f.mood === 'imperative')).toBe(false)
+    })
+  })
 })

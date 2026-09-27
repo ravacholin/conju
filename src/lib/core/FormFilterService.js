@@ -70,6 +70,10 @@ export function filterEligibleForms(forms, settings, context = {}) {
       return false
     }
 
+    if (isNonexistentForm(form)) {
+      return false
+    }
+
     // Level filtering
     if (!applyLevelFilter(form, {level, practiceMode, blockComboFilter})) {
       return false
@@ -191,6 +195,16 @@ function applyLevelFilter(form, {level, practiceMode, blockComboFilter}) {
   const allowed = blockComboFilter || getAllowedCombosForLevel(level)
 
   return allowed.has(`${form.mood}|${form.tense}`)
+}
+
+/**
+ * Forms the dataset carries but standard Spanish does not have. The grader can
+ * never accept an answer for them, so serving one is an unwinnable exercise.
+ */
+const LEMMAS_WITHOUT_IMPERATIVE = new Set(['soler'])
+
+function isNonexistentForm(form) {
+  return form.mood === 'imperative' && LEMMAS_WITHOUT_IMPERATIVE.has(form.lemma)
 }
 
 /**
@@ -476,6 +490,10 @@ export function createFallbackPool(forms, settings, context = {}) {
 
   // Single pass filtering
   let fallback = forms.filter(f => {
+    if (isNonexistentForm(f)) {
+      return false
+    }
+
     // Level filter (if not specific practice)
     if (!isSpecificTopicPractice && !allowedCombos.has(`${f.mood}|${f.tense}`)) {
       return false
@@ -526,11 +544,11 @@ export function createFallbackPool(forms, settings, context = {}) {
 
   // Progressive relaxation
   if (fallback.length === 0 && specificTense) {
-    fallback = forms.filter(f => f.mood === specificMood)
+    fallback = forms.filter(f => f.mood === specificMood && !isNonexistentForm(f))
   }
 
   if (fallback.length === 0 && specificMood) {
-    fallback = forms
+    fallback = forms.filter(f => !isNonexistentForm(f))
   }
 
   return fallback
