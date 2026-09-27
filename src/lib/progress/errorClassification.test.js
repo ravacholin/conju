@@ -108,4 +108,12 @@ describe('Error Classification', () => {
     const errors = classifyError('sigás', 'sigues', item) // Múltiples errores potenciales
     expect(errors.length).toBeGreaterThan(0)
   })
+
+  it('never tags an error as a clitic pronoun problem', () => {
+    const item = { lemma: 'hablar', person: '1s', tense: 'pres', mood: 'indicative', verbType: 'regular' }
+    const errors = classifyError('me', 'hablo', item)
+    expect(errors.length).toBeGreaterThan(0)
+    expect(errors).not.toContain('pronombres_clíticos')
+    expect(Object.values(ERROR_TAGS)).not.toContain('pronombres_clíticos')
+  })
 })

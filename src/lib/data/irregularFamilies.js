@@ -46,8 +46,8 @@ export const IRREGULAR_FAMILIES = {
   'O_U_GER_IR': {
     id: 'O_U_GER_IR',
     name: 'o→u en gerundio y pretérito (-ir)',
-    description: 'dormir, morir, adormecerse, gruñir, podrir, promorir',
-    examples: ['dormir', 'morir', 'adormir', 'adormecerse', 'redormir', 'gruñir'],
+    description: 'dormir, morir, adormir, gruñir, podrir, redormir',
+    examples: ['dormir', 'morir', 'adormir', 'redormir', 'gruñir', 'podrir'],
     pattern: 'o→u en gerundio y pretérito 3ª personas de verbos -ir que diptongan',
     affectedTenses: ['pretIndef', 'ger'],
     paradigmaticVerbs: ['dormir', 'morir']

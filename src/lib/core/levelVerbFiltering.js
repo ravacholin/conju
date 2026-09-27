@@ -33,7 +33,7 @@ export const A1_A2_ONLY_VERBS = [
   'comprar', 'vender', 'aprender', 'enseñar', 'ayudar', 'usar', 'subir',
   'bajar', 'entrar', 'esperar', 'ganar', 'perder', 'cantar',
   'bailar', 'cocinar', 'limpiar', 'lavar', 'correr', 'nadar', 'manejar', 'viajar',
-  'descansar', 'levantar', 'sentar', 'acostar', 'ducharse', 'vestirse',
+  'descansar', 'levantar', 'sentar', 'acostar',
   
   // Verbos de emociones y estados básicos A1  
   'gustar', 'amar', 'odiar', 'necesitar', 'desear', 'preferir', 'sentir',
@@ -72,7 +72,7 @@ export const B2_PLUS_ONLY_VERBS = [
   'amuar', 'desaguar', 'menguar', 'fraguar', 'atestiguar', 'apaciguar',
   
   // Verbos -ir con cambios complicados
-  'adormir', 'adormecerse', 'redormir', 'competir', 'concebir', 'impedir',
+  'adormir', 'redormir', 'competir', 'concebir', 'impedir',
   
   // -guir/-gir raros
   'distinguir', 'extinguir', 'conseguir', 'perseguir', 'proseguir', 'subsidir',

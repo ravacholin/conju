@@ -73,7 +73,6 @@ export const ERROR_TAGS = {
   VERBAL_ENDING: 'terminación_verbal',
   IRREGULAR_STEM: 'raíz_irregular',
   ACCENT: 'acentuación',
-  CLITIC_PRONOUNS: 'pronombres_clíticos',
   ORTHOGRAPHY_G_GU: 'ortografía_g/gu',
   ORTHOGRAPHY_C_QU: 'ortografía_c/qu',
   ORTHOGRAPHY_Z_C: 'ortografía_z/c',

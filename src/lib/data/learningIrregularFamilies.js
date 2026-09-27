@@ -47,7 +47,7 @@ export const LEARNING_IRREGULAR_FAMILIES = {
     description: 'Cambios vocálicos sistemáticos: e→ie (pensar), e→i (pedir), o→ue (dormir)',
     paradigmatic: 'pensar',
     // Priorizar un ejemplo por cada grupo: e→ie (pensar), e→i (pedir), o→ue (dormir)
-    examples: ['pensar', 'pedir', 'dormir', 'querer', 'poder', 'volver', 'servir', 'contar', 'encontrar', 'recordar', 'mostrar', 'costar', 'sonar', 'volar', 'cerrar', 'empezar', 'despertar', 'comenzar', 'sentarse', 'acostarse', 'entender', 'perder', 'defender', 'encender', 'mentir', 'sentir', 'convertir', 'divertir', 'preferir', 'referir', 'sugerir', 'advertir', 'repetir', 'competir', 'impedir', 'medir', 'reír', 'freír', 'sonreír', 'vestir', 'elegir', 'corregir', 'morir', 'jugar'], // Jugar al final para no aparecer en presentación
+    examples: ['pensar', 'pedir', 'dormir', 'querer', 'poder', 'volver', 'servir', 'contar', 'encontrar', 'recordar', 'mostrar', 'costar', 'sonar', 'volar', 'cerrar', 'empezar', 'despertar', 'comenzar', 'entender', 'perder', 'defender', 'encender', 'mentir', 'sentir', 'convertir', 'divertir', 'preferir', 'referir', 'sugerir', 'advertir', 'repetir', 'competir', 'impedir', 'medir', 'reír', 'freír', 'sonreír', 'vestir', 'elegir', 'corregir', 'morir', 'jugar'], // Jugar al final para no aparecer en presentación
     priorityExamples: ['pensar', 'pedir', 'dormir'], // Casos más representativos: e→ie, e→i, o→ue
     pattern: 'pensar: pienso, piensas, piensa, pensamos, pensáis, piensan (nosotros/vosotros no diptongan)',
     affectedTenses: ['pres', 'subjPres'],
@@ -352,8 +352,6 @@ export const LEARNING_VERB_TO_FAMILIES = {
   // Más verbos e→ie
   'despertar': ['LEARNING_DIPHTHONGS'],
   'comenzar': ['LEARNING_DIPHTHONGS'],
-  'sentarse': ['LEARNING_DIPHTHONGS'],
-  'acostarse': ['LEARNING_DIPHTHONGS'],
   'defender': ['LEARNING_DIPHTHONGS'],
   'encender': ['LEARNING_DIPHTHONGS'],
   'mentir': ['LEARNING_DIPHTHONGS', 'LEARNING_PRET_3AS_PERSONAS'],

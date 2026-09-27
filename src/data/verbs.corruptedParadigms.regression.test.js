@@ -42,8 +42,6 @@ describe('corrupted paradigm regression - present indicative', () => {
     ['reproducir', 'reproduzco', 'reproduces', 'reproducís', 'reproduce', 'reproducimos', 'reproducís', 'reproducen'],
     ['reponer', 'repongo', 'repones', 'reponés', 'repone', 'reponemos', 'reponéis', 'reponen'],
     ['poseer', 'poseo', 'posees', 'poseés', 'posee', 'poseemos', 'poseéis', 'poseen'],
-    ['sentarse', 'siento', 'sientas', 'sentás', 'sienta', 'sentamos', 'sentáis', 'sientan'],
-    ['acostarse', 'acuesto', 'acuestas', 'acostás', 'acuesta', 'acostamos', 'acostáis', 'acuestan'],
     ['reír', 'río', 'ríes', 'reís', 'ríe', 'reímos', 'reís', 'ríen'],
     ['sonreír', 'sonrío', 'sonríes', 'sonreís', 'sonríe', 'sonreímos', 'sonreís', 'sonríen']
   ]

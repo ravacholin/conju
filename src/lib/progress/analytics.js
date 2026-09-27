@@ -290,7 +290,6 @@ export async function getErrorRadarData(userId) {
         case ERROR_TAGS.WRONG_PERSON: return 'Persona'
         case ERROR_TAGS.WRONG_TENSE: return 'Tiempo'
         case ERROR_TAGS.WRONG_MOOD: return 'Modo'
-        case ERROR_TAGS.CLITIC_PRONOUNS: return 'Clíticos'
         case ERROR_TAGS.OTHER_VALID_FORM: return 'Otra forma válida'
         default: return 'Ortografía'
       }
@@ -487,7 +486,6 @@ export async function getErrorIntelligence(userId, signal) {
         case ERROR_TAGS.WRONG_TENSE: return 2.0
         case ERROR_TAGS.IRREGULAR_STEM: return 1.8
         case ERROR_TAGS.VERBAL_ENDING: return 1.5
-        case ERROR_TAGS.CLITIC_PRONOUNS: return 1.4
         case ERROR_TAGS.OTHER_VALID_FORM: return 1.2
         case ERROR_TAGS.ACCENT:
         case ERROR_TAGS.ORTHOGRAPHY_C_QU:
@@ -505,7 +503,6 @@ export async function getErrorIntelligence(userId, signal) {
         case ERROR_TAGS.WRONG_PERSON: return 'Persona'
         case ERROR_TAGS.WRONG_TENSE: return 'Tiempo'
         case ERROR_TAGS.WRONG_MOOD: return 'Modo'
-        case ERROR_TAGS.CLITIC_PRONOUNS: return 'Clíticos'
         case ERROR_TAGS.OTHER_VALID_FORM: return 'Otra forma válida'
         case ERROR_TAGS.ORTHOGRAPHY_C_QU:
         case ERROR_TAGS.ORTHOGRAPHY_G_GU:

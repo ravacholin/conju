@@ -416,7 +416,7 @@ function processConstellationData(attempts, timeRange) {
   const constellations = {
     'Morfología Verbal': [ERROR_TAGS.VERBAL_ENDING, ERROR_TAGS.IRREGULAR_STEM],
     'Ortografía': [ERROR_TAGS.ORTHOGRAPHY_C_QU, ERROR_TAGS.ORTHOGRAPHY_G_GU, ERROR_TAGS.ORTHOGRAPHY_Z_C, ERROR_TAGS.ACCENT],
-    'Sintaxis': [ERROR_TAGS.WRONG_PERSON, ERROR_TAGS.WRONG_MOOD, ERROR_TAGS.WRONG_TENSE, ERROR_TAGS.CLITIC_PRONOUNS],
+    'Sintaxis': [ERROR_TAGS.WRONG_PERSON, ERROR_TAGS.WRONG_MOOD, ERROR_TAGS.WRONG_TENSE],
     'Variación': [ERROR_TAGS.OTHER_VALID_FORM]
   }
 
@@ -874,7 +874,6 @@ function getErrorTagLabel(tag) {
     [ERROR_TAGS.WRONG_PERSON]: 'Persona',
     [ERROR_TAGS.WRONG_TENSE]: 'Tiempo',
     [ERROR_TAGS.WRONG_MOOD]: 'Modo',
-    [ERROR_TAGS.CLITIC_PRONOUNS]: 'Clíticos',
     [ERROR_TAGS.ORTHOGRAPHY_C_QU]: 'Ortografía C/QU',
     [ERROR_TAGS.ORTHOGRAPHY_G_GU]: 'Ortografía G/GU',
     [ERROR_TAGS.ORTHOGRAPHY_Z_C]: 'Ortografía Z/C',
@@ -891,7 +890,6 @@ function getErrorColor(errorType) {
     [ERROR_TAGS.WRONG_PERSON]: 'rgba(255, 255, 255, 0.5)',
     [ERROR_TAGS.WRONG_TENSE]: 'rgba(255, 255, 255, 0.45)',
     [ERROR_TAGS.WRONG_MOOD]: 'rgba(255, 255, 255, 0.4)',
-    [ERROR_TAGS.CLITIC_PRONOUNS]: 'rgba(255, 255, 255, 0.6)',
     [ERROR_TAGS.ORTHOGRAPHY_C_QU]: 'rgba(255, 255, 255, 0.5)',
     [ERROR_TAGS.ORTHOGRAPHY_G_GU]: 'rgba(255, 255, 255, 0.42)',
     [ERROR_TAGS.ORTHOGRAPHY_Z_C]: 'rgba(255, 255, 255, 0.38)',

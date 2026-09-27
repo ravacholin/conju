@@ -529,7 +529,6 @@ export function hasIrregularParticiple(lemma) {
     'suscribir': 'suscrito',
     'transcribir': 'transcrito',
     'reescribir': 'reescrito',
-    'deshacerse': 'deshecho',
     'deshacer': 'deshecho',
     'rehacer': 'rehecho',
     'contrahacer': 'contrahecho',
